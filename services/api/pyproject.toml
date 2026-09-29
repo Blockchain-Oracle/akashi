@@ -3,6 +3,7 @@ name = "akashi-api"
 version = "0.1.0"
 requires-python = ">=3.13,<3.14"
 dependencies = [
+    "akashi-code",
     "akashi-core",
     "uvicorn[standard]>=0.54",
 ]
@@ -16,3 +17,4 @@ packages = ["src/akashi_api"]
 
 [tool.uv.sources]
 akashi-core = { workspace = true }
+akashi-code = { workspace = true }

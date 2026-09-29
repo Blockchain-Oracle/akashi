@@ -35,9 +35,7 @@ _STATUS_TO_CODE = {
 def error_response(
     status: int, code: ErrorCode, message: str, *, retryable: bool = False, details: list[str] | None = None
 ) -> AkashiJSONResponse:
-    body = ErrorEnvelope(
-        error=ErrorBody(code=code, message=message, retryable=retryable, details=details or [])
-    )
+    body = ErrorEnvelope(error=ErrorBody(code=code, message=message, retryable=retryable, details=details or []))
     return AkashiJSONResponse(body.model_dump(mode="json"), status_code=status)
 
 
@@ -67,9 +65,7 @@ async def _on_http(_: Request, exc: StarletteHTTPException) -> AkashiJSONRespons
 
 
 async def _on_akashi(_: Request, exc: AkashiError) -> AkashiJSONResponse:
-    return error_response(
-        exc.status_code, exc.code, exc.message, retryable=exc.retryable, details=exc.details
-    )
+    return error_response(exc.status_code, exc.code, exc.message, retryable=exc.retryable, details=exc.details)
 
 
 async def _on_unhandled(request: Request, exc: Exception) -> AkashiJSONResponse:

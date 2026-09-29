@@ -36,9 +36,7 @@ def model_schema(model: type[BaseModel]) -> dict[str, Any]:
     return _inline(raw, raw.get("$defs", {}))
 
 
-def output_schema(
-    result_models: list[type[BaseModel]], example: dict[str, Any] | None = None
-) -> dict[str, Any]:
+def output_schema(result_models: list[type[BaseModel]], example: dict[str, Any] | None = None) -> dict[str, Any]:
     """One schema per service: the envelope with results[] = anyOf(result kinds), plus the error shape."""
     envelope = model_schema(Envelope[dict[str, Any]])
     envelope["properties"]["results"] = {

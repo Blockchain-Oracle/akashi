@@ -21,9 +21,7 @@ from akashi_core.errors import UpstreamFailure
 from akashi_core.http.registry import UpstreamSpec
 from akashi_core.settings import get_settings
 
-_RETRYABLE_STATUS = frozenset(
-    {HTTPStatus.BAD_GATEWAY, HTTPStatus.SERVICE_UNAVAILABLE, HTTPStatus.GATEWAY_TIMEOUT}
-)
+_RETRYABLE_STATUS = frozenset({HTTPStatus.BAD_GATEWAY, HTTPStatus.SERVICE_UNAVAILABLE, HTTPStatus.GATEWAY_TIMEOUT})
 _RATE_LIMITED = HTTPStatus.TOO_MANY_REQUESTS
 _MS_PER_S = 1000
 
@@ -69,9 +67,7 @@ class UpstreamClient:
                     budget = deadline.for_call(self.spec.total_s)
                     if budget <= 0:
                         raise UpstreamFailure(self.spec.name, "deadline_exceeded")
-                    timeout = httpx2.Timeout(
-                        budget, connect=min(self.spec.connect_s, budget), pool=DEFAULT_POOL_S
-                    )
+                    timeout = httpx2.Timeout(budget, connect=min(self.spec.connect_s, budget), pool=DEFAULT_POOL_S)
                     async with self._gate:
                         resp = await self._client.request(method, url, timeout=timeout, **kwargs)
                     if resp.status_code in _RETRYABLE_STATUS:

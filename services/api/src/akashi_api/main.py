@@ -2,6 +2,8 @@
 
 from fastapi import APIRouter
 
+from akashi_api.lifespan import lifespan
+from akashi_code.router import router as code_router
 from akashi_core.app.factory import ServiceSpec, create_root_app
 from akashi_core.constants.app import (
     PREFIX_CITE,
@@ -16,8 +18,8 @@ from akashi_core.constants.deadlines import CITE_DEADLINE_S, CODE_DEADLINE_S, NO
 # Domain routers replace these empty ones in S3–S5.
 SPECS = [
     ServiceSpec(SERVICE_CITE, PREFIX_CITE, "Akashi Citation Verifier", CITE_DEADLINE_S, APIRouter()),
-    ServiceSpec(SERVICE_CODE, PREFIX_CODE, "Akashi Code Reality Check", CODE_DEADLINE_S, APIRouter()),
+    ServiceSpec(SERVICE_CODE, PREFIX_CODE, "Akashi Code Reality Check", CODE_DEADLINE_S, code_router),
     ServiceSpec(SERVICE_NOW, PREFIX_NOW, "Akashi Live Facts", NOW_DEADLINE_S, APIRouter()),
 ]
 
-app = create_root_app(SPECS)
+app = create_root_app(SPECS, lifespan=lifespan)

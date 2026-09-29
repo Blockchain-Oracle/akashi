@@ -1,5 +1,7 @@
 """Build one sub-app per Pocket service and the root app that mounts them."""
 
+from collections.abc import Callable
+from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass
 
 from fastapi import APIRouter, FastAPI
@@ -44,8 +46,11 @@ def create_service_app(spec: ServiceSpec) -> FastAPI:
     return app
 
 
-def create_root_app(specs: list[ServiceSpec]) -> FastAPI:
-    root = _bare_app(title="akashi-api")
+Lifespan = Callable[[FastAPI], AbstractAsyncContextManager[None]]
+
+
+def create_root_app(specs: list[ServiceSpec], lifespan: Lifespan | None = None) -> FastAPI:
+    root = _bare_app(title="akashi-api", lifespan=lifespan)
 
     @root.get("/v1/health", include_in_schema=False)
     async def health() -> dict[str, str]:

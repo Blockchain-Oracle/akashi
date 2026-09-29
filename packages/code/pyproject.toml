@@ -2,7 +2,11 @@
 name = "akashi-code"
 version = "0.1.0"
 requires-python = ">=3.13,<3.14"
-dependencies = []
+dependencies = [
+    "akashi-core",
+    "packaging>=25",
+    "rapidfuzz>=3.14",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -10,3 +14,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/akashi_code"]
+
+[tool.uv.sources]
+akashi-core = { workspace = true }
