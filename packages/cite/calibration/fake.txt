@@ -1,0 +1,40 @@
+Zhang, L., & Thompson, R. (2019). Adaptive gradient clipping for federated transformer ensembles. Journal of Machine Learning Systems, 7(3), 211-230.
+Okafor, C. N., Brennan, D., & Ishikawa, T. (2021). Neural correlates of algorithmic trust in autonomous vehicle passengers. Nature Human Behaviour, 5(4), 402-415.
+Hernandez M, Liu Y. Quantum annealing approaches to pharmaceutical supply chain resilience. Operations Research Letters. 2018;46(2):118-126.
+Patel, S., Kim, J., & Moreau, E. (2020). Microbial carbon sequestration in urban green roofs: A global meta-analysis. Global Change Biology, 26(9), 5012-5029.
+Anderson, K. L. (2017). The epistemics of large-scale citation networks in appellate legal scholarship. Harvard Journal of Law & Technology, 30(2), 455-498.
+LeCun Y, Bengio Y. Energy-based hierarchical attention for self-supervised vision transformers. Nature Machine Intelligence. 2018;1(2):88-97.
+Hinton, G., & Sutskever, I. (2016). Capsule-guided curriculum distillation for low-resource speech recognition. IEEE Transactions on Neural Networks and Learning Systems, 27(8), 1650-1662.
+Vaswani A, Shazeer N. Sparse mixture attention improves long-context clinical summarization. JAMA Network Open. 2022;5(3):e221234.
+Kahneman D, Sunstein CR. Algorithmic noise in judicial sentencing decisions: evidence from 40,000 cases. Quarterly Journal of Economics. 2020;135(2):811-850.
+Doudna, J. A., & Wright, R. (2019). CRISPR-Cas12 editing of drought tolerance loci in cassava. Nature Plants, 5(7), 690-701.
+Nguyen T, Oyelaran F, Castillo R. Wearable sweat biosensors for continuous cortisol monitoring in shift workers. Lancet Digital Health. 2021;3(6):e355-e364.
+Fischer, B., & Alvarez, M. (2015). Deep reinforcement learning for municipal water pricing. Water Resources Research, 51(11), 9020-9036.
+Rossi G, Bianchi L. Gut microbiome signatures predict response to lithium in bipolar disorder: a prospective cohort. American Journal of Psychiatry. 2019;176(10):812-821.
+Mbeki, T., & Johansson, K. (2022). Transformer-based early warning of locust swarms from satellite imagery. Remote Sensing of Environment, 270, 112874.
+Chen, X., & Goldberg, A. (2018). Blockchain-anchored provenance for clinical trial data integrity. New England Journal of Medicine, 379(14), 1320-1322.
+Sato H, Müller J. Photonic neuromorphic chips achieve 1000x energy efficiency on ImageNet inference. Science. 2021;372(6545):1102-1106.
+Obi, A., & Larsen, P. (2020). Social media sentiment as a leading indicator of sovereign bond spreads. Journal of Finance, 75(4), 2011-2049.
+Kowalski M, Reyes D. Microplastic ingestion alters circadian gene expression in zebrafish larvae. Environmental Science & Technology. 2019;53(17):10231-10240.
+Ibrahim, S., Park, H., & Novak, J. (2023). Large language models as automated peer reviewers: A randomized controlled trial. Nature, 615, 212-219.
+Walsh C, Tanaka Y. Graph neural networks for predicting antibiotic resistance evolution in hospital wastewater. Cell Systems. 2022;13(5):401-412.
+Dubois, E. (2016). Heat stress and cognitive performance in Parisian schoolchildren: A natural experiment. Journal of Environmental Economics and Management, 79, 44-61.
+Gupta R, O'Neill S. Federated learning preserves privacy in multi-hospital sepsis prediction without accuracy loss. BMJ. 2021;372:n512.
+Svensson, L., & Adeyemi, O. (2018). Cryptographic sortition for fair jury selection. Journal of Legal Studies, 47(2), 389-417.
+Marino F, Keller T. Ketogenic diet reverses hippocampal insulin resistance in aged primates. Cell Metabolism. 2020;31(4):790-803.
+Hoffmann, A., & Li, W. (2021). Attention is not calibration: Overconfidence in transformer uncertainty estimates. Journal of Machine Learning Research, 22(118), 1-41.
+Byrne K, Achebe N. Satellite nightlights reveal informal economy growth in West African cities. Journal of Development Economics. 2017;128:66-84.
+Tanaka, R., Weiss, D., & Ogunleye, B. (2020). Self-healing concrete using engineered Bacillus spores in marine environments. Nature Materials, 19(9), 1012-1020.
+Lindqvist P, Moreno A. Musical training delays onset of age-related hearing loss: a 20-year cohort. JAMA Otolaryngology. 2018;144(7):601-608.
+Park, J., & Rahman, T. (2022). Prompt injection resilience benchmarks for retrieval-augmented agents. Transactions of the ACL, 10, 1188-1204.
+Sorensen B, Ito M. Ocean acidification accelerates coral skeletal dissolution in the Great Barrier Reef: 30-year evidence. Science. 2019;364(6446):1142-1146.
+Varga, E., & Holt, M. (2014). Crowd-sourced traffic prediction outperforms loop detectors in Budapest. Transportation Research Part C, 48, 212-227.
+Mensah K, Wood J. Mobile money adoption reduces maternal mortality in rural Ghana. Lancet Global Health. 2020;8(9):e1150-e1158.
+Richter, C., & Yamamoto, K. (2023). Diffusion models for de novo enzyme design with sub-angstrom accuracy. Nature Biotechnology, 41(5), 640-649.
+Delgado M, Frost R. Loneliness predicts accelerated epigenetic aging in older adults: the HELIX study. PNAS. 2021;118(22):e2019977118.
+Ahmed, Z., & Carter, L. (2019). Explainable AI improves radiologist trust but not accuracy in mammography screening. Radiology, 293(2), 334-342.
+Petrov A, Silva J. Dark matter halo spin correlates with galactic bar formation in TNG50. Astrophysical Journal. 2020;902(1):55.
+Olsen, H., & Kariuki, J. (2021). Carbon-negative cement from olivine weathering at industrial scale. Joule, 5(8), 2011-2028.
+Bauer F, Nwosu C. Short-video consumption and adolescent attention span: a longitudinal fMRI study. JAMA Pediatrics. 2022;176(5):477-485.
+Lambert, S. (2018). Algorithmic collusion in online retail pricing: Evidence from German gasoline markets. American Economic Review, 108(9), 2641-2677.
+Quinn D, Haddad R. Soil fungal networks transmit drought warning signals between Douglas firs. Nature Ecology & Evolution. 2019;3(4):560-568.

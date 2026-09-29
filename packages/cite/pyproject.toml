@@ -2,7 +2,12 @@
 name = "akashi-cite"
 version = "0.1.0"
 requires-python = ">=3.13,<3.14"
-dependencies = []
+dependencies = [
+    "akashi-core",
+    "eyecite>=2.7",
+    "idutils>=1.7",
+    "rapidfuzz>=3.14",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -10,3 +15,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/akashi_cite"]
+
+[tool.uv.sources]
+akashi-core = { workspace = true }

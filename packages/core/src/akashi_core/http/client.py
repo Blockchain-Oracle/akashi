@@ -8,15 +8,16 @@ from typing import Any
 import httpx2
 import orjson
 import stamina
+import structlog
 from limits import parse
 from limits.aio.storage import MemoryStorage, RedisStorage, Storage
 from limits.aio.strategies import MovingWindowRateLimiter
 
-from akashi_core.constants.deadlines import DEFAULT_POOL_S, KEEPALIVE_S, NOW_DEADLINE_S
+from akashi_core.constants.deadlines import DEADLINE_SAFETY_MARGIN_S, DEFAULT_POOL_S, KEEPALIVE_S, NOW_DEADLINE_S
 from akashi_core.constants.http import HTTP_CLIENT_ERROR_MIN, HTTP_NOT_FOUND
 from akashi_core.contract.enums import SourceStatus
 from akashi_core.contract.sources import SourceRef
-from akashi_core.deadline import current_deadline
+from akashi_core.deadline import Deadline, current_deadline
 from akashi_core.errors import UpstreamFailure
 from akashi_core.http.registry import UpstreamSpec
 from akashi_core.settings import get_settings
@@ -24,6 +25,11 @@ from akashi_core.settings import get_settings
 _RETRYABLE_STATUS = frozenset({HTTPStatus.BAD_GATEWAY, HTTPStatus.SERVICE_UNAVAILABLE, HTTPStatus.GATEWAY_TIMEOUT})
 _RATE_LIMITED = HTTPStatus.TOO_MANY_REQUESTS
 _MS_PER_S = 1000
+LOG_DETAIL_MAX_CHARS = 200
+RATE_WAIT_MIN_S = 0.02  # never spin: sleep at least this long between rate-limit checks
+RATE_COOLDOWN_DEFAULT_S = 1.0  # after a 429 without Retry-After: per-second limits recover fast
+RATE_COOLDOWN_MAX_S = 900.0  # re-probe at least every 15 min even if Retry-After says hours
+log = structlog.get_logger(__name__)
 
 
 class RetryableStatus(Exception):
@@ -39,6 +45,7 @@ class UpstreamClient:
         self._gate = asyncio.Semaphore(spec.max_concurrency)
         self._limiter = MovingWindowRateLimiter(storage or MemoryStorage()) if spec.rate else None
         self._rate = parse(spec.rate) if spec.rate else None
+        self._cooldown_until = 0.0  # monotonic time before which calls fail fast (upstream said 429)
         self._client = httpx2.AsyncClient(
             base_url=spec.base_url,
             http2=spec.http2,
@@ -47,18 +54,35 @@ class UpstreamClient:
             headers={"user-agent": f"akashi/1.0 (+{settings.repo_url}; mailto:{settings.contact_email})"},
         )
 
+    @property
+    def http(self) -> httpx2.AsyncClient:
+        """The underlying client, for callers that must drive requests themselves (the SSRF-guarded fetch)."""
+        return self._client
+
     async def aclose(self) -> None:
         await self._client.aclose()
 
-    async def _admit(self) -> None:
-        if self._limiter and self._rate and not await self._limiter.hit(self._rate, self.spec.name):
-            raise UpstreamFailure(self.spec.name, SourceStatus.rate_limited)
+    async def _admit(self, deadline: Deadline) -> None:
+        """Take a rate-limit slot, waiting for the window to free up while the deadline allows it.
+
+        Failing fast here would turn a burst (ten citations at once) into false "unavailable" answers.
+        """
+        if time.monotonic() < self._cooldown_until:
+            raise UpstreamFailure(self.spec.name, SourceStatus.rate_limited, "cooldown")
+        if not (self._limiter and self._rate):
+            return
+        while not await self._limiter.hit(self._rate, self.spec.name):
+            stats = await self._limiter.get_window_stats(self._rate, self.spec.name)
+            wait = max(stats.reset_time - time.time(), RATE_WAIT_MIN_S)
+            if wait >= deadline.remaining() - DEADLINE_SAFETY_MARGIN_S:
+                raise UpstreamFailure(self.spec.name, SourceStatus.rate_limited)
+            await asyncio.sleep(wait)
 
     async def request(self, method: str, url: str, **kwargs: Any) -> httpx2.Response:
         """One request under the current deadline; retries transient failures on idempotent verbs only."""
         deadline = current_deadline(NOW_DEADLINE_S)
         attempts = self.spec.retry_attempts if method in {"GET", "HEAD"} else 1
-        await self._admit()
+        await self._admit(deadline)
         try:
             async for attempt in stamina.retry_context(
                 on=(httpx2.TransportError, RetryableStatus), attempts=attempts, timeout=deadline.remaining()
@@ -74,8 +98,12 @@ class UpstreamClient:
                         raise RetryableStatus(str(resp.status_code))
                     return resp
         except httpx2.TimeoutException as exc:
+            log.warning("upstream_timeout", upstream=self.spec.name, error=type(exc).__name__)
             raise UpstreamFailure(self.spec.name, "deadline_exceeded") from exc
         except (httpx2.TransportError, RetryableStatus) as exc:
+            log.warning(
+                "upstream_unavailable", upstream=self.spec.name, error=type(exc).__name__, detail=str(exc)[:200]
+            )
             raise UpstreamFailure(self.spec.name, SourceStatus.unavailable) from exc
         raise UpstreamFailure(self.spec.name, SourceStatus.unavailable)
 
@@ -87,6 +115,7 @@ class UpstreamClient:
         if resp.status_code == HTTP_NOT_FOUND:
             raise UpstreamFailure(self.spec.name, SourceStatus.not_found)
         if resp.status_code == _RATE_LIMITED:
+            self._cool_down(resp.headers.get("retry-after"))
             raise UpstreamFailure(self.spec.name, SourceStatus.rate_limited)
         if resp.status_code >= HTTP_CLIENT_ERROR_MIN:
             raise UpstreamFailure(self.spec.name, SourceStatus.unavailable, str(resp.status_code))
@@ -95,6 +124,12 @@ class UpstreamClient:
         except orjson.JSONDecodeError as exc:
             raise UpstreamFailure(self.spec.name, "decode") from exc
         return data, self.source_ref(SourceStatus.ok, url=str(resp.url), latency_ms=latency)
+
+    def _cool_down(self, retry_after: str | None) -> None:
+        """Stop calling an upstream that answered 429 (e.g. OpenAlex's daily budget) for as long as it asks."""
+        wait = float(retry_after) if retry_after and retry_after.isdigit() else RATE_COOLDOWN_DEFAULT_S
+        self._cooldown_until = time.monotonic() + min(wait, RATE_COOLDOWN_MAX_S)
+        log.warning("upstream_rate_limited", upstream=self.spec.name, cooldown_s=min(wait, RATE_COOLDOWN_MAX_S))
 
     def source_ref(self, status: SourceStatus, **kwargs: Any) -> SourceRef:
         return SourceRef(

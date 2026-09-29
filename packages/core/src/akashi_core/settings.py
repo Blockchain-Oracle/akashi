@@ -2,6 +2,7 @@
 
 from functools import lru_cache
 
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from akashi_core.constants.app import METRICS_PORT
@@ -18,6 +19,7 @@ class AkashiSettings(BaseSettings):
     contact_email: str = "blockchainoracle.dev@gmail.com"
     ts_introspect_url: str = "http://localhost:3000"
     demo_secret: str | None = None
+    openalex_api_key: SecretStr | None = None  # free key: 10x the shared keyless budget
     data_dir: str = "./data"
     metrics_port: int = METRICS_PORT
 

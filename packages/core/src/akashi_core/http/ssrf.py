@@ -4,7 +4,7 @@ import asyncio
 import ipaddress
 import socket
 from dataclasses import dataclass
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
 import httpx2
 
@@ -19,6 +19,10 @@ REDIRECT_STATUSES = frozenset({301, 302, 303, 307, 308})
 BLOCKED_HOST_SUFFIXES = (".internal", ".local", ".localhost", ".svc", ".cluster.local")
 
 
+class UnresolvableHost(InvalidInput):
+    """The host has no DNS answer: for a cited URL that is evidence (dead domain), not a bad request."""
+
+
 def _is_public(ip: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
     return not (
         ip.is_private
@@ -31,16 +35,34 @@ def _is_public(ip: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
     )
 
 
-async def _resolve_public(host: str) -> None:
+async def _resolve_public(host: str) -> str:
+    """Resolve once and return the address to connect to. Every answer must be public (no mixed A records)."""
+    try:
+        return str(_public_ip(ipaddress.ip_address(host)))
+    except ValueError:
+        pass
     if "." not in host or host.endswith(BLOCKED_HOST_SUFFIXES):
         raise InvalidInput("URL host is not a public internet host.")
     try:
         infos = await asyncio.get_running_loop().getaddrinfo(host, None, type=socket.SOCK_STREAM)
     except socket.gaierror as exc:
-        raise InvalidInput("URL host does not resolve.") from exc
-    for info in infos:
-        if not _is_public(ipaddress.ip_address(info[4][0])):
-            raise InvalidInput("URL resolves to a non-public address.")
+        raise UnresolvableHost("URL host does not resolve.") from exc
+    addresses = [_public_ip(ipaddress.ip_address(info[4][0])) for info in infos]
+    return str(addresses[0])
+
+
+def _public_ip(ip: ipaddress.IPv4Address | ipaddress.IPv6Address) -> ipaddress.IPv4Address | ipaddress.IPv6Address:
+    if not _is_public(ip):
+        raise InvalidInput("URL resolves to a non-public address.")
+    return ip
+
+
+def _pinned(url: str, ip: str) -> str:
+    """Same URL with the host replaced by the vetted IP (closes the DNS-rebinding window)."""
+    parts = urlsplit(url)
+    host = f"[{ip}]" if ":" in ip else ip
+    netloc = f"{host}:{parts.port}" if parts.port else host
+    return urlunsplit(parts._replace(netloc=netloc))
 
 
 def validate_url(url: str) -> str:
@@ -66,17 +88,26 @@ class FetchedPage:
 
 
 async def safe_get(client: httpx2.AsyncClient, url: str, budget_s: float) -> FetchedPage:
-    """GET with manual redirects; every hop is re-validated and re-resolved; body capped."""
+    """GET with manual redirects; every hop is re-validated, re-resolved and pinned to the vetted IP; body capped.
+
+    Connecting to the IP (Host header + TLS SNI keep the real name, so certificates still verify) means a second DNS
+    answer can never point the request at an internal address. `connection: close` keeps pooled sockets from being
+    reused under another hostname's SNI.
+    """
     current = validate_url(url)
     for _ in range(MAX_REDIRECTS + 1):
-        host = urlsplit(current).hostname or ""
-        await _resolve_public(host)
+        parts = urlsplit(current)
+        host = parts.hostname or ""
+        ip = await _resolve_public(host)
+        extensions = {"sni_hostname": host} if parts.scheme == "https" else {}
+        host_header = f"{host}:{parts.port}" if parts.port else host  # never forward userinfo
         async with client.stream(
             "GET",
-            current,
+            _pinned(current, ip),
             timeout=budget_s,
             follow_redirects=False,
-            headers={"range": f"bytes=0-{URL_FETCH_MAX_BYTES - 1}"},
+            headers={"host": host_header, "range": f"bytes=0-{URL_FETCH_MAX_BYTES - 1}", "connection": "close"},
+            extensions=extensions,
         ) as resp:
             if resp.status_code in REDIRECT_STATUSES and (loc := resp.headers.get("location")):
                 current = validate_url(urljoin(current, loc))

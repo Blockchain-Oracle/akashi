@@ -1,0 +1,998 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Akashi Citation Verifier",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v1/version": {
+      "get": {
+        "summary": "Version",
+        "operationId": "version_v1_version_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Version V1 Version Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health V1 Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/verify": {
+      "post": {
+        "summary": "Verify",
+        "operationId": "verify_v1_verify_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_CitationResult_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CacheState": {
+        "type": "string",
+        "enum": [
+          "hit",
+          "miss",
+          "stale"
+        ],
+        "title": "CacheState"
+      },
+      "CitationResult": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "citation",
+            "title": "Kind",
+            "default": "citation"
+          },
+          "index": {
+            "type": "integer",
+            "title": "Index"
+          },
+          "input_kind": {
+            "$ref": "#/components/schemas/InputKind"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/CitationVerdict"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "matched": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MatchedRecord"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "field_diffs": {
+            "items": {
+              "$ref": "#/components/schemas/FieldDiff"
+            },
+            "type": "array",
+            "title": "Field Diffs"
+          },
+          "retraction": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Retraction"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/MatchedRecord"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "legal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LegalMatch"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "web": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WebCheck"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "retryable": {
+            "type": "boolean",
+            "title": "Retryable",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "index",
+          "input_kind",
+          "verdict",
+          "confidence"
+        ],
+        "title": "CitationResult"
+      },
+      "CitationVerdict": {
+        "type": "string",
+        "enum": [
+          "verified",
+          "mismatch",
+          "not_found",
+          "retracted",
+          "ambiguous",
+          "unverifiable"
+        ],
+        "title": "CitationVerdict"
+      },
+      "Envelope_CitationResult_": {
+        "properties": {
+          "service": {
+            "type": "string",
+            "title": "Service"
+          },
+          "operation": {
+            "type": "string",
+            "title": "Operation"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResponseStatus"
+          },
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "deadline_ms": {
+            "type": "integer",
+            "title": "Deadline Ms"
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "title": "Elapsed Ms"
+          },
+          "unavailable": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unavailable"
+          },
+          "summary": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Summary"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/CitationResult"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceRef"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "service",
+          "operation",
+          "version",
+          "status",
+          "as_of",
+          "deadline_ms",
+          "elapsed_ms"
+        ],
+        "title": "Envelope[CitationResult]"
+      },
+      "FieldDiff": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "given": {
+            "type": "string",
+            "title": "Given"
+          },
+          "found": {
+            "type": "string",
+            "title": "Found"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "major",
+              "minor"
+            ],
+            "title": "Severity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field",
+          "given",
+          "found",
+          "severity"
+        ],
+        "title": "FieldDiff"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InputKind": {
+        "type": "string",
+        "enum": [
+          "scholarly",
+          "legal",
+          "web",
+          "statute"
+        ],
+        "title": "InputKind"
+      },
+      "LegalMatch": {
+        "properties": {
+          "reporter": {
+            "type": "string",
+            "title": "Reporter"
+          },
+          "volume": {
+            "type": "string",
+            "title": "Volume"
+          },
+          "page": {
+            "type": "string",
+            "title": "Page"
+          },
+          "case_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case Name"
+          },
+          "date_filed": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date Filed"
+          },
+          "court": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Court"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "covered_through": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Covered Through"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reporter",
+          "volume",
+          "page"
+        ],
+        "title": "LegalMatch"
+      },
+      "MatchedRecord": {
+        "properties": {
+          "doi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doi"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "authors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Authors"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "venue": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Venue"
+          },
+          "volume": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume"
+          },
+          "pages": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pages"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "record_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Record Source"
+          }
+        },
+        "type": "object",
+        "title": "MatchedRecord"
+      },
+      "ResponseStatus": {
+        "type": "string",
+        "enum": [
+          "complete",
+          "partial"
+        ],
+        "title": "ResponseStatus"
+      },
+      "Retraction": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "retracted",
+              "corrected",
+              "expression_of_concern",
+              "none"
+            ],
+            "title": "Status"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "notice_doi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notice Doi"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "Retraction"
+      },
+      "SourceRef": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SourceStatus"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "licence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Licence"
+          },
+          "attribution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attribution"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "fetched_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fetched At"
+          },
+          "latency_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms"
+          },
+          "cache": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CacheState"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "status"
+        ],
+        "title": "SourceRef"
+      },
+      "SourceStatus": {
+        "type": "string",
+        "enum": [
+          "ok",
+          "not_found",
+          "unavailable",
+          "rate_limited",
+          "skipped_budget",
+          "not_applicable"
+        ],
+        "title": "SourceStatus"
+      },
+      "StructuredCitation": {
+        "properties": {
+          "raw": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw"
+          },
+          "doi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doi"
+          },
+          "arxiv": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arxiv"
+          },
+          "pmid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pmid"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "authors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "title": "Authors"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 2100.0,
+                "minimum": 1500.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "venue": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Venue"
+          },
+          "volume": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume"
+          },
+          "pages": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pages"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "legal_cite": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Cite"
+          }
+        },
+        "type": "object",
+        "title": "StructuredCitation"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VerifyOptions": {
+        "properties": {
+          "check_urls": {
+            "type": "boolean",
+            "title": "Check Urls",
+            "default": true
+          },
+          "retraction": {
+            "type": "boolean",
+            "title": "Retraction",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "VerifyOptions"
+      },
+      "VerifyRequest": {
+        "properties": {
+          "citations": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/components/schemas/StructuredCitation"
+                }
+              ]
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Citations"
+          },
+          "options": {
+            "$ref": "#/components/schemas/VerifyOptions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "citations"
+        ],
+        "title": "VerifyRequest"
+      },
+      "WebCheck": {
+        "properties": {
+          "http_status": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Http Status"
+          },
+          "liveness": {
+            "type": "string",
+            "enum": [
+              "live",
+              "dead",
+              "blocked",
+              "unreachable"
+            ],
+            "title": "Liveness"
+          },
+          "final_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Final Url"
+          },
+          "page_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Title"
+          },
+          "archived_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archived Url"
+          },
+          "archived_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archived At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "liveness"
+        ],
+        "title": "WebCheck"
+      }
+    }
+  }
+}

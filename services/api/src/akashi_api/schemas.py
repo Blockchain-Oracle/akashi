@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+from akashi_cite.models import CitationResult, VerifyRequest
+from akashi_cite.router import router as cite_router
 from akashi_code.models import (
     CheckRequest,
     Diagnostic,
@@ -15,13 +17,20 @@ from akashi_code.models import (
     VersionsResult,
 )
 from akashi_code.router import router as code_router
-from akashi_core.constants.app import SERVICE_CODE
+from akashi_core.constants.app import SERVICE_CITE, SERVICE_CODE
 from akashi_core.schema.cli import SchemaSpec, write_all
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 CARDS_DIR = REPO_ROOT / "cards"
 
 SPECS = [
+    SchemaSpec(
+        service_id=SERVICE_CITE,
+        title="Akashi Citation Verifier",
+        results=[CitationResult],
+        requests=[VerifyRequest],
+        router=cite_router,
+    ),
     SchemaSpec(
         service_id=SERVICE_CODE,
         title="Akashi Code Reality Check",
