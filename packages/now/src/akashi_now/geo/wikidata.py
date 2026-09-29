@@ -1,6 +1,9 @@
 """Place name → coordinates and ISO country via Wikidata (search, then the first item that has P625)."""
 
+import json
 from dataclasses import asdict, dataclass
+from functools import lru_cache
+from importlib import resources
 from typing import Any
 from urllib.parse import quote
 
@@ -12,7 +15,6 @@ from akashi_now.constants import (
     TTL_GEOCODE,
     WIKIDATA_COORDINATES,
     WIKIDATA_COUNTRY,
-    WIKIDATA_ISO_ALPHA2,
 )
 
 
@@ -24,6 +26,15 @@ class Place:
     lat: float
     lon: float
     country: str | None  # ISO 3166-1 alpha-2
+
+
+@lru_cache(maxsize=1)
+def _country_iso() -> dict[str, str]:
+    """Wikidata country QID → ISO 3166-1 alpha-2 (P297), bundled so geocoding needs two calls, not three.
+
+    Generated 2026-09-29 with SPARQL `SELECT DISTINCT ?c ?iso WHERE { ?c wdt:P297 ?iso . }` (261 entries, CC0).
+    """
+    return json.loads(resources.files("akashi_now.data").joinpath("wikidata_country_iso.json").read_text())
 
 
 def _value(claims: dict[str, Any], prop: str) -> Any:
@@ -56,10 +67,8 @@ async def geocode(place: str) -> Place | None:
             claims = entities.get(h["id"], {}).get("claims", {})
             if (coord := _value(claims, WIKIDATA_COORDINATES)) is None:
                 continue
-            country = None
-            if (country_ref := _value(claims, WIKIDATA_COUNTRY)) is not None:
-                country_claims = (await _entities([country_ref["id"]])).get(country_ref["id"], {}).get("claims", {})
-                country = _value(country_claims, WIKIDATA_ISO_ALPHA2)
+            country_ref = _value(claims, WIKIDATA_COUNTRY)
+            country = _country_iso().get(country_ref["id"]) if country_ref else None
             result = Place(
                 h["id"], h.get("label", place), h.get("description"), coord["latitude"], coord["longitude"], country
             )

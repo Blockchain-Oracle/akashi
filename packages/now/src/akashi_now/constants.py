@@ -26,7 +26,6 @@ GEOCODE_CANDIDATES: Final = 5
 TTL_GEOCODE: Final = timedelta(days=30)
 WIKIDATA_COORDINATES: Final = "P625"
 WIKIDATA_COUNTRY: Final = "P17"
-WIKIDATA_ISO_ALPHA2: Final = "P297"
 
 # --- /holidays, /business-days ---
 NAGER = UpstreamSpec(
