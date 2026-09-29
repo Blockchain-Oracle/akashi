@@ -84,6 +84,8 @@ SUSPICIOUS_MAX_WEEKLY_DOWNLOADS: Final = 1_000
 SUSPICIOUS_MAX_VERSIONS: Final = 2
 DID_YOU_MEAN_LIMIT: Final = 5
 VERSIONS_TAIL: Final = 10
+VERSIONS_LIST_MAX: Final = 200  # /v1/versions returns at most this many, newest first
+MAX_RANGE_CHARS: Final = 256
 
 # --- placeholder / defensive-package detection ---
 NPM_SECURITY_HOLDING_VERSION_RE: Final = r"^0\.0\.1-security(\.\d+)?$"

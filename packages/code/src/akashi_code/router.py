@@ -3,8 +3,9 @@
 from fastapi import APIRouter
 
 from akashi_code.constants import PACKAGES_CONCURRENCY
-from akashi_code.models import PackageQuery, PackageResult, PackagesRequest
+from akashi_code.models import PackageQuery, PackageResult, PackagesRequest, VersionsQuery, VersionsResult
 from akashi_code.service import check_package
+from akashi_code.versions.service import list_versions
 from akashi_core.constants.app import SERVICE_CODE
 from akashi_core.constants.deadlines import CODE_DEADLINE_S
 from akashi_core.contract.build import build_envelope
@@ -53,4 +54,19 @@ async def packages(body: PackagesRequest) -> Envelope[PackageResult]:
         sources=sources,
         unavailable=unavailable,
         summary_field="verdict",
+    )
+
+
+@router.post("/versions")
+async def versions(query: VersionsQuery) -> Envelope[VersionsResult]:
+    deadline = current_deadline(CODE_DEADLINE_S)
+    result, sources, unavailable = await list_versions(query)
+    return build_envelope(
+        service=SERVICE_CODE,
+        operation="versions",
+        deadline=deadline,
+        results=[result],
+        sources=sources,
+        unavailable=unavailable,
+        summary_field="exists",
     )

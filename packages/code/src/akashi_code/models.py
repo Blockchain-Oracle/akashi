@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from akashi_code.constants import (
     MAX_PACKAGE_NAME_CHARS,
     MAX_PACKAGES_PER_REQUEST,
+    MAX_RANGE_CHARS,
     MAX_VERSION_CHARS,
 )
 from akashi_core.contract.enums import Tristate
@@ -78,4 +79,25 @@ class PackageResult(BaseModel):
     versions_tail: list[str] = Field(default_factory=list)
     evidence: list[str] = Field(default_factory=list)
     see_also: list[str] = Field(default_factory=list)
+    retryable: bool = False
+
+
+class VersionsQuery(BaseModel):
+    ecosystem: Ecosystem
+    name: str = Field(min_length=1, max_length=MAX_PACKAGE_NAME_CHARS)
+    range: str | None = Field(default=None, max_length=MAX_RANGE_CHARS)
+
+
+class VersionsResult(BaseModel):
+    kind: Literal["versions"] = "versions"
+    ecosystem: Ecosystem
+    name: str
+    exists: Tristate
+    range: str | None = None
+    resolved: str | None = None  # highest version satisfying `range` (None if nothing matches)
+    range_syntax: str | None = None  # which rules were applied: npm | cargo | pep440 | exact
+    dist_tags: dict[str, str] = Field(default_factory=dict)
+    versions: list[str] = Field(default_factory=list)  # newest first
+    truncated: bool = False
+    evidence: list[str] = Field(default_factory=list)
     retryable: bool = False
