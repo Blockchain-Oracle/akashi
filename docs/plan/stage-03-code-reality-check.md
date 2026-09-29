@@ -9,8 +9,8 @@
 - [x] Python wheel range reads + AST index + stdlib via typeshed stubs
 - [x] Go via pkg.go.dev v1 (zip fallback not needed so far)
 - [x] Rust (docs.rs rustdoc JSON, format 61, projected + cached per crate version)
-- [ ] ts-introspect (TypeScript 6.0.3)
-- [ ] /symbol(s) with pending + background completion
+- [x] ts-introspect (TypeScript 6.0.3) — deployed internal-only
+- [x] /symbol(s) with pending + background completion
 - [ ] /check via tree-sitter
 - [ ] Pre-warm job, schema, probe
 
@@ -32,6 +32,12 @@ axios fetchJson→no / getUri→yes+sig; zod z.string→yes; react-codeshift & h
 - **Go (pkg.go.dev v1):** `/v1beta` now 301 → use `/v1`. `filter` is a **Go expression** (`name == "X"`, `hasPrefix(name, "T.")`, `contains(name, ".") == false`), not a regex; paging param is `token`; empty `items` come back as **null**. Results: gin v1.10.0 Context.AbortWithError → `func (c *Context) AbortWithError(code int, err error) *Error` · AbortWithErr → no (AbortWithError, AbortWithStatus) · Contxt.JSON → no (Context) · x/time/rate NewLimiter → yes.
 - **Rust (docs.rs):** anyhow 1.0.86 → **unknown / rustdoc_json_unavailable** (pre-2025 build, confirmed) · latest 1.0.104 `Error::context` → `fn context<C>(self, context: C) -> Self` · `Result` → `type Result<T, E = Error> = core::result::Result<T, E>` · `Error::contxt` → no (context) · `Eror::msg` → no (Error) · itoa `Buffer::format` → `fn format<I>(&mut self, i: I) -> &str` · serde_json `from_str` → `fn from_str<'a, T>(s: &'a str) -> …` · missing crate → not_found. Warm ≈ 200 ms.
 - ⚠️ The Mac ran out of disk mid-session (ENOSPC, 265 MB free). Cause: pre-existing disk use plus ~1.8 GB of research-agent leftovers in the session scratchpad; the leftovers were deleted (12 GB free after). Tell the user.
+- **npm (ts-introspect):** axios 1.7.9 `AxiosInstance.getUri` → `getUri(config?: AxiosRequestConfig<any> | undefined): string`, `fetchJson` → no · zod `z.string` → yes (namespace re-export; the research prototype missed it) · express via @types · lodash `debounce` (export=), `_.chunk` (alias) · date-fns · react `useState` · left-pad (export= function) · next/server `NextResponse.json` → **static** `json<JsonBody>(body, init?)`, `after<T>`, `jsonx` → no.
+- **Bugs found by live checks and fixed:** export= modules answered "no" (lodash) → use the export= value; date-fns 10.9 MB unpacked but 1.6 MB gzip → the size threshold was wrong; a jsDelivr crawl capped at 200 files / 45 s gave **false "no"** on next → replaced by **streaming tar extraction** (only .d.ts kept; complete; next ~7 s) + "never answer no from an incomplete or unresolved view" (unknown instead); next's self-referencing imports (`next/dist/...`); static members must win over inherited instance members.
+- `resolveExternalModuleSymbol` is not public API in TS 6; `erasableSyntaxOnly` forbids parameter properties (Node runs .ts directly).
+- Program LRU = 4 (one next@15 program ≈ 150 MB RSS); container 512m, `--max-old-space-size=384`.
+- **Deploy:** 3 clones failed with 'Permission denied (publickey)' right after a successful ls-remote. The key cloned fine from the Mac and the server, and a sequential retry succeeded → transient. Retry once before debugging.
+- `data/` (toplist cache) was committed by mistake → removed and gitignored.
 - Startup loads the top lists before the port opens (health waits for them). Test scripts must poll `/v1/health` rather than sleep.
 
 ## Handoff
