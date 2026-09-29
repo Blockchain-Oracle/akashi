@@ -86,7 +86,7 @@ async def _search_hn(req: NewsRequest) -> list[NewsStory]:
     since = int(time.time()) - req.since_hours * SECONDS_PER_HOUR
     data, _ = await hn_client().get_json(
         f"/api/v1/search?query={quote(req.query)}&tags=story&hitsPerPage={req.limit}"
-        f"&numericFilters=created_at_i>{since}"
+        f"&numericFilters=created_at_i>{since}&typoTolerance=false"  # else "election" matches "Evictions"
     )
     stories = []
     for h in data.get("hits", []):

@@ -10,6 +10,7 @@ import zipfile
 from contextlib import closing
 from datetime import UTC, datetime
 from functools import cache
+from http import HTTPStatus
 from typing import Any
 
 import anyio
@@ -97,6 +98,8 @@ async def run() -> dict[str, Any]:
         if store.meta(conn, LAST_FILE) == url:
             return {"status": "up_to_date", "file": url}
     resp = await client().request("GET", url.removeprefix(GDELT.base_url))
+    if resp.status_code == HTTPStatus.NOT_FOUND:  # listed before the CDN serves it: the next run picks it up
+        return {"status": "file_not_ready", "file": url}
     resp.raise_for_status()
     rows = await anyio.to_thread.run_sync(parse, resp.content)
     stats = await anyio.to_thread.run_sync(_store, rows, url)
