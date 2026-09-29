@@ -28,6 +28,5 @@ In-flight step: S5.1 time (tzdb) — not started
 Done: S0 ✅ · S4 ✅ citation-verify live (verify + claim; calibration 40/40 · 40/40; NLI sidecar) · S3 ✅ code-reality-check live (package/packages/versions/symbol/symbols/check) · (repo github.com/Blockchain-Oracle/akashi, private · Coolify project akashi) · S1 ✅ (api live at temp http://qbjpovbitgqrjgafdcrigqmd.84.46.247.92.sslip.io)
 Blockers:
 - Q-001: the domain has not been bought yet (blocks S2 from step 5)
-- Q-005: the OpenAlex free API key from the user (limits DOI-less coverage until then)
 Env readiness: pocketd ☐ · pocket-ap ☐ · OPENAI_API_KEY (from the user) ☐ · domain ☐
 Next action: S5 per specs/backend.md §3.3. Read the stage-05 file, verify each source live (tzdata, Nager.Date, Frankfurter, met.no, Wikidata, GDELT, HN), then build akashi_now.
