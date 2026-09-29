@@ -14,6 +14,6 @@ Format: date · decision · evidence · consequence · approved by
 
 ## Open questions
 - **Q-001** Domain name: the user is buying one. Blocks S2 step 5 onward (DNS, relayer URL, supplier stake).
-- **Q-002** GitHub owner / repo name for `akashi`, and the go-ahead for the Coolify project + deploy key.
+- ~~Q-002~~ resolved: repo Blockchain-Oracle/akashi (private); Coolify project `akashi` created.
 - **Q-003** (for organizers, asked in S2) staging app = test.agent.pocket.network? · how Beta services get listed · gateway delegation · test tx = claim tx? · one endpoint for 3 submissions OK?
 - **Q-004** Licences to confirm: CourtListener bulk, Retraction Watch data.

@@ -20,12 +20,11 @@
 >
 > **Tick each checkbox in the same commit as its artifact.** Record every tx and deploy in `acceptance.md` / `ids-and-txs.md`.
 
-Current stage: **S0 Bootstrap** (in progress)
+Current stage: **S1 Core backend** (starting)
 Last commit: b728271 "S0: bootstrap Akashi repo — plan, specs, UI shortlist, workspaces"
-In-flight step: S0.4 (needs user OK: GitHub repo + Coolify project)
-Done: —
+In-flight step: S1.1 constants + settings
+Done: S0 ✅ (repo github.com/Blockchain-Oracle/akashi, private · Coolify project akashi)
 Blockers:
 - Q-001: the domain has not been bought yet (blocks S2 from step 5)
-- Q-002: GitHub repo name / owner and the go-ahead for the Coolify project
 Env readiness: pocketd ☐ · pocket-ap ☐ · OPENAI_API_KEY (from the user) ☐ · domain ☐
-Next action: get the user's OK for S0.4, then start S1 (packages/core).
+Next action: S1 — read FastAPI/httpx2/cashews/pydantic-settings docs (Context7), then build packages/core per specs/backend.md §2.

@@ -38,6 +38,8 @@
 ## Coolify
 | resource | uuid | type | domain | alias | mem | last deploy |
 |---|---|---|---|---|---|---|
+| project `akashi` | 43kqbdz2dncah0wuhzob5f7b | project | – | – | – | – |
+| private key `akashi-deploy-key` | 7izaxr1xhppq74ashloilmoc | deploy key (GitHub id 164816962, read-only) | – | – | – | – |
 
 ## DNS / TLS
 | host | A record | cert checked |
