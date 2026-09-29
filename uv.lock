@@ -44,6 +44,7 @@ dependencies = [
     { name = "packaging" },
     { name = "rapidfuzz" },
     { name = "semantic-version" },
+    { name = "typeshed-client" },
 ]
 
 [package.metadata]
@@ -52,6 +53,7 @@ requires-dist = [
     { name = "packaging", specifier = ">=25" },
     { name = "rapidfuzz", specifier = ">=3.14" },
     { name = "semantic-version", specifier = ">=2.10" },
+    { name = "typeshed-client", specifier = ">=2.13" },
 ]
 
 [[package]]
@@ -643,6 +645,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/53/a3/1585216310e344e8102c22482f6060c7a6ea0322b63e026372e6dcefcfd6/truststore-0.10.4.tar.gz", hash = "sha256:9d91bd436463ad5e4ee4aba766628dd6cd7010cf3e2461756b3303710eebc301", size = 26169, upload-time = "2025-08-12T18:49:02.73Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/19/97/56608b2249fe206a67cd573bc93cd9896e1efb9e98bce9c163bcdc704b88/truststore-0.10.4-py3-none-any.whl", hash = "sha256:adaeaecf1cbb5f4de3b1959b42d41f6fab57b2b1666adb59e89cb0b53361d981", size = 18660, upload-time = "2025-08-12T18:49:01.46Z" },
+]
+
+[[package]]
+name = "typeshed-client"
+version = "2.13.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/62/eb/ef31fadb73c5a9da6e88adf146b9db88282cf17136beb65a1c88905afe2f/typeshed_client-2.13.0.tar.gz", hash = "sha256:85ce73be98a5e3a51cafb2e2921653e3759ce7e9d1530adcca935dec201152f2", size = 532578, upload-time = "2026-08-03T04:11:13.63Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/76/2b/83e50380aa9ca001ee74460f027b518eefd330edb7ab7787442424f1e584/typeshed_client-2.13.0-py3-none-any.whl", hash = "sha256:71bc9ed297ddb32d3c4b2d29b5e688c6b0b9a21ca8ce6082d0aa7cee9cad5077", size = 800208, upload-time = "2026-08-03T04:11:12.368Z" },
 ]
 
 [[package]]

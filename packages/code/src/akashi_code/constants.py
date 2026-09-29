@@ -125,7 +125,8 @@ TTL_DOWNLOADS: Final = timedelta(hours=24)
 MAX_SYMBOL_CHARS: Final = 300
 MAX_SYMBOLS_PER_REQUEST: Final = 50
 REEXPORT_MAX_DEPTH: Final = 4
-MAX_MODULES_PER_LOOKUP: Final = 16
+MAX_MODULES_PER_LOOKUP: Final = 16  # network-backed (wheel range reads)
+MAX_MODULES_PER_LOOKUP_LOCAL: Final = 96  # disk-backed stubs (stdlib via typeshed): cheap reads
 CLASS_BASE_MAX_DEPTH: Final = 3
 TTL_SYMBOLS: Final = None  # immutable (package, version) → cache forever (LRU-evicted only)
 WHEEL_PLATFORM_PREFERENCE: Final = ("py3-none-any", "py2.py3-none-any", "cp313-cp313-manylinux", "abi3-manylinux")

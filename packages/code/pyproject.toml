@@ -7,6 +7,7 @@ dependencies = [
     "packaging>=25",
     "rapidfuzz>=3.14",
     "semantic-version>=2.10",
+    "typeshed-client>=2.13",
 ]
 
 [build-system]

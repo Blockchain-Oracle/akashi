@@ -6,7 +6,7 @@ bases from other packages) answers `unknown`, never `no`.
 
 import ast
 
-from akashi_code.constants import CLASS_BASE_MAX_DEPTH, MAX_MODULES_PER_LOOKUP, REEXPORT_MAX_DEPTH
+from akashi_code.constants import CLASS_BASE_MAX_DEPTH, REEXPORT_MAX_DEPTH
 from akashi_code.symbols.base import SymbolAnswer
 from akashi_code.symbols.python.astindex import (
     ModuleIndex,
@@ -15,7 +15,7 @@ from akashi_code.symbols.python.astindex import (
     overload_signatures,
     signature,
 )
-from akashi_code.symbols.python.wheel import Wheel
+from akashi_code.symbols.python.source import ModuleSource
 from akashi_core.contract.enums import Tristate
 
 REASON_MODULE_BUDGET = "module_budget_exceeded"
@@ -25,7 +25,7 @@ REASON_COMPILED = "compiled_module_no_stubs"
 
 
 class Resolver:
-    def __init__(self, wheel: Wheel) -> None:
+    def __init__(self, wheel: ModuleSource) -> None:
         self.wheel = wheel
         self._cache: dict[str, ModuleIndex | None] = {}
 
@@ -33,10 +33,10 @@ class Resolver:
         if dotted in self._cache:
             return self._cache[dotted]
         member = self.wheel.modules.get(dotted)
-        if member is None or len(self._cache) >= MAX_MODULES_PER_LOOKUP:
+        if member is None or len(self._cache) >= self.wheel.module_budget:
             self._cache[dotted] = None
             return None
-        source = await self.wheel.zip.read(member)
+        source = await self.wheel.read(member)
         index = build_index(dotted, dotted in self.wheel.packages, source)
         self._cache[dotted] = index
         return index
@@ -49,7 +49,7 @@ class Resolver:
             return SymbolAnswer(Tristate.unknown, reason="reexport_depth_exceeded")
         index = await self.module(dotted)
         if index is None:
-            if len(self._cache) >= MAX_MODULES_PER_LOOKUP:
+            if len(self._cache) >= self.wheel.module_budget:
                 return SymbolAnswer(Tristate.unknown, reason=REASON_MODULE_BUDGET)
             return SymbolAnswer(Tristate.unknown, reason=REASON_COMPILED)
         if not tokens:
@@ -74,11 +74,11 @@ class Resolver:
             found = await self.resolve(star, tokens, depth + 1)
             if found.exists is not Tristate.no:
                 return found
+        # Names re-exported through `from x import *` are visible too (e.g. os.path → posixpath).
+        visible = index.names() + [n for star in index.star_modules if (m := self._cache.get(star)) for n in m.names()]
         if index.dynamic:
-            return SymbolAnswer(Tristate.unknown, reason=REASON_DYNAMIC, siblings=index.names())
-        return SymbolAnswer(
-            Tristate.no, defined_in=dotted, siblings=index.names(), evidence_source=self._evidence(dotted)
-        )
+            return SymbolAnswer(Tristate.unknown, reason=REASON_DYNAMIC, siblings=visible)
+        return SymbolAnswer(Tristate.no, defined_in=dotted, siblings=visible, evidence_source=self._evidence(dotted))
 
     async def _from_definition(
         self, index: ModuleIndex, head: str, node: ast.AST, rest: list[str], depth: int

@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any
 from urllib.parse import quote
 
-from akashi_code.constants import WHEEL_PLATFORM_PREFERENCE
+from akashi_code.constants import MAX_MODULES_PER_LOOKUP, WHEEL_PLATFORM_PREFERENCE
 from akashi_code.registries import clients
 from akashi_code.registries.pypi import normalize
 from akashi_code.symbols.python.zip_range import RemoteZip
@@ -18,9 +18,13 @@ class Wheel:
     version: str
     filename: str
     zip: RemoteZip
+    module_budget: int = MAX_MODULES_PER_LOOKUP
     modules: dict[str, str] = field(default_factory=dict)  # dotted → member path
     packages: set[str] = field(default_factory=set)  # dotted names that are packages (__init__)
     roots: list[str] = field(default_factory=list)  # top-level import names
+
+    async def read(self, member: str) -> bytes:
+        return await self.zip.read(member)
 
 
 def _rank(filename: str) -> int:

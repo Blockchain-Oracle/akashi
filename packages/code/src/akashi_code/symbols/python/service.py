@@ -3,11 +3,12 @@
 from akashi_code.registries.pypi import normalize
 from akashi_code.symbols.base import SymbolAnswer
 from akashi_code.symbols.python.lookup import Resolver
-from akashi_code.symbols.python.wheel import Wheel, open_wheel
+from akashi_code.symbols.python.source import ModuleSource, is_stdlib, stdlib
+from akashi_code.symbols.python.wheel import open_wheel
 from akashi_core.contract.enums import Tristate
 
 
-def split_symbol(wheel: Wheel, package: str, symbol: str) -> tuple[str, list[str]]:
+def split_symbol(wheel: ModuleSource, package: str, symbol: str) -> tuple[str, list[str]]:
     """'requests.Session.mount' or 'Session.mount' → ('requests', ['Session', 'mount'])."""
     tokens = [t for t in symbol.strip().replace(":", ".").split(".") if t]
     default_root = normalize(package).replace("-", "_")
@@ -23,6 +24,12 @@ def split_symbol(wheel: Wheel, package: str, symbol: str) -> tuple[str, list[str
 
 async def lookup(package: str, version: str | None, symbol: str) -> tuple[SymbolAnswer, str | None]:
     """(answer, resolved version). Raises UpstreamFailure(not_found) when the package/version does not exist."""
+    if is_stdlib(package):
+        source = stdlib()
+        module, tokens = split_symbol(source, package, symbol)
+        answer = await Resolver(source).resolve(module, tokens)
+        answer.evidence_source = "typeshed"
+        return answer, f"python{source.version}"
     wheel = await open_wheel(package, version)
     if wheel is None:
         return SymbolAnswer(Tristate.unknown, reason="no_wheel_published"), version
