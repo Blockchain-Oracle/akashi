@@ -1,0 +1,1 @@
+"""akashi_now package."""

@@ -1,0 +1,22 @@
+[project]
+name = "akashi-workspace"
+version = "0.0.0"
+description = "Akashi 証 — verification services for Pocket Network's Agentic Portal (uv workspace root)"
+requires-python = ">=3.13,<3.14"
+
+[tool.uv.workspace]
+members = ["packages/core", "packages/cite", "packages/code", "packages/now", "services/api", "services/worker"]
+
+[dependency-groups]
+dev = ["ruff>=0.16", "pyright>=1.1.414"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC", "RUF", "PLR2004"]  # PLR2004 = no magic numbers
+
+[tool.pyright]
+pythonVersion = "3.13"
+typeCheckingMode = "standard"

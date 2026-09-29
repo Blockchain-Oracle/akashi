@@ -1,0 +1,6 @@
+packages:
+  - "apps/*"
+  - "packages/api-client"
+  - "packages/brand"
+  - "packages/model"
+  - "services/ts-introspect"

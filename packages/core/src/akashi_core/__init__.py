@@ -1,0 +1,1 @@
+"""akashi_core package."""
