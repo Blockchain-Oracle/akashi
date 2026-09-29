@@ -8,7 +8,11 @@ requires-python = ">=3.13,<3.14"
 members = ["packages/core", "packages/cite", "packages/code", "packages/now", "services/api", "services/worker"]
 
 [dependency-groups]
-dev = ["ruff>=0.16", "pyright>=1.1.414"]
+dev = [
+    "ruff>=0.16",
+    "pyright>=1.1.414",
+    "jsonschema>=4.25",
+]
 
 [tool.ruff]
 line-length = 120

@@ -15,18 +15,18 @@
 > - **No CLAUDE.md or AGENTS.md.** **Autonomy (D-010):** deploys, Coolify/server config and Beta testnet txs are pre-approved — just do them and report. Confirm only destructive or real-money actions (deleting volumes/data, making the repo public, paid services, MainNet).
 >
 > **Gate commands:**
-> - Python: `uv run ruff check . && uv run pyright`
+> - Python: `uv sync --all-packages` (a plain `uv sync` prunes the workspace members!) then `uv run ruff check . && uv run pyright`
 > - JS: `pnpm lint && pnpm typecheck && pnpm build`
 >
 > **Deploys:** a deploy is done only when the container is **healthy** and a real request passes (`deploy-verify` pattern: build finished → `docker inspect` health → smoke request). Coolify "finished" is not enough (see acceptance.md 2026-09-29 15:05).
 >
 > **Tick each checkbox in the same commit as its artifact.** Record every tx and deploy in `acceptance.md` / `ids-and-txs.md`.
 
-Current stage: **S3 code-reality-check** (starting; S2 waits for the domain)
+Current stage: **S4 citation-verify** (starting; S2 waits for the domain)
 Last commit: b728271 "S0: bootstrap Akashi repo — plan, specs, UI shortlist, workspaces"
-In-flight step: S3.10 schema/probe for code-reality-check (pre-warm job moves to the worker in S5)
-Done: S0 ✅ · S3 nearly done (package/packages/versions/symbol/symbols/check live on the temp URL; ts-introspect deployed) · (repo github.com/Blockchain-Oracle/akashi, private · Coolify project akashi) · S1 ✅ (api live at temp http://qbjpovbitgqrjgafdcrigqmd.84.46.247.92.sslip.io)
+In-flight step: S4.1 citation input router
+Done: S0 ✅ · S3 ✅ code-reality-check live (package/packages/versions/symbol/symbols/check) · (repo github.com/Blockchain-Oracle/akashi, private · Coolify project akashi) · S1 ✅ (api live at temp http://qbjpovbitgqrjgafdcrigqmd.84.46.247.92.sslip.io)
 Blockers:
 - Q-001: the domain has not been bought yet (blocks S2 from step 5)
 Env readiness: pocketd ☐ · pocket-ap ☐ · OPENAI_API_KEY (from the user) ☐ · domain ☐
-Next action: finish S3 (schema CLI → cards/code-reality-check/output-schema.json; functional probe), then S4 citation-verify.
+Next action: S4 per specs/backend.md §3.1 — verify Crossref/doi.org/OpenAlex/eyecite APIs live, then build akashi_cite.

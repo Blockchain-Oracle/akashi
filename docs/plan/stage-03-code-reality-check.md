@@ -12,7 +12,7 @@
 - [x] ts-introspect (TypeScript 6.0.3) — deployed internal-only
 - [x] /symbol(s) with pending + background completion
 - [x] /check via tree-sitter (python, typescript/tsx, javascript, go, rust)
-- [ ] Pre-warm job, schema, probe
+- [x] Schema (`uv run akashi-schemas` → cards/code-reality-check/{output-schema,input-schema,openapi}.json; 8/8 live bodies incl. 404/422 validate under Draft 2020-12) + functional probe (axios@1.7.9 AxiosInstance.fetchJson → no) · pre-warm job → S5 worker
 
 ## Gate
 axios fetchJson→no / getUri→yes+sig; zod z.string→yes; react-codeshift & huggingface-cli→placeholder; left-padx→likely_typo; requests Session.mount→yes; gin AbortWithError sig; anyhow→unknown; next@15 pending→warm.
@@ -45,3 +45,4 @@ axios fetchJson→no / getUri→yes+sig; zod z.string→yes; react-codeshift & h
 - Startup loads the top lists before the port opens (health waits for them). Test scripts must poll `/v1/health` rather than sleep.
 
 ## Handoff
+- **S3 done** (2026-09-29). Live on the temp URL; ts-introspect internal. Open: pre-warm job (S5 worker); cold-path perf review (S6).
