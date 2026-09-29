@@ -72,7 +72,7 @@ async def get_holidays(req: HolidaysRequest) -> tuple[list[HolidayResult], list[
     listings |= await _remote(req, sources, unavailable)
     agreement = calendar_agreement(listings)
     results = []
-    for day in sorted(set().union(*listings)):
+    for day in sorted(set().union(*listings.values())):
         listed = {src: listing[day] for src, listing in listings.items() if day in listing}
         names = list(dict.fromkeys(name for name, _ in listed.values() if name))
         local_only = all(lo for _, lo in listed.values())

@@ -10,6 +10,7 @@ from akashi_now.constants import PUBLIC_CALENDAR
 
 WEEKDAY_NAMES = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 OBSERVED_MARK = "(observed)"
+ENGLISH = "en_US"  # answer in English where the country module has a translation
 
 
 @cache
@@ -23,7 +24,9 @@ def calendar_for(
     code = calendar.upper()
     try:
         if calendar.lower() == PUBLIC_CALENDAR:
-            return holidays_lib.country_holidays(country.upper(), subdiv=subdivision, years=years)
+            cls = holidays_lib.country_holidays(country.upper()).__class__
+            language = ENGLISH if ENGLISH in getattr(cls, "supported_languages", ()) else None
+            return holidays_lib.country_holidays(country.upper(), subdiv=subdivision, years=years, language=language)
         if code in _markets():
             return holidays_lib.financial_holidays(code, years=years)
     except NotImplementedError as exc:
