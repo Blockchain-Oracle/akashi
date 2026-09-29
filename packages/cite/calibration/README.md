@@ -14,7 +14,8 @@ Pass criteria:
 
 | Date (UTC) | Real (40) | Fake (40) | Notes |
 |---|---|---|---|
-| 2026-09-29 | 39 verified, 1 unverifiable | 40 not_found | OpenAlex keyless budget exhausted. The one unverifiable (Srivastava 2014, JMLR, no DOI) is only indexed by OpenAlex. |
+| 2026-09-29 (dev Mac) | 39 verified, 1 unverifiable | 40 not_found | OpenAlex keyless budget exhausted. The one unverifiable (Srivastava 2014, JMLR, no DOI) is only indexed by OpenAlex. |
+| 2026-09-29 (production, via API) | **40 verified** | **40 not_found** | Batches of 10: real 3.3–4.6 s; fabricated 6.2–7.1 s (each fake runs every fallback, and Crossref allows 3/s). |
 
 ## What calibration changed (each item was a failure in an earlier run)
 
