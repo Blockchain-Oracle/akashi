@@ -58,14 +58,17 @@ def sentences(text: str) -> list[str]:
 
 
 def premises(text: str, claim: str) -> list[str]:
-    """Top lexical matches, adjacent-sentence windows around the best ones, and the whole text (truncated)."""
-    sents = sentences(text)
+    """Top lexical matches plus adjacent-sentence windows around the best ones.
+
+    Never the whole abstract: it truncates to MAX_TOKENS and, batched, pads every pair to that length (a 9-pair
+    request on long abstracts took >5 s on the server; sentences and windows carry the same evidence).
+    """
+    sents = sentences(text) or [text[:NLI_PREMISE_MAX_CHARS]]  # provided text may be one long sentence
     ranked = sorted(range(len(sents)), key=lambda i: fuzz.token_set_ratio(norm(sents[i]), norm(claim)), reverse=True)
     chosen = [sents[i] for i in ranked[:NLI_TOP_SENTENCES]]
     for i in ranked[:NLI_WINDOW_FROM_TOP]:
         if i + 1 < len(sents):
             chosen.append(f"{sents[i]} {sents[i + 1]}")
-    chosen.append(text)
     unique = list(dict.fromkeys(p[:NLI_PREMISE_MAX_CHARS] for p in chosen if p))
     return unique
 

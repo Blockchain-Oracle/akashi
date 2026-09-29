@@ -10,6 +10,7 @@ PAD_TOKEN: Final = "[PAD]"
 
 MAX_TOKENS: Final = 256  # premise truncated first ("only_first"); claims are short
 MAX_PAIRS: Final = 16
+BATCH_SIZE: Final = 4  # length-sorted mini-batches: little padding, still vectorized
 MAX_TEXT_CHARS: Final = 2_000
 INTRA_OP_THREADS: Final = 2  # 4 vCPU box shared with other services
 RUN_CONCURRENCY: Final = 1  # one batch at a time: ORT already uses INTRA_OP_THREADS

@@ -13,6 +13,7 @@ import structlog
 from tokenizers import Tokenizer
 
 from akashi_nli.constants import (
+    BATCH_SIZE,
     CONFIG_FILE,
     IDLE_CHECK_S,
     IDLE_UNLOAD_S,
@@ -48,7 +49,7 @@ def _load(model_dir: Path) -> _Loaded:
     return _Loaded(session, tokenizer, labels, {i.name for i in session.get_inputs()})
 
 
-def _run(m: _Loaded, pairs: list[tuple[str, str]]) -> list[dict[str, float]]:
+def _run_batch(m: _Loaded, pairs: list[tuple[str, str]]) -> np.ndarray:
     enc = m.tokenizer.encode_batch(pairs)
     feed = {
         "input_ids": np.array([e.ids for e in enc], dtype=np.int64),
@@ -56,7 +57,16 @@ def _run(m: _Loaded, pairs: list[tuple[str, str]]) -> list[dict[str, float]]:
     }
     if "token_type_ids" in m.input_names:  # this export has none; other exports do
         feed["token_type_ids"] = np.array([e.type_ids for e in enc], dtype=np.int64)
-    logits = np.asarray(m.session.run(None, feed)[0], dtype=np.float32)
+    return np.asarray(m.session.run(None, feed)[0], dtype=np.float32)
+
+
+def _run(m: _Loaded, pairs: list[tuple[str, str]]) -> list[dict[str, float]]:
+    """Score in length-sorted mini-batches: padding to the batch's longest pair is where the time goes."""
+    order = sorted(range(len(pairs)), key=lambda i: len(pairs[i][0]) + len(pairs[i][1]))
+    logits = np.empty((len(pairs), len(m.labels)), dtype=np.float32)
+    for start in range(0, len(order), BATCH_SIZE):
+        idx = order[start : start + BATCH_SIZE]
+        logits[idx] = _run_batch(m, [pairs[i] for i in idx])
     shifted = np.exp(logits - logits.max(axis=1, keepdims=True))
     probs = shifted / shifted.sum(axis=1, keepdims=True)
     return [{label: round(float(p), 4) for label, p in zip(m.labels, row, strict=True)} for row in probs]
