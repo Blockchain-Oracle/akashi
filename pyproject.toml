@@ -5,7 +5,7 @@ description = "Akashi 証 — verification services for Pocket Network's Agentic
 requires-python = ">=3.13,<3.14"
 
 [tool.uv.workspace]
-members = ["packages/core", "packages/cite", "packages/code", "packages/now", "services/api", "services/worker"]
+members = ["packages/core", "packages/cite", "packages/code", "packages/now", "services/api", "services/nli", "services/worker"]
 
 [dependency-groups]
 dev = [
@@ -28,7 +28,7 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 "packages/code/src/akashi_code/snippet/extract_*.py" = ["E501"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["akashi_core", "akashi_cite", "akashi_code", "akashi_now", "akashi_api", "akashi_worker"]
+known-first-party = ["akashi_core", "akashi_cite", "akashi_code", "akashi_now", "akashi_api", "akashi_nli", "akashi_worker"]
 
 [tool.pyright]
 pythonVersion = "3.13"

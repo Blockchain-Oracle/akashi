@@ -18,6 +18,8 @@ class AkashiSettings(BaseSettings):
     repo_url: str = "https://github.com/Blockchain-Oracle/akashi"
     contact_email: str = "blockchainoracle.dev@gmail.com"
     ts_introspect_url: str = "http://localhost:3000"
+    nli_url: str = "http://localhost:8100"
+    nli_model_dir: str = "./data/models/nli"
     demo_secret: str | None = None
     openalex_api_key: SecretStr | None = None  # free key: 10x the shared keyless budget
     data_dir: str = "./data"
