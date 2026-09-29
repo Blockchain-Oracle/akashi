@@ -34,6 +34,12 @@ def _record(attrs: dict[str, Any]) -> Record:
         else (attrs.get("publisher") or {}).get("name"),
         type=_type(attrs),
         url=attrs.get("url"),
+        abstract=clean_text(
+            next(
+                (d.get("description") for d in attrs.get("descriptions", []) if d.get("descriptionType") == "Abstract"),
+                None,
+            )
+        ),
     )
 
 

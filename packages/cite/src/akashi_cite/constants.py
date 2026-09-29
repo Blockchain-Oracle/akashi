@@ -47,6 +47,15 @@ CAP = UpstreamSpec(
 WAYBACK = UpstreamSpec(
     "wayback", "https://archive.org", max_concurrency=2, total_s=3.0, attribution="Internet Archive Wayback Machine"
 )
+EUROPEPMC = UpstreamSpec(
+    "europepmc",
+    "https://www.ebi.ac.uk",
+    max_concurrency=3,
+    total_s=3.0,
+    licence="abstracts: publisher terms (quoted as evidence, not redistributed)",
+    attribution="Europe PMC",
+)
+NLI = UpstreamSpec("nli", "http://nli.internal:8100", max_concurrency=2, total_s=5.0, retry_attempts=1)
 WEB = UpstreamSpec("web", "https://example.invalid", max_concurrency=4, total_s=3.0, retry_attempts=1)
 
 # --- request limits ---
@@ -155,3 +164,15 @@ TTL_DATACITE: Final = timedelta(days=7)
 TTL_CAP_VOLUME: Final = timedelta(days=30)
 TTL_WEB: Final = timedelta(hours=1)
 TTL_WAYBACK: Final = timedelta(hours=24)
+
+# --- /claim (specs/backend.md §3.1 claim algorithm; thresholds validated on calibration/nli_pairs.jsonl) ---
+MAX_CLAIM_CHARS: Final = 1_000
+MAX_EVIDENCE_CHARS: Final = 20_000
+NLI_MAX_PREMISE_SENTENCES: Final = 16
+NLI_TOP_SENTENCES: Final = 6  # lexical preselection keeps inference ~0.35 s (8 pairs, measured on the server)
+NLI_WINDOW_FROM_TOP: Final = 2  # adjacent-sentence windows around the best lexical hits
+NLI_PREMISE_MAX_CHARS: Final = 2_000  # sidecar's per-text cap
+NLI_ENTAIL_MIN: Final = 0.80
+NLI_CONTRA_MIN: Final = 0.80
+NLI_OPPOSING_MAX: Final = 0.20  # a "supported" sentence must not also look contradicting
+MIN_SENTENCE_CHARS: Final = 20

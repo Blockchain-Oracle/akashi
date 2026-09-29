@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from akashi_cite.models import CitationResult, VerifyRequest
+from akashi_cite.models import CitationResult, ClaimRequest, ClaimResult, VerifyRequest
 from akashi_cite.router import router as cite_router
 from akashi_code.models import (
     CheckRequest,
@@ -27,8 +27,8 @@ SPECS = [
     SchemaSpec(
         service_id=SERVICE_CITE,
         title="Akashi Citation Verifier",
-        results=[CitationResult],
-        requests=[VerifyRequest],
+        results=[CitationResult, ClaimResult],
+        requests=[VerifyRequest, ClaimRequest],
         router=cite_router,
     ),
     SchemaSpec(

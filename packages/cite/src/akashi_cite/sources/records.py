@@ -44,3 +44,4 @@ class Record:
     retraction_notice: str | None = None
     retraction_source: str | None = None
     corrected: bool = False
+    abstract: str | None = None

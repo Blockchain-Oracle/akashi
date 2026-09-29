@@ -69,19 +69,29 @@ class NliModel:
         self._load_lock = asyncio.Lock()
         self._run_gate = asyncio.Semaphore(RUN_CONCURRENCY)
         self._last_used = 0.0
+        self._tasks: set[asyncio.Task[_Loaded]] = set()  # strong refs for fire-and-forget loads
 
     @property
     def loaded(self) -> bool:
         return self._loaded is not None
 
-    async def score(self, pairs: list[tuple[str, str]]) -> list[dict[str, float]]:
-        self._last_used = time.monotonic()
+    async def _ensure_loaded(self) -> _Loaded:
         async with self._load_lock:
             if self._loaded is None:
                 started = time.monotonic()
                 self._loaded = await anyio.to_thread.run_sync(_load, self._dir)
                 log.info("nli_loaded", seconds=round(time.monotonic() - started, 2))
-        loaded = self._loaded
+            return self._loaded
+
+    def spawn_load(self) -> None:
+        self._last_used = time.monotonic()
+        task = asyncio.create_task(self._ensure_loaded())
+        self._tasks.add(task)
+        task.add_done_callback(self._tasks.discard)
+
+    async def score(self, pairs: list[tuple[str, str]]) -> list[dict[str, float]]:
+        self._last_used = time.monotonic()
+        loaded = await self._ensure_loaded()
         async with self._run_gate:
             return await anyio.to_thread.run_sync(_run, loaded, pairs)
 

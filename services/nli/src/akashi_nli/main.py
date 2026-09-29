@@ -48,6 +48,14 @@ async def health() -> dict[str, object]:
     return {"status": "ok", "loaded": model.loaded}
 
 
+@app.post("/warm")
+async def warm() -> dict[str, object]:
+    """Start loading without waiting: /claim calls this first so the load overlaps its evidence fetching."""
+    if not model.loaded:
+        model.spawn_load()
+    return {"status": "ok", "loaded": model.loaded}
+
+
 @app.post("/score")
 async def score(body: ScoreRequest) -> ScoreResponse:
     scores = await model.score([(p.premise, p.hypothesis) for p in body.pairs])

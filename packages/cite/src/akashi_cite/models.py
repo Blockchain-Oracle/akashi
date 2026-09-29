@@ -3,9 +3,17 @@
 from enum import StrEnum
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
-from akashi_cite.constants import MAX_AUTHORS, MAX_CITATION_CHARS, MAX_CITATIONS_PER_REQUEST, MAX_YEAR, MIN_YEAR
+from akashi_cite.constants import (
+    MAX_AUTHORS,
+    MAX_CITATION_CHARS,
+    MAX_CITATIONS_PER_REQUEST,
+    MAX_CLAIM_CHARS,
+    MAX_EVIDENCE_CHARS,
+    MAX_YEAR,
+    MIN_YEAR,
+)
 from akashi_core.contract.fields import UntrustedStr
 
 
@@ -112,5 +120,43 @@ class CitationResult(BaseModel):
     candidates: list[MatchedRecord] = Field(default_factory=list)
     legal: LegalMatch | None = None
     web: WebCheck | None = None
+    reasons: list[UntrustedStr] = Field(default_factory=list)
+    retryable: bool = False
+
+
+class ClaimVerdict(StrEnum):
+    supported = "supported"
+    contradicted = "contradicted"
+    insufficient_evidence = "insufficient_evidence"
+    unverifiable = "unverifiable"  # the evidence or the model could not be reached: retry
+
+
+class ClaimRequest(BaseModel):
+    claim: str = Field(min_length=1, max_length=MAX_CLAIM_CHARS)
+    citation: CitationInput | None = None
+    evidence_text: str | None = Field(default=None, max_length=MAX_EVIDENCE_CHARS)
+
+    @model_validator(mode="after")
+    def _needs_evidence(self) -> "ClaimRequest":
+        if self.citation is None and not self.evidence_text:
+            raise ValueError("give a citation, evidence_text, or both")
+        return self
+
+
+class ClaimScores(BaseModel):
+    entailment: float
+    neutral: float
+    contradiction: float
+
+
+class ClaimResult(BaseModel):
+    kind: Literal["claim"] = "claim"
+    verdict: ClaimVerdict
+    scores: ClaimScores | None = None
+    evidence_sentence: UntrustedStr | None = None
+    evidence_scope: Literal["abstract", "provided_text"] | None = None
+    premise_source: str | None = None
+    model: str | None = None
+    citation: CitationResult | None = None
     reasons: list[UntrustedStr] = Field(default_factory=list)
     retryable: bool = False

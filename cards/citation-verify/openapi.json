@@ -86,6 +86,44 @@
           }
         }
       }
+    },
+    "/v1/claim": {
+      "post": {
+        "summary": "Claim",
+        "operationId": "claim_v1_claim_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClaimRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_ClaimResult_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -209,6 +247,178 @@
         ],
         "title": "CitationVerdict"
       },
+      "ClaimRequest": {
+        "properties": {
+          "claim": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Claim"
+          },
+          "citation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/components/schemas/StructuredCitation"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Citation"
+          },
+          "evidence_text": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "claim"
+        ],
+        "title": "ClaimRequest"
+      },
+      "ClaimResult": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "claim",
+            "title": "Kind",
+            "default": "claim"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/ClaimVerdict"
+          },
+          "scores": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ClaimScores"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evidence_sentence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Sentence"
+          },
+          "evidence_scope": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "abstract",
+                  "provided_text"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Scope"
+          },
+          "premise_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Premise Source"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "citation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CitationResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "retryable": {
+            "type": "boolean",
+            "title": "Retryable",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "verdict"
+        ],
+        "title": "ClaimResult"
+      },
+      "ClaimScores": {
+        "properties": {
+          "entailment": {
+            "type": "number",
+            "title": "Entailment"
+          },
+          "neutral": {
+            "type": "number",
+            "title": "Neutral"
+          },
+          "contradiction": {
+            "type": "number",
+            "title": "Contradiction"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entailment",
+          "neutral",
+          "contradiction"
+        ],
+        "title": "ClaimScores"
+      },
+      "ClaimVerdict": {
+        "type": "string",
+        "enum": [
+          "supported",
+          "contradicted",
+          "insufficient_evidence",
+          "unverifiable"
+        ],
+        "title": "ClaimVerdict"
+      },
       "Envelope_CitationResult_": {
         "properties": {
           "service": {
@@ -285,6 +495,83 @@
           "elapsed_ms"
         ],
         "title": "Envelope[CitationResult]"
+      },
+      "Envelope_ClaimResult_": {
+        "properties": {
+          "service": {
+            "type": "string",
+            "title": "Service"
+          },
+          "operation": {
+            "type": "string",
+            "title": "Operation"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResponseStatus"
+          },
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "deadline_ms": {
+            "type": "integer",
+            "title": "Deadline Ms"
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "title": "Elapsed Ms"
+          },
+          "unavailable": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unavailable"
+          },
+          "summary": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Summary"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/ClaimResult"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceRef"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "service",
+          "operation",
+          "version",
+          "status",
+          "as_of",
+          "deadline_ms",
+          "elapsed_ms"
+        ],
+        "title": "Envelope[ClaimResult]"
       },
       "FieldDiff": {
         "properties": {

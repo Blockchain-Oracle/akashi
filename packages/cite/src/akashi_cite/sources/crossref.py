@@ -35,6 +35,7 @@ def to_record(item: dict[str, Any]) -> Record:
         type=item.get("type"),
         url=item.get("URL"),
         score=item.get("score"),
+        abstract=clean_text(item.get("abstract")),  # JATS, only when the publisher deposits it
     )
     for update in item.get("updated-by", []) or []:
         kind = (update.get("type") or "").lower()
