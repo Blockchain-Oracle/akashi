@@ -100,3 +100,13 @@ MAX_LONGITUDE: Final = 180.0
 FAHRENHEIT_OFFSET: Final = 32.0
 FAHRENHEIT_SCALE: Final = 5.0 / 9.0
 MPH_TO_MS: Final = 0.44704
+
+# --- /fact (Wikidata statements, read from entity JSON: no SPARQL label-service dependency) ---
+MAX_SUBJECT_CHARS: Final = 200
+MAX_FACT_VALUES: Final = 10
+TTL_FACT_ENTITY: Final = timedelta(hours=1)
+TTL_LABELS: Final = timedelta(days=7)
+WIKIDATA_END_TIME: Final = "P582"
+WIKIDATA_START_TIME: Final = "P580"
+WIKIDATA_POINT_IN_TIME: Final = "P585"
+LABEL_LANGUAGES: Final = ("en", "mul")  # "mul": Wikidata's default label for all languages (2025+)

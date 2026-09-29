@@ -8,6 +8,8 @@ from akashi_core.constants.deadlines import NOW_DEADLINE_S
 from akashi_core.contract.build import build_envelope
 from akashi_core.contract.envelope import Envelope
 from akashi_core.deadline import current_deadline
+from akashi_now.facts.models import FactRequest, FactResult
+from akashi_now.facts.service import get_fact
 from akashi_now.fx.models import FxRequest, FxResult
 from akashi_now.fx.service import get_fx
 from akashi_now.holidays.models import BusinessDaysRequest, BusinessDaysResult, HolidayResult, HolidaysRequest
@@ -91,5 +93,20 @@ async def weather(body: WeatherRequest) -> Envelope[WeatherResult]:
         results=[result] if result else [],
         sources=sources,
         unavailable=unavailable,
+        summary_field="kind",
+    )
+
+
+@router.post("/fact")
+async def fact(body: FactRequest) -> Envelope[FactResult]:
+    deadline = current_deadline(NOW_DEADLINE_S)
+    result, sources = await get_fact(body)
+    return build_envelope(
+        service=SERVICE_NOW,
+        operation="fact",
+        deadline=deadline,
+        results=[result],
+        sources=sources,
+        unavailable=[],
         summary_field="kind",
     )

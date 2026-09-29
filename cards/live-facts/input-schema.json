@@ -237,6 +237,27 @@
         }
       },
       "type": "object"
+    },
+    {
+      "properties": {
+        "subject": {
+          "description": "Wikidata QID or a name, e.g. Q30 / United States",
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        },
+        "property": {
+          "description": "Wikidata PID or an alias, e.g. P35 / head of state",
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "subject",
+        "property"
+      ],
+      "type": "object"
     }
   ]
 }

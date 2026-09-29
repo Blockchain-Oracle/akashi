@@ -238,6 +238,44 @@
           }
         }
       }
+    },
+    "/v1/fact": {
+      "post": {
+        "summary": "Fact",
+        "operationId": "fact_v1_fact_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FactRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_FactResult_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -456,6 +494,83 @@
           "elapsed_ms"
         ],
         "title": "Envelope[BusinessDaysResult]"
+      },
+      "Envelope_FactResult_": {
+        "properties": {
+          "service": {
+            "type": "string",
+            "title": "Service"
+          },
+          "operation": {
+            "type": "string",
+            "title": "Operation"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResponseStatus"
+          },
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "deadline_ms": {
+            "type": "integer",
+            "title": "Deadline Ms"
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "title": "Elapsed Ms"
+          },
+          "unavailable": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unavailable"
+          },
+          "summary": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Summary"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/FactResult"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceRef"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "service",
+          "operation",
+          "version",
+          "status",
+          "as_of",
+          "deadline_ms",
+          "elapsed_ms"
+        ],
+        "title": "Envelope[FactResult]"
       },
       "Envelope_FxResult_": {
         "properties": {
@@ -764,6 +879,164 @@
           "elapsed_ms"
         ],
         "title": "Envelope[WeatherResult]"
+      },
+      "FactRequest": {
+        "properties": {
+          "subject": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Subject",
+            "description": "Wikidata QID or a name, e.g. Q30 / United States"
+          },
+          "property": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Property",
+            "description": "Wikidata PID or an alias, e.g. P35 / head of state"
+          }
+        },
+        "type": "object",
+        "required": [
+          "subject",
+          "property"
+        ],
+        "title": "FactRequest"
+      },
+      "FactResult": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "fact",
+            "title": "Kind",
+            "default": "fact"
+          },
+          "subject_qid": {
+            "type": "string",
+            "title": "Subject Qid"
+          },
+          "subject_label": {
+            "type": "string",
+            "title": "Subject Label"
+          },
+          "property_pid": {
+            "type": "string",
+            "title": "Property Pid"
+          },
+          "property_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Property Label"
+          },
+          "values": {
+            "items": {
+              "$ref": "#/components/schemas/FactValue"
+            },
+            "type": "array",
+            "title": "Values"
+          },
+          "ended_values": {
+            "type": "integer",
+            "title": "Ended Values",
+            "default": 0
+          },
+          "wikipedia_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wikipedia Url"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "subject_qid",
+          "subject_label",
+          "property_pid",
+          "values",
+          "provenance"
+        ],
+        "title": "FactResult"
+      },
+      "FactValue": {
+        "properties": {
+          "value": {
+            "type": "string",
+            "title": "Value"
+          },
+          "qid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qid"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "point_in_time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Point In Time"
+          },
+          "rank": {
+            "type": "string",
+            "enum": [
+              "preferred",
+              "normal"
+            ],
+            "title": "Rank"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "rank"
+        ],
+        "title": "FactValue"
       },
       "Freshness": {
         "type": "string",

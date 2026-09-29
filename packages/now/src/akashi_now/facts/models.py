@@ -1,0 +1,39 @@
+"""/fact request and result."""
+
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
+from akashi_core.contract.fields import UntrustedStr
+from akashi_now.constants import MAX_SUBJECT_CHARS
+from akashi_now.provenance import Provenance
+
+
+class FactRequest(BaseModel):
+    subject: str = Field(
+        min_length=1, max_length=MAX_SUBJECT_CHARS, description="Wikidata QID or a name, e.g. Q30 / United States"
+    )
+    property: str = Field(
+        min_length=1, max_length=MAX_SUBJECT_CHARS, description="Wikidata PID or an alias, e.g. P35 / head of state"
+    )
+
+
+class FactValue(BaseModel):
+    value: UntrustedStr
+    qid: str | None = None
+    unit: UntrustedStr | None = None
+    start: str | None = None
+    point_in_time: str | None = None
+    rank: Literal["preferred", "normal"]
+
+
+class FactResult(BaseModel):
+    kind: Literal["fact"] = "fact"
+    subject_qid: str
+    subject_label: UntrustedStr
+    property_pid: str
+    property_label: UntrustedStr | None = None
+    values: list[FactValue]  # current values: preferred rank if any, no end time, latest point in time
+    ended_values: int = 0  # statements left out because they have ended
+    wikipedia_url: str | None = None
+    provenance: Provenance
