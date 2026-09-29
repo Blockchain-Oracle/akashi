@@ -17,8 +17,10 @@ from akashi_code.models import (
     VersionsResult,
 )
 from akashi_code.router import router as code_router
-from akashi_core.constants.app import SERVICE_CITE, SERVICE_CODE
+from akashi_core.constants.app import SERVICE_CITE, SERVICE_CODE, SERVICE_NOW
 from akashi_core.schema.cli import SchemaSpec, write_all
+from akashi_now.router import router as now_router
+from akashi_now.time.models import TimeRequest, TimeResult
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 CARDS_DIR = REPO_ROOT / "cards"
@@ -37,6 +39,13 @@ SPECS = [
         results=[PackageResult, VersionsResult, SymbolResult, Diagnostic],
         requests=[PackageQuery, PackagesRequest, VersionsQuery, SymbolQuery, SymbolsQuery, CheckRequest],
         router=code_router,
+    ),
+    SchemaSpec(
+        service_id=SERVICE_NOW,
+        title="Akashi Live Facts",
+        results=[TimeResult],
+        requests=[TimeRequest],
+        router=now_router,
     ),
 ]
 

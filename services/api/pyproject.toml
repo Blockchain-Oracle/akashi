@@ -6,6 +6,7 @@ dependencies = [
     "akashi-cite",
     "akashi-code",
     "akashi-core",
+    "akashi-now",
     "uvicorn[standard]>=0.54",
 ]
 
@@ -23,3 +24,4 @@ packages = ["src/akashi_api"]
 akashi-core = { workspace = true }
 akashi-cite = { workspace = true }
 akashi-code = { workspace = true }
+akashi-now = { workspace = true }

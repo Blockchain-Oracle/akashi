@@ -11,6 +11,7 @@ from akashi_code.risk import toplists
 from akashi_core.cache.store import cache
 from akashi_core.obs.logging import configure_logging
 from akashi_core.settings import get_settings
+from akashi_now.clients import close_all as close_now_clients
 
 
 @asynccontextmanager
@@ -22,4 +23,5 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     yield
     await close_code_clients()
     await close_cite_clients()
+    await close_now_clients()
     await cache.close()

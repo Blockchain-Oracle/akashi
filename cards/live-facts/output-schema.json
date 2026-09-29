@@ -1,0 +1,405 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "service": {
+      "type": "string"
+    },
+    "operation": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "complete",
+        "partial"
+      ],
+      "type": "string"
+    },
+    "as_of": {
+      "type": "string"
+    },
+    "deadline_ms": {
+      "type": "integer"
+    },
+    "elapsed_ms": {
+      "type": "integer"
+    },
+    "unavailable": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "summary": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "type": "object"
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "properties": {
+              "kind": {
+                "const": "time",
+                "type": "string"
+              },
+              "zone": {
+                "type": "string"
+              },
+              "matched": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "at_utc": {
+                "type": "string"
+              },
+              "local_time": {
+                "type": "string"
+              },
+              "utc_offset": {
+                "type": "string"
+              },
+              "abbreviation": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "is_dst": {
+                "type": "boolean"
+              },
+              "next_transition": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "at": {
+                        "type": "string"
+                      },
+                      "offset_before": {
+                        "type": "string"
+                      },
+                      "offset_after": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "at",
+                      "offset_before",
+                      "offset_after"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "conversions": {
+                "items": {
+                  "properties": {
+                    "zone": {
+                      "type": "string"
+                    },
+                    "local_time": {
+                      "type": "string"
+                    },
+                    "utc_offset": {
+                      "type": "string"
+                    },
+                    "abbreviation": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "is_dst": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "zone",
+                    "local_time",
+                    "utc_offset",
+                    "is_dst"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "tzdb_version": {
+                "type": "string"
+              },
+              "tzdb_latest": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "provenance": {
+                "properties": {
+                  "sources": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "as_of": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "age_seconds": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "freshness": {
+                    "enum": [
+                      "fresh",
+                      "lagging",
+                      "stale",
+                      "unknown"
+                    ],
+                    "type": "string"
+                  },
+                  "agreement": {
+                    "enum": [
+                      "agree",
+                      "minor_diff",
+                      "conflict",
+                      "single_source"
+                    ],
+                    "type": "string"
+                  },
+                  "spread_pct": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "licence": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "attribution": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "type": "object"
+              },
+              "notes": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "zone",
+              "at_utc",
+              "local_time",
+              "utc_offset",
+              "is_dst",
+              "tzdb_version",
+              "provenance"
+            ],
+            "type": "object"
+          }
+        ]
+      }
+    },
+    "sources": {
+      "items": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "not_found",
+              "unavailable",
+              "rate_limited",
+              "skipped_budget",
+              "not_applicable"
+            ],
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "licence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "attribution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fetched_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latency_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cache": {
+            "anyOf": [
+              {
+                "enum": [
+                  "hit",
+                  "miss",
+                  "stale"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "status"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "notes": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "error": {
+      "properties": {
+        "code": {
+          "enum": [
+            "invalid_json",
+            "invalid_input",
+            "not_found",
+            "method_not_allowed",
+            "payload_too_large",
+            "unsupported",
+            "internal"
+          ],
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "details": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [],
+  "type": "object"
+}
