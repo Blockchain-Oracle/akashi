@@ -36,4 +36,4 @@ models/
 .vscode/
 
 # runtime data written by the api/worker (top lists, indexes)
-data/
+/data/
