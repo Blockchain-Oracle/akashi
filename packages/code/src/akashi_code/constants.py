@@ -141,3 +141,6 @@ RUSTDOC_MAX_DECOMPRESSED_BYTES: Final = 64 << 20  # 64 MiB cap on decompressed r
 RUSTDOC_FORMAT_MIN: Final = 39  # oldest rustdoc JSON format this projector understands
 RUSTDOC_FORMAT_MAX: Final = 99  # guard against incompatible future formats
 RUSTDOC_MAX_MODULE_DEPTH: Final = 6
+TS_INTROSPECT_TOTAL_S: Final = 5.0  # a cold build beyond this answers `pending` and finishes in the background
+TS_INTROSPECT_BACKGROUND_S: Final = 60.0
+RETRY_AFTER_MS: Final = 3_000

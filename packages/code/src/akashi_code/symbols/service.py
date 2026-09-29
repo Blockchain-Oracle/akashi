@@ -5,6 +5,7 @@ import dataclasses
 from akashi_code.constants import TTL_SYMBOLS
 from akashi_code.models import Ecosystem, SymbolQuery, SymbolResult
 from akashi_code.symbols import go as go_symbols
+from akashi_code.symbols import npm as npm_symbols
 from akashi_code.symbols import rust as rust_symbols
 from akashi_code.symbols.base import SymbolAnswer
 from akashi_code.symbols.python import service as python_symbols
@@ -19,8 +20,14 @@ _LOOKUPS = {
     Ecosystem.pypi: python_symbols.lookup,
     Ecosystem.go: go_symbols.lookup,
     Ecosystem.cargo: rust_symbols.lookup,
+    Ecosystem.npm: npm_symbols.lookup,
 }
-_SOURCE_NAME = {Ecosystem.pypi: "pypi-files", Ecosystem.go: "pkgsite", Ecosystem.cargo: "docs.rs"}
+_SOURCE_NAME = {
+    Ecosystem.pypi: "pypi-files",
+    Ecosystem.go: "pkgsite",
+    Ecosystem.cargo: "docs.rs",
+    Ecosystem.npm: "ts-introspect",
+}
 
 
 def _result(query: SymbolQuery, answer: SymbolAnswer, package_exists: Tristate, version: str | None) -> SymbolResult:
@@ -39,6 +46,8 @@ def _result(query: SymbolQuery, answer: SymbolAnswer, package_exists: Tristate, 
         evidence_source=answer.evidence_source,
         reason=answer.reason,
         did_you_mean=suggest(last, answer.siblings) if answer.exists is Tristate.no else [],
+        pending=answer.pending,
+        retry_after_ms=answer.retry_after_ms,
     )
 
 
