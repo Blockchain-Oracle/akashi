@@ -5,7 +5,7 @@ from datetime import timedelta
 
 from akashi_code.constants import TTL_LATEST, TTL_MISSING, TTL_VERSION
 from akashi_code.models import Ecosystem, PackageQuery, PackageResult, PackageVerdict
-from akashi_code.registries import npm, pypi
+from akashi_code.registries import npm, others, pypi
 from akashi_code.registries.base import PackageFacts
 from akashi_code.risk import toplists
 from akashi_code.risk.typosquat import find_targets
@@ -15,13 +15,26 @@ from akashi_core.cache.store import cache
 from akashi_core.contract.enums import SourceStatus, Tristate
 from akashi_core.contract.sources import SourceRef
 
-_FETCHERS = {Ecosystem.npm: npm.fetch, Ecosystem.pypi: pypi.fetch}
+_FETCHERS = {
+    Ecosystem.npm: npm.fetch,
+    Ecosystem.pypi: pypi.fetch,
+    Ecosystem.cargo: others.cargo,
+    Ecosystem.go: others.go,
+    Ecosystem.maven: others.maven,
+    Ecosystem.rubygems: others.rubygems,
+    Ecosystem.packagist: others.packagist,
+    Ecosystem.nuget: others.nuget,
+}
+# Go module paths and Maven/Packagist coordinates are case-sensitive; npm/cargo/nuget are compared lowercased.
+_CASE_SENSITIVE = frozenset({Ecosystem.go, Ecosystem.maven})
 _SVC = "code"
 
 
 def lookup_name(ecosystem: Ecosystem, name: str) -> str:
     name = name.strip()
-    return pypi.normalize(name) if ecosystem is Ecosystem.pypi else name.lower()
+    if ecosystem is Ecosystem.pypi:
+        return pypi.normalize(name)
+    return name if ecosystem in _CASE_SENSITIVE else name.lower()
 
 
 def _ttl(facts: PackageFacts, version: str | None) -> timedelta:

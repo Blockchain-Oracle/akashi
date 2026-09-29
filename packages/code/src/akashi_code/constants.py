@@ -32,6 +32,42 @@ DEPS_DEV = UpstreamSpec(
     attribution="Data: deps.dev (CC-BY 4.0)",
 )
 
+CRATES_INDEX = UpstreamSpec(
+    "crates-index",
+    "https://index.crates.io",
+    max_concurrency=10,
+    total_s=2.0,
+    attribution="index.crates.io (sparse index)",
+)
+GO_PROXY = UpstreamSpec(
+    "go-proxy", "https://proxy.golang.org", max_concurrency=8, total_s=2.5, attribution="proxy.golang.org"
+)
+MAVEN_CENTRAL = UpstreamSpec(
+    "maven-central", "https://repo1.maven.org", max_concurrency=5, total_s=2.0, attribution="Maven Central"
+)
+RUBYGEMS = UpstreamSpec(
+    "rubygems",
+    "https://rubygems.org",
+    max_concurrency=10,
+    total_s=2.0,
+    rate="10/second",
+    attribution="rubygems.org API",
+)
+PACKAGIST = UpstreamSpec(
+    "packagist", "https://repo.packagist.org", max_concurrency=10, total_s=2.5, attribution="Packagist p2"
+)
+NUGET = UpstreamSpec("nuget", "https://api.nuget.org", max_concurrency=5, total_s=2.0, attribution="nuget.org")
+
+# deps.dev system names for publish history (RubyGems and Packagist are not covered by deps.dev).
+DEPS_DEV_SYSTEMS: Final = {
+    "npm": "npm",
+    "pypi": "pypi",
+    "go": "go",
+    "maven": "maven",
+    "cargo": "cargo",
+    "nuget": "nuget",
+}
+
 # --- request limits ---
 MAX_PACKAGE_NAME_CHARS: Final = 214  # npm's documented maximum name length
 MAX_VERSION_CHARS: Final = 128
