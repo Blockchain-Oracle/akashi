@@ -27,3 +27,26 @@ TTL_GEOCODE: Final = timedelta(days=30)
 WIKIDATA_COORDINATES: Final = "P625"
 WIKIDATA_COUNTRY: Final = "P17"
 WIKIDATA_ISO_ALPHA2: Final = "P297"
+
+# --- /holidays, /business-days ---
+NAGER = UpstreamSpec(
+    "nager.date", "https://date.nager.at", max_concurrency=4, total_s=1.5, licence="MIT", attribution="Nager.Date"
+)
+OPENHOLIDAYS = UpstreamSpec(
+    "openholidays",
+    "https://openholidaysapi.org",
+    max_concurrency=4,
+    total_s=1.5,
+    licence="ODbL",
+    attribution="OpenHolidays API",
+)
+HOLIDAYS_LIB = "python-holidays"
+HOLIDAYS_LIB_LICENCE = "MIT"
+MIN_HOLIDAY_YEAR: Final = 1900
+MAX_HOLIDAY_YEAR: Final = 2100
+TTL_HOLIDAYS: Final = timedelta(hours=24)
+MINOR_DIFF_MAX_DATES: Final = 3  # calendars differing on ≤ this many dates (observed shifts, regional scope) are minor
+MINOR_DIFF_MAX_SHARE: Final = 0.2
+MAX_BUSINESS_DAY_SPAN: Final = 3_650
+PUBLIC_CALENDAR: Final = "public"
+CALENDAR_DAYS_PER_BUSINESS_DAY_MAX: Final = 2  # generous: weekends + holiday clusters never exceed 2x

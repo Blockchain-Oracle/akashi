@@ -86,6 +86,82 @@
           }
         }
       }
+    },
+    "/v1/holidays": {
+      "post": {
+        "summary": "Holidays",
+        "operationId": "holidays_v1_holidays_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HolidaysRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_HolidayResult_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/business-days": {
+      "post": {
+        "summary": "Business Days Route",
+        "operationId": "business_days_route_v1_business_days_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessDaysRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_BusinessDaysResult_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -100,6 +176,125 @@
         ],
         "title": "Agreement"
       },
+      "BusinessDaysRequest": {
+        "properties": {
+          "country": {
+            "type": "string",
+            "maxLength": 2,
+            "minLength": 2,
+            "title": "Country",
+            "description": "ISO 3166-1 alpha-2"
+          },
+          "subdivision": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subdivision"
+          },
+          "calendar": {
+            "type": "string",
+            "maxLength": 10,
+            "title": "Calendar",
+            "default": "public"
+          },
+          "start": {
+            "type": "string",
+            "format": "date",
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "add_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 3650.0,
+                "minimum": -3650.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Add Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "country",
+          "start"
+        ],
+        "title": "BusinessDaysRequest"
+      },
+      "BusinessDaysResult": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "business_days",
+            "title": "Kind",
+            "default": "business_days"
+          },
+          "calendar": {
+            "type": "string",
+            "title": "Calendar"
+          },
+          "start": {
+            "type": "string",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "title": "End"
+          },
+          "business_days": {
+            "type": "integer",
+            "title": "Business Days"
+          },
+          "weekend": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Weekend"
+          },
+          "holidays_skipped": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Holidays Skipped"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "calendar",
+          "start",
+          "end",
+          "business_days",
+          "weekend",
+          "holidays_skipped",
+          "provenance"
+        ],
+        "title": "BusinessDaysResult"
+      },
       "CacheState": {
         "type": "string",
         "enum": [
@@ -108,6 +303,160 @@
           "stale"
         ],
         "title": "CacheState"
+      },
+      "Envelope_BusinessDaysResult_": {
+        "properties": {
+          "service": {
+            "type": "string",
+            "title": "Service"
+          },
+          "operation": {
+            "type": "string",
+            "title": "Operation"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResponseStatus"
+          },
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "deadline_ms": {
+            "type": "integer",
+            "title": "Deadline Ms"
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "title": "Elapsed Ms"
+          },
+          "unavailable": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unavailable"
+          },
+          "summary": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Summary"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/BusinessDaysResult"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceRef"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "service",
+          "operation",
+          "version",
+          "status",
+          "as_of",
+          "deadline_ms",
+          "elapsed_ms"
+        ],
+        "title": "Envelope[BusinessDaysResult]"
+      },
+      "Envelope_HolidayResult_": {
+        "properties": {
+          "service": {
+            "type": "string",
+            "title": "Service"
+          },
+          "operation": {
+            "type": "string",
+            "title": "Operation"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResponseStatus"
+          },
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "deadline_ms": {
+            "type": "integer",
+            "title": "Deadline Ms"
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "title": "Elapsed Ms"
+          },
+          "unavailable": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unavailable"
+          },
+          "summary": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Summary"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/HolidayResult"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceRef"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "service",
+          "operation",
+          "version",
+          "status",
+          "as_of",
+          "deadline_ms",
+          "elapsed_ms"
+        ],
+        "title": "Envelope[HolidayResult]"
       },
       "Envelope_TimeResult_": {
         "properties": {
@@ -208,6 +557,107 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "HolidayResult": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "holiday",
+            "title": "Kind",
+            "default": "holiday"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "other_names": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Other Names"
+          },
+          "calendar": {
+            "type": "string",
+            "title": "Calendar"
+          },
+          "observed": {
+            "type": "boolean",
+            "title": "Observed",
+            "default": false
+          },
+          "local_only": {
+            "type": "boolean",
+            "title": "Local Only",
+            "default": false
+          },
+          "listed_by": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Listed By"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "name",
+          "calendar",
+          "listed_by",
+          "provenance"
+        ],
+        "title": "HolidayResult"
+      },
+      "HolidaysRequest": {
+        "properties": {
+          "country": {
+            "type": "string",
+            "maxLength": 2,
+            "minLength": 2,
+            "title": "Country",
+            "description": "ISO 3166-1 alpha-2"
+          },
+          "year": {
+            "type": "integer",
+            "maximum": 2100.0,
+            "minimum": 1900.0,
+            "title": "Year"
+          },
+          "subdivision": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subdivision",
+            "description": "e.g. BY (Bavaria), CA (California)"
+          },
+          "calendar": {
+            "type": "string",
+            "maxLength": 10,
+            "title": "Calendar",
+            "description": "'public' or a market: NYSE, ECB, LSE\u2026",
+            "default": "public"
+          }
+        },
+        "type": "object",
+        "required": [
+          "country",
+          "year"
+        ],
+        "title": "HolidaysRequest"
       },
       "Provenance": {
         "properties": {

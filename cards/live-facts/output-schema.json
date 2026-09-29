@@ -254,6 +254,249 @@
               "provenance"
             ],
             "type": "object"
+          },
+          {
+            "properties": {
+              "kind": {
+                "const": "holiday",
+                "type": "string"
+              },
+              "date": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "other_names": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "calendar": {
+                "type": "string"
+              },
+              "observed": {
+                "type": "boolean"
+              },
+              "local_only": {
+                "type": "boolean"
+              },
+              "listed_by": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "provenance": {
+                "properties": {
+                  "sources": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "as_of": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "age_seconds": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "freshness": {
+                    "enum": [
+                      "fresh",
+                      "lagging",
+                      "stale",
+                      "unknown"
+                    ],
+                    "type": "string"
+                  },
+                  "agreement": {
+                    "enum": [
+                      "agree",
+                      "minor_diff",
+                      "conflict",
+                      "single_source"
+                    ],
+                    "type": "string"
+                  },
+                  "spread_pct": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "licence": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "attribution": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "date",
+              "name",
+              "calendar",
+              "listed_by",
+              "provenance"
+            ],
+            "type": "object"
+          },
+          {
+            "properties": {
+              "kind": {
+                "const": "business_days",
+                "type": "string"
+              },
+              "calendar": {
+                "type": "string"
+              },
+              "start": {
+                "type": "string"
+              },
+              "end": {
+                "type": "string"
+              },
+              "business_days": {
+                "type": "integer"
+              },
+              "weekend": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "holidays_skipped": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "provenance": {
+                "properties": {
+                  "sources": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "as_of": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "age_seconds": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "freshness": {
+                    "enum": [
+                      "fresh",
+                      "lagging",
+                      "stale",
+                      "unknown"
+                    ],
+                    "type": "string"
+                  },
+                  "agreement": {
+                    "enum": [
+                      "agree",
+                      "minor_diff",
+                      "conflict",
+                      "single_source"
+                    ],
+                    "type": "string"
+                  },
+                  "spread_pct": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "licence": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "attribution": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "calendar",
+              "start",
+              "end",
+              "business_days",
+              "weekend",
+              "holidays_skipped",
+              "provenance"
+            ],
+            "type": "object"
           }
         ]
       }

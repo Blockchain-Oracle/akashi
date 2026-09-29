@@ -60,6 +60,98 @@
         }
       },
       "type": "object"
+    },
+    {
+      "properties": {
+        "country": {
+          "description": "ISO 3166-1 alpha-2",
+          "maxLength": 2,
+          "minLength": 2,
+          "type": "string"
+        },
+        "year": {
+          "maximum": 2100,
+          "minimum": 1900,
+          "type": "integer"
+        },
+        "subdivision": {
+          "anyOf": [
+            {
+              "maxLength": 10,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "e.g. BY (Bavaria), CA (California)"
+        },
+        "calendar": {
+          "description": "'public' or a market: NYSE, ECB, LSE\u2026",
+          "maxLength": 10,
+          "type": "string"
+        }
+      },
+      "required": [
+        "country",
+        "year"
+      ],
+      "type": "object"
+    },
+    {
+      "properties": {
+        "country": {
+          "description": "ISO 3166-1 alpha-2",
+          "maxLength": 2,
+          "minLength": 2,
+          "type": "string"
+        },
+        "subdivision": {
+          "anyOf": [
+            {
+              "maxLength": 10,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "calendar": {
+          "maxLength": 10,
+          "type": "string"
+        },
+        "start": {
+          "type": "string"
+        },
+        "end": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "add_days": {
+          "anyOf": [
+            {
+              "maximum": 3650,
+              "minimum": -3650,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "country",
+        "start"
+      ],
+      "type": "object"
     }
   ]
 }
