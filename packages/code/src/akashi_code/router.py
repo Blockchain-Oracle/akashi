@@ -3,8 +3,18 @@
 from fastapi import APIRouter
 
 from akashi_code.constants import PACKAGES_CONCURRENCY
-from akashi_code.models import PackageQuery, PackageResult, PackagesRequest, VersionsQuery, VersionsResult
+from akashi_code.models import (
+    PackageQuery,
+    PackageResult,
+    PackagesRequest,
+    SymbolQuery,
+    SymbolResult,
+    SymbolsQuery,
+    VersionsQuery,
+    VersionsResult,
+)
 from akashi_code.service import check_package
+from akashi_code.symbols.service import check_symbol
 from akashi_code.versions.service import list_versions
 from akashi_core.constants.app import SERVICE_CODE
 from akashi_core.constants.deadlines import CODE_DEADLINE_S
@@ -66,6 +76,50 @@ async def versions(query: VersionsQuery) -> Envelope[VersionsResult]:
         operation="versions",
         deadline=deadline,
         results=[result],
+        sources=sources,
+        unavailable=unavailable,
+        summary_field="exists",
+    )
+
+
+@router.post("/symbol")
+async def symbol(query: SymbolQuery) -> Envelope[SymbolResult]:
+    deadline = current_deadline(CODE_DEADLINE_S)
+    result, sources, unavailable = await check_symbol(query)
+    return build_envelope(
+        service=SERVICE_CODE,
+        operation="symbol",
+        deadline=deadline,
+        results=[result],
+        sources=sources,
+        unavailable=unavailable,
+        summary_field="exists",
+    )
+
+
+@router.post("/symbols")
+async def symbols(body: SymbolsQuery) -> Envelope[SymbolResult]:
+    deadline = current_deadline(CODE_DEADLINE_S)
+    queries = [
+        SymbolQuery(ecosystem=body.ecosystem, package=body.package, version=body.version, symbol=s)
+        for s in body.symbols
+    ]
+    outcomes = await gather_limited((check_symbol(q) for q in queries), PACKAGES_CONCURRENCY)
+    results: list[SymbolResult] = []
+    sources: list[SourceRef] = []
+    unavailable: list[str] = []
+    for outcome in outcomes:
+        if isinstance(outcome, BaseException):
+            raise outcome
+        result, refs, missing = outcome
+        results.append(result)
+        sources.extend(refs)
+        unavailable.extend(missing)
+    return build_envelope(
+        service=SERVICE_CODE,
+        operation="symbols",
+        deadline=deadline,
+        results=results,
         sources=sources,
         unavailable=unavailable,
         summary_field="exists",

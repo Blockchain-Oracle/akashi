@@ -12,6 +12,7 @@ from akashi_code.constants import (
     NUGET,
     PACKAGIST,
     PYPI,
+    PYPI_FILES,
     RUBYGEMS,
 )
 from akashi_core.http.client import UpstreamClient
@@ -67,7 +68,12 @@ def nuget() -> UpstreamClient:
     return UpstreamClient(NUGET)
 
 
-_ALL = (npm, npm_downloads, pypi, deps_dev, crates, go_proxy, maven, rubygems, packagist, nuget)
+@cache
+def pypi_files() -> UpstreamClient:
+    return UpstreamClient(PYPI_FILES)
+
+
+_ALL = (pypi_files, npm, npm_downloads, pypi, deps_dev, crates, go_proxy, maven, rubygems, packagist, nuget)
 
 
 async def close_all() -> None:

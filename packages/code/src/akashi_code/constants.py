@@ -58,6 +58,15 @@ PACKAGIST = UpstreamSpec(
 )
 NUGET = UpstreamSpec("nuget", "https://api.nuget.org", max_concurrency=5, total_s=2.0, attribution="nuget.org")
 
+PYPI_FILES = UpstreamSpec(
+    "pypi-files",
+    "https://files.pythonhosted.org",
+    max_concurrency=10,
+    total_s=4.0,
+    http2=True,
+    attribution="files.pythonhosted.org (wheel range reads)",
+)
+
 # deps.dev system names for publish history (RubyGems and Packagist are not covered by deps.dev).
 DEPS_DEV_SYSTEMS: Final = {
     "npm": "npm",
@@ -111,3 +120,12 @@ TTL_VERSION: Final = timedelta(hours=1)
 TTL_LATEST: Final = timedelta(minutes=10)
 TTL_MISSING: Final = timedelta(minutes=5)  # a squatter may register the name any minute
 TTL_DOWNLOADS: Final = timedelta(hours=24)
+
+# --- symbols ---
+MAX_SYMBOL_CHARS: Final = 300
+MAX_SYMBOLS_PER_REQUEST: Final = 50
+REEXPORT_MAX_DEPTH: Final = 4
+MAX_MODULES_PER_LOOKUP: Final = 16
+CLASS_BASE_MAX_DEPTH: Final = 3
+TTL_SYMBOLS: Final = None  # immutable (package, version) → cache forever (LRU-evicted only)
+WHEEL_PLATFORM_PREFERENCE: Final = ("py3-none-any", "py2.py3-none-any", "cp313-cp313-manylinux", "abi3-manylinux")

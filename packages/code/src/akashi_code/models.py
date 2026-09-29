@@ -9,6 +9,8 @@ from akashi_code.constants import (
     MAX_PACKAGE_NAME_CHARS,
     MAX_PACKAGES_PER_REQUEST,
     MAX_RANGE_CHARS,
+    MAX_SYMBOL_CHARS,
+    MAX_SYMBOLS_PER_REQUEST,
     MAX_VERSION_CHARS,
 )
 from akashi_core.contract.enums import Tristate
@@ -101,3 +103,36 @@ class VersionsResult(BaseModel):
     truncated: bool = False
     evidence: list[str] = Field(default_factory=list)
     retryable: bool = False
+
+
+class SymbolQuery(BaseModel):
+    ecosystem: Ecosystem
+    package: str = Field(min_length=1, max_length=MAX_PACKAGE_NAME_CHARS)
+    version: str | None = Field(default=None, max_length=MAX_VERSION_CHARS)
+    symbol: str = Field(min_length=1, max_length=MAX_SYMBOL_CHARS)
+
+
+class SymbolsQuery(BaseModel):
+    ecosystem: Ecosystem
+    package: str = Field(min_length=1, max_length=MAX_PACKAGE_NAME_CHARS)
+    version: str | None = Field(default=None, max_length=MAX_VERSION_CHARS)
+    symbols: list[str] = Field(min_length=1, max_length=MAX_SYMBOLS_PER_REQUEST)
+
+
+class SymbolResult(BaseModel):
+    kind: Literal["symbol"] = "symbol"
+    ecosystem: Ecosystem
+    package: str
+    symbol: str
+    package_exists: Tristate
+    resolved_version: str | None = None
+    exists: Tristate
+    symbol_kind: str | None = None  # function | class | method | attribute | type | module | …
+    signature: UntrustedStr | None = None
+    overloads: list[UntrustedStr] = Field(default_factory=list)
+    defined_in: str | None = None
+    did_you_mean: list[str] = Field(default_factory=list)
+    evidence_source: str | None = None  # pyi | py-ast | d.ts | rustdoc | pkgsite | typeshed
+    pending: bool = False
+    retry_after_ms: int | None = None
+    reason: str | None = None
