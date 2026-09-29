@@ -21,7 +21,7 @@
 > **Tick each checkbox in the same commit as its artifact.** Record every tx and deploy in `acceptance.md` / `ids-and-txs.md`.
 
 Current stage: **S0 Bootstrap** (in progress)
-Last commit: — (none yet)
+Last commit: b728271 "S0: bootstrap Akashi repo — plan, specs, UI shortlist, workspaces"
 In-flight step: S0.4 (needs user OK: GitHub repo + Coolify project)
 Done: —
 Blockers:
