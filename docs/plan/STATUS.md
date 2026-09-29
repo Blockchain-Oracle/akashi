@@ -22,11 +22,12 @@
 >
 > **Tick each checkbox in the same commit as its artifact.** Record every tx and deploy in `acceptance.md` / `ids-and-txs.md`.
 
-Current stage: **S4 citation-verify** (starting; S2 waits for the domain)
-Last commit: b728271 "S0: bootstrap Akashi repo — plan, specs, UI shortlist, workspaces"
-In-flight step: S4.1 citation input router
+Current stage: **S4 citation-verify** (verify built + calibrated; deploy + /claim next; S2 waits for the domain)
+Last commit: d8806d7 "S4: citation-verify — parse, sources, scoring, calibration"
+In-flight step: S4 deploy + live gate, then NLI /claim
 Done: S0 ✅ · S3 ✅ code-reality-check live (package/packages/versions/symbol/symbols/check) · (repo github.com/Blockchain-Oracle/akashi, private · Coolify project akashi) · S1 ✅ (api live at temp http://qbjpovbitgqrjgafdcrigqmd.84.46.247.92.sslip.io)
 Blockers:
 - Q-001: the domain has not been bought yet (blocks S2 from step 5)
+- Q-005: the OpenAlex free API key from the user (limits DOI-less coverage until then)
 Env readiness: pocketd ☐ · pocket-ap ☐ · OPENAI_API_KEY (from the user) ☐ · domain ☐
-Next action: S4 per specs/backend.md §3.1 — verify Crossref/doi.org/OpenAlex/eyecite APIs live, then build akashi_cite.
+Next action: see stage-04 Handoff (deploy api → live gate batch → /claim NLI).

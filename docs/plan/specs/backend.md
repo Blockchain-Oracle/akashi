@@ -318,7 +318,7 @@ It also emits `input-schema.json` and a prefix-free `openapi.json` into `cards/<
 - **`POST /v1/claim`**
   - Request: `{claim ≤ 1000, citation?: CitationInput, evidence_text? ≤ 20_000}`; at least one of `citation` / `evidence_text`.
   - Item (`kind:"claim"`) fields: `verdict`, `scores {entailment, neutral, contradiction}`, `evidence_sentence`, `evidence_scope: abstract|provided_text|page_text`, `premise_source`, `model: "deberta-v3-base-mnli-fever-anli-int8"`, `matched_citation`.
-- **Functional probe:** `POST /v1/verify {"citations":["Obergefell v. Hodges, 576 U.S. 644 (2015)"]}` → `$.results[0].verdict ^verified$`. It is purely local (legal index), so it is cheap and deterministic.
+- **Functional probe:** `POST /v1/verify {"citations":["Brown v. Board of Education, 347 U.S. 483 (1954)"]}` → `$.results[0].verdict ^verified$`. The CAP volume is cached for 30 days, so after the first call it is cheap and deterministic. (Obergefell, 576 U.S., lies outside CAP coverage: D-011.)
 
 **Verify algorithm.** Per citation; items run through `gather_limited` under the request deadline.
 1. **Classify** (`parse/router.py`):
