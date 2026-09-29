@@ -22,12 +22,14 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 FROM python:${PYTHON_VERSION}-slim
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/* \
-    && useradd --create-home --uid 10001 akashi
+    && useradd --create-home --uid 10001 akashi \
+    && mkdir -p /data && chown akashi:akashi /data  # a new named volume inherits this ownership
 COPY --from=builder --chown=akashi:akashi /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
     PYTHONTZPATH="" \
-    AKASHI_ENV=production
+    AKASHI_ENV=production \
+    AKASHI_DATA_DIR=/data
 USER akashi
 WORKDIR /app
 EXPOSE 8000

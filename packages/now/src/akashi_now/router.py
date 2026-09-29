@@ -14,6 +14,8 @@ from akashi_now.fx.models import FxRequest, FxResult
 from akashi_now.fx.service import get_fx
 from akashi_now.holidays.models import BusinessDaysRequest, BusinessDaysResult, HolidayResult, HolidaysRequest
 from akashi_now.holidays.service import business_days, get_holidays
+from akashi_now.news.models import NewsRequest, NewsStory
+from akashi_now.news.service import get_news
 from akashi_now.time.models import TimeRequest, TimeResult
 from akashi_now.time.service import get_time
 from akashi_now.weather.models import WeatherRequest, WeatherResult
@@ -109,4 +111,20 @@ async def fact(body: FactRequest) -> Envelope[FactResult]:
         sources=sources,
         unavailable=[],
         summary_field="kind",
+    )
+
+
+@router.post("/news")
+async def news(body: NewsRequest) -> Envelope[NewsStory]:
+    deadline = current_deadline(NOW_DEADLINE_S)
+    results, sources, unavailable, notes = await get_news(body)
+    return build_envelope(
+        service=SERVICE_NOW,
+        operation="news",
+        deadline=deadline,
+        results=results,
+        sources=sources,
+        unavailable=unavailable,
+        summary_field="source",
+        notes=notes,
     )

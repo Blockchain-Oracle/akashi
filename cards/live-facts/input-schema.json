@@ -258,6 +258,42 @@
         "property"
       ],
       "type": "object"
+    },
+    {
+      "properties": {
+        "query": {
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        },
+        "since_hours": {
+          "maximum": 72,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "country": {
+          "anyOf": [
+            {
+              "maxLength": 2,
+              "minLength": 2,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "ISO 3166-1 alpha-2 mentioned"
+        },
+        "limit": {
+          "maximum": 25,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "type": "object"
     }
   ]
 }

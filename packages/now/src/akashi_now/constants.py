@@ -110,3 +110,29 @@ WIKIDATA_END_TIME: Final = "P582"
 WIKIDATA_START_TIME: Final = "P580"
 WIKIDATA_POINT_IN_TIME: Final = "P585"
 LABEL_LANGUAGES: Final = ("en", "mul")  # "mul": Wikidata's default label for all languages (2025+)
+
+# --- /news (local GDELT GKG index, filled every 15 min by a scheduled task; live HN Algolia) ---
+GDELT = UpstreamSpec(
+    "gdelt",
+    "https://data.gdeltproject.org",
+    max_concurrency=1,
+    total_s=60.0,
+    licence="GDELT: free, unlimited use with citation",
+    attribution="The GDELT Project",
+)
+HN = UpstreamSpec("hn", "https://hn.algolia.com", max_concurrency=4, total_s=1.5, attribution="Hacker News via Algolia")
+NEWS_DB: Final = "news.db"
+NEWS_RETENTION_HOURS: Final = 72
+NEWS_MAX_QUERY_CHARS: Final = 200
+NEWS_MAX_SINCE_HOURS: Final = 72
+NEWS_DEFAULT_SINCE_HOURS: Final = 24
+NEWS_MAX_LIMIT: Final = 25
+NEWS_DEFAULT_LIMIT: Final = 10
+NEWS_RECENCY_WEIGHT_PER_HOUR: Final = 0.15  # bm25 is ~-5..-15 for good hits: one day old ≈ -3.6
+NEWS_DEDUPE_TITLE_MIN: Final = 88
+NEWS_INGEST_BUDGET_S: Final = 240.0
+NEWS_TITLE_MAX_CHARS: Final = 300
+NEWS_INSERT_BATCH: Final = 1_000
+SECONDS_PER_HOUR: Final = 3_600
+GKG_COLUMNS: Final = 27
+GKG_DATE, GKG_DOMAIN, GKG_URL, GKG_LOCATIONS, GKG_EXTRAS = 1, 3, 4, 9, 26

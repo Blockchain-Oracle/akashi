@@ -12,6 +12,7 @@ dependencies = [
 
 [project.scripts]
 akashi-schemas = "akashi_api.schemas:main"
+akashi-task = "akashi_api.tasks:main"
 
 [build-system]
 requires = ["hatchling"]

@@ -22,6 +22,7 @@ from akashi_core.schema.cli import SchemaSpec, write_all
 from akashi_now.facts.models import FactRequest, FactResult
 from akashi_now.fx.models import FxRequest, FxResult
 from akashi_now.holidays.models import BusinessDaysRequest, BusinessDaysResult, HolidayResult, HolidaysRequest
+from akashi_now.news.models import NewsRequest, NewsStory
 from akashi_now.router import router as now_router
 from akashi_now.time.models import TimeRequest, TimeResult
 from akashi_now.weather.models import WeatherRequest, WeatherResult
@@ -47,8 +48,16 @@ SPECS = [
     SchemaSpec(
         service_id=SERVICE_NOW,
         title="Akashi Live Facts",
-        results=[TimeResult, HolidayResult, BusinessDaysResult, FxResult, WeatherResult, FactResult],
-        requests=[TimeRequest, HolidaysRequest, BusinessDaysRequest, FxRequest, WeatherRequest, FactRequest],
+        results=[TimeResult, HolidayResult, BusinessDaysResult, FxResult, WeatherResult, FactResult, NewsStory],
+        requests=[
+            TimeRequest,
+            HolidaysRequest,
+            BusinessDaysRequest,
+            FxRequest,
+            WeatherRequest,
+            FactRequest,
+            NewsRequest,
+        ],
         router=now_router,
     ),
 ]

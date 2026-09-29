@@ -1132,6 +1132,134 @@
               "provenance"
             ],
             "type": "object"
+          },
+          {
+            "properties": {
+              "kind": {
+                "const": "news_story",
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              },
+              "domain": {
+                "type": "string"
+              },
+              "seen_at": {
+                "type": "string"
+              },
+              "source": {
+                "enum": [
+                  "gdelt",
+                  "hn"
+                ],
+                "type": "string"
+              },
+              "also_in": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "points": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "provenance": {
+                "properties": {
+                  "sources": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "as_of": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "age_seconds": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "freshness": {
+                    "enum": [
+                      "fresh",
+                      "lagging",
+                      "stale",
+                      "unknown"
+                    ],
+                    "type": "string"
+                  },
+                  "agreement": {
+                    "enum": [
+                      "agree",
+                      "minor_diff",
+                      "conflict",
+                      "single_source"
+                    ],
+                    "type": "string"
+                  },
+                  "spread_pct": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "licence": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "attribution": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "title",
+              "url",
+              "domain",
+              "seen_at",
+              "source",
+              "provenance"
+            ],
+            "type": "object"
           }
         ]
       }
