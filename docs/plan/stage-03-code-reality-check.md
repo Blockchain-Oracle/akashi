@@ -41,6 +41,7 @@ axios fetchJson→no / getUri→yes+sig; zod z.string→yes; react-codeshift & h
 - **/v1/check live (one call per snippet):** Python → `reqeusts` nonexistent_package (did you mean requests), `s.mountx` nonexistent_symbol (mount) via `s = requests.Session()` inference, `os.path.joinx` (join), real signatures for numpy/pandas · TypeScript → react-codeshift placeholder, `axios.fetchJson` no, `z.strng` (string), node:fs builtins skipped · Go → `gin.NewEngine` no (did you mean Engine), fmt/gin signatures · Rust → `serde_json::from_strx` (from_str); fully-qualified crate paths bind their crate implicitly.
 - JS instance inference is `new X()` only: a call result (axios.create()) has an unknown type, so it is not guessed.
 - Bug found: node builtin + named import produced a symbol lookup with an empty package → 500 → builtins skip symbol checks.
+- ⚠️ **Prod incident:** the `.gitignore` `data/` rule (meant for the root runtime cache) also matched `akashi_code/data/`, so `py_import_map.json` never reached git; the api crash-looped after deploy while Coolify said "finished". Fixed by anchoring `/data/`. New rule: verify container health + a live request after every deploy.
 - Startup loads the top lists before the port opens (health waits for them). Test scripts must poll `/v1/health` rather than sleep.
 
 ## Handoff
