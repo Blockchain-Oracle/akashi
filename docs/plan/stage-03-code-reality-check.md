@@ -11,7 +11,7 @@
 - [x] Rust (docs.rs rustdoc JSON, format 61, projected + cached per crate version)
 - [x] ts-introspect (TypeScript 6.0.3) — deployed internal-only
 - [x] /symbol(s) with pending + background completion
-- [ ] /check via tree-sitter
+- [x] /check via tree-sitter (python, typescript/tsx, javascript, go, rust)
 - [ ] Pre-warm job, schema, probe
 
 ## Gate
@@ -38,6 +38,9 @@ axios fetchJson→no / getUri→yes+sig; zod z.string→yes; react-codeshift & h
 - Program LRU = 4 (one next@15 program ≈ 150 MB RSS); container 512m, `--max-old-space-size=384`.
 - **Deploy:** 3 clones failed with 'Permission denied (publickey)' right after a successful ls-remote. The key cloned fine from the Mac and the server, and a sequential retry succeeded → transient. Retry once before debugging.
 - `data/` (toplist cache) was committed by mistake → removed and gitignored.
+- **/v1/check live (one call per snippet):** Python → `reqeusts` nonexistent_package (did you mean requests), `s.mountx` nonexistent_symbol (mount) via `s = requests.Session()` inference, `os.path.joinx` (join), real signatures for numpy/pandas · TypeScript → react-codeshift placeholder, `axios.fetchJson` no, `z.strng` (string), node:fs builtins skipped · Go → `gin.NewEngine` no (did you mean Engine), fmt/gin signatures · Rust → `serde_json::from_strx` (from_str); fully-qualified crate paths bind their crate implicitly.
+- JS instance inference is `new X()` only: a call result (axios.create()) has an unknown type, so it is not guessed.
+- Bug found: node builtin + named import produced a symbol lookup with an empty package → 500 → builtins skip symbol checks.
 - Startup loads the top lists before the port opens (health waits for them). Test scripts must poll `/v1/health` rather than sleep.
 
 ## Handoff

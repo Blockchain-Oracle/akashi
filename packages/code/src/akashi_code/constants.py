@@ -144,3 +144,7 @@ RUSTDOC_MAX_MODULE_DEPTH: Final = 6
 TS_INTROSPECT_TOTAL_S: Final = 5.0  # a cold build beyond this answers `pending` and finishes in the background
 TS_INTROSPECT_BACKGROUND_S: Final = 60.0
 RETRY_AFTER_MS: Final = 3_000
+MAX_CHECK_CODE_BYTES: Final = 49_152
+MAX_CHECK_TARGETS: Final = 60  # distinct (package, symbol) checks per snippet
+MAX_CHECK_PINS: Final = 50
+CHECK_CONCURRENCY: Final = 12

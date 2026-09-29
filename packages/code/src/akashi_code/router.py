@@ -4,6 +4,8 @@ from fastapi import APIRouter
 
 from akashi_code.constants import PACKAGES_CONCURRENCY
 from akashi_code.models import (
+    CheckRequest,
+    Diagnostic,
     PackageQuery,
     PackageResult,
     PackagesRequest,
@@ -14,6 +16,7 @@ from akashi_code.models import (
     VersionsResult,
 )
 from akashi_code.service import check_package
+from akashi_code.snippet.check import check_snippet
 from akashi_code.symbols.service import check_symbol
 from akashi_code.versions.service import list_versions
 from akashi_core.constants.app import SERVICE_CODE
@@ -123,4 +126,19 @@ async def symbols(body: SymbolsQuery) -> Envelope[SymbolResult]:
         sources=sources,
         unavailable=unavailable,
         summary_field="exists",
+    )
+
+
+@router.post("/check")
+async def check(body: CheckRequest) -> Envelope[Diagnostic]:
+    deadline = current_deadline(CODE_DEADLINE_S)
+    diagnostics, sources, unavailable = await check_snippet(body)
+    return build_envelope(
+        service=SERVICE_CODE,
+        operation="check",
+        deadline=deadline,
+        results=diagnostics,
+        sources=sources,
+        unavailable=unavailable,
+        summary_field="verdict",
     )

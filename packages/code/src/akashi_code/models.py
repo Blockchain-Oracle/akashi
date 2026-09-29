@@ -6,6 +6,8 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from akashi_code.constants import (
+    MAX_CHECK_CODE_BYTES,
+    MAX_CHECK_PINS,
     MAX_PACKAGE_NAME_CHARS,
     MAX_PACKAGES_PER_REQUEST,
     MAX_RANGE_CHARS,
@@ -135,4 +137,47 @@ class SymbolResult(BaseModel):
     evidence_source: str | None = None  # pyi | py-ast | d.ts | rustdoc | pkgsite | typeshed
     pending: bool = False
     retry_after_ms: int | None = None
+    reason: str | None = None
+
+
+class CheckLanguage(StrEnum):
+    python = "python"
+    typescript = "typescript"
+    javascript = "javascript"
+    go = "go"
+    rust = "rust"
+
+
+class CheckRequest(BaseModel):
+    language: CheckLanguage
+    code: str = Field(min_length=1, max_length=MAX_CHECK_CODE_BYTES)
+    versions: dict[str, str] = Field(default_factory=dict, max_length=MAX_CHECK_PINS)  # package → pinned version
+
+
+class DiagnosticVerdict(StrEnum):
+    ok = "ok"
+    nonexistent_package = "nonexistent_package"
+    placeholder = "placeholder"
+    likely_typo = "likely_typo"
+    suspicious_new = "suspicious_new"
+    nonexistent_symbol = "nonexistent_symbol"
+    deprecated = "deprecated"
+    unknown = "unknown"
+
+
+class Diagnostic(BaseModel):
+    kind: Literal["diagnostic"] = "diagnostic"
+    line: int
+    column: int
+    end_line: int
+    end_column: int
+    text: UntrustedStr
+    ref_kind: Literal["import", "call", "attribute"]
+    package: str | None = None
+    version: str | None = None
+    target: str | None = None
+    verdict: DiagnosticVerdict
+    signature: UntrustedStr | None = None
+    fix_hint: UntrustedStr | None = None
+    did_you_mean: list[str] = Field(default_factory=list)
     reason: str | None = None
