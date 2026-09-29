@@ -24,6 +24,7 @@ MINUTES_PER_HOUR: Final = 60
 # --- geocoding (Wikidata: CC0; place → coordinates + country) ---
 GEOCODE_CANDIDATES: Final = 5
 TTL_GEOCODE: Final = timedelta(days=30)
+GEOCODE_CACHE_KIND: Final = "geocode-r2"  # bump when the choice logic changes: old answers live 30 days
 WIKIDATA_COORDINATES: Final = "P625"
 WIKIDATA_COUNTRY: Final = "P17"
 

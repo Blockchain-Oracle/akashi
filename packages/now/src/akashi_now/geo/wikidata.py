@@ -11,6 +11,7 @@ from akashi_core.cache.keys import cache_key
 from akashi_core.cache.store import cache
 from akashi_now import clients
 from akashi_now.constants import (
+    GEOCODE_CACHE_KIND,
     GEOCODE_CANDIDATES,
     TTL_GEOCODE,
     WIKIDATA_COORDINATES,
@@ -52,7 +53,7 @@ async def _entities(ids: list[str]) -> dict[str, Any]:
 
 
 async def geocode(place: str) -> Place | None:
-    key = cache_key("now", "wikidata", "geocode", place.lower())
+    key = cache_key("now", "wikidata", GEOCODE_CACHE_KIND, place.lower())
     if (hit := await cache.get(key)) is not None:
         return Place(**hit) if hit else None
     found, _ = await clients.wikidata().get_json(
