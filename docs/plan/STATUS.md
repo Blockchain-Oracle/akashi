@@ -24,7 +24,7 @@
 
 Current stage: **S5 live-facts + worker** (S4 ✅; S2 waits for the domain)
 Last commit: see `git log -1` (S4 closed 2026-09-29)
-In-flight step: S5.1 time (tzdb) — not started
+In-flight step: S5 news (GDELT ingest in the worker + HN) — time/holidays/business-days/fx/weather/fact are live
 Done: S0 ✅ · S4 ✅ citation-verify live (verify + claim; calibration 40/40 · 40/40; NLI sidecar) · S3 ✅ code-reality-check live (package/packages/versions/symbol/symbols/check) · (repo github.com/Blockchain-Oracle/akashi, private · Coolify project akashi) · S1 ✅ (api live at temp http://qbjpovbitgqrjgafdcrigqmd.84.46.247.92.sslip.io)
 Blockers:
 - Q-001: the domain has not been bought yet (blocks S2 from step 5)
