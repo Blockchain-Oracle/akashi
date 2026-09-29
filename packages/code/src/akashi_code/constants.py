@@ -67,6 +67,10 @@ PYPI_FILES = UpstreamSpec(
     attribution="files.pythonhosted.org (wheel range reads)",
 )
 
+PKGSITE = UpstreamSpec(
+    "pkgsite", "https://pkg.go.dev", max_concurrency=8, total_s=2.5, rate="40/second", attribution="pkg.go.dev API (v1)"
+)  # documented limit: 45 QPS per IP block
+
 # deps.dev system names for publish history (RubyGems and Packagist are not covered by deps.dev).
 DEPS_DEV_SYSTEMS: Final = {
     "npm": "npm",
@@ -130,3 +134,4 @@ MAX_MODULES_PER_LOOKUP_LOCAL: Final = 96  # disk-backed stubs (stdlib via typesh
 CLASS_BASE_MAX_DEPTH: Final = 3
 TTL_SYMBOLS: Final = None  # immutable (package, version) → cache forever (LRU-evicted only)
 WHEEL_PLATFORM_PREFERENCE: Final = ("py3-none-any", "py2.py3-none-any", "cp313-cp313-manylinux", "abi3-manylinux")
+PKGSITE_SIBLINGS_LIMIT: Final = 200  # names fetched for did-you-mean when a symbol is missing

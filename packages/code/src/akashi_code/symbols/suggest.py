@@ -8,7 +8,7 @@ SUGGEST_MIN_SIMILARITY = 0.5
 
 
 def suggest(name: str, candidates: list[str]) -> list[str]:
-    public = [c for c in candidates if not c.startswith("_")]
+    public = list(dict.fromkeys(c for c in candidates if not c.startswith("_")))  # dedupe, keep order
     hits = process.extract(
         name, public, scorer=Levenshtein.normalized_similarity, score_cutoff=SUGGEST_MIN_SIMILARITY, limit=SUGGEST_LIMIT
     )

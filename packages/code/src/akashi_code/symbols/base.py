@@ -15,3 +15,4 @@ class SymbolAnswer:
     siblings: list[str] = field(default_factory=list)  # names visible where the lookup failed (for did-you-mean)
     evidence_source: str | None = None
     reason: str | None = None
+    suggest_for: str | None = None  # the token that failed (defaults to the last one)

@@ -11,6 +11,7 @@ from akashi_code.constants import (
     NPM_REGISTRY,
     NUGET,
     PACKAGIST,
+    PKGSITE,
     PYPI,
     PYPI_FILES,
     RUBYGEMS,
@@ -73,7 +74,12 @@ def pypi_files() -> UpstreamClient:
     return UpstreamClient(PYPI_FILES)
 
 
-_ALL = (pypi_files, npm, npm_downloads, pypi, deps_dev, crates, go_proxy, maven, rubygems, packagist, nuget)
+@cache
+def pkgsite() -> UpstreamClient:
+    return UpstreamClient(PKGSITE)
+
+
+_ALL = (pkgsite, pypi_files, npm, npm_downloads, pypi, deps_dev, crates, go_proxy, maven, rubygems, packagist, nuget)
 
 
 async def close_all() -> None:
