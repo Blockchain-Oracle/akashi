@@ -16,6 +16,11 @@ target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "ASYNC", "RUF", "PLR2004"]  # PLR2004 = no magic numbers
+# Brand copy intentionally uses 証, en dashes and the non-breaking hyphen.
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["akashi_core", "akashi_cite", "akashi_code", "akashi_now", "akashi_api", "akashi_worker"]
 
 [tool.pyright]
 pythonVersion = "3.13"

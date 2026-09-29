@@ -1,0 +1,15 @@
+# Build context is the repo root (Coolify base dir "/"); keep it lean.
+.git
+**/.venv
+**/node_modules
+**/.next
+**/.turbo
+**/__pycache__
+**/.ruff_cache
+docs
+apps
+brand
+.env
+.env.*
+data
+models

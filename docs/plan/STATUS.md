@@ -22,9 +22,9 @@
 
 Current stage: **S1 Core backend** (starting)
 Last commit: b728271 "S0: bootstrap Akashi repo — plan, specs, UI shortlist, workspaces"
-In-flight step: S1.1 constants + settings
+In-flight step: S1 last step — [OK?] Coolify deploy of app-redis + api
 Done: S0 ✅ (repo github.com/Blockchain-Oracle/akashi, private · Coolify project akashi)
 Blockers:
 - Q-001: the domain has not been bought yet (blocks S2 from step 5)
 Env readiness: pocketd ☐ · pocket-ap ☐ · OPENAI_API_KEY (from the user) ☐ · domain ☐
-Next action: S1 — read FastAPI/httpx2/cashews/pydantic-settings docs (Context7), then build packages/core per specs/backend.md §2.
+Next action: with user OK, deploy app-redis + api on Coolify; then S3 (code-reality-check) while the domain (Q-001) is pending.
