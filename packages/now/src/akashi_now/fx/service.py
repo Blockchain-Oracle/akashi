@@ -93,6 +93,7 @@ async def _ecb_fallback(req: FxRequest, sources: list[SourceRef]) -> list[FxResu
             rate_type="reference rate",
             cadence="daily",
             freshness=Freshness.unknown,
+            issuer=quote == EURO,
             business_days_old=business_days_between(date.fromisoformat(day), now_utc().date()),
         )
         out.append(_result(req, quote, [provider], day))
@@ -183,6 +184,7 @@ async def get_fx(req: FxRequest) -> tuple[list[FxResult], list[SourceRef], list[
                     cadence=p.cadence,
                     freshness=fresh,
                     business_days_old=age,
+                    issuer=_issuer_of(p, {quote}),
                 )
             )
         if quoted:
