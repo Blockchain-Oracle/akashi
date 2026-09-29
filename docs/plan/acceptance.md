@@ -14,3 +14,4 @@ Every tx, claim, audit run and deploy, in order. **Failed attempts stay in.**
 | 2026-09-29 15:12 | S3 | api redeployed @da0cff2, verified healthy + live /v1/check | Coolify | – | ok: 299 ms, reqeusts→nonexistent_package, s.mountx→nonexistent_symbol | – |
 | 2026-09-29 16:40 | S4 | akashi-api deployed (g++ builder fix) | Coolify | – | ok: container healthy; live gate: Varghese not_found/page_inside_other_case, Wakefield retracted 2010-02-06, nature14539 verified, wrong year mismatch, arXiv verified, SSRF 169.254.169.254 → 422, probe Brown verified (7 ms); 10-cite batch 2.6 s cold / 223 ms warm | – |
 | 2026-09-29 16:45 | S4 | citation calibration against production | api | – | ok: real 40/40 verified · fabricated 40/40 not_found | – |
+| 2026-09-29 17:30 | S4 | akashi-nli created + deployed; api redeployed with /claim | Coolify | – | ok: nli healthy (load 3.4 s, 1.21 GiB loaded, 8 pairs 0.35 s); claim gate 6/6 correct; bodies validate against output-schema | – |

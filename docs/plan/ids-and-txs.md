@@ -42,6 +42,7 @@
 | app-redis `akashi-app-redis` | wr4snhvj0y0ww3u95x6veuew | Coolify Redis (redis_conf: maxmemory 128mb, allkeys-lru, no persistence) | internal only | host `wr4snhvj0y0ww3u95x6veuew:6379` | 160m | 2026-09-29 |
 | app `akashi-api` | qbjpovbitgqrjgafdcrigqmd | Dockerfile `/services/api/Dockerfile`, base `/`, gzip off | temp `http://qbjpovbitgqrjgafdcrigqmd.84.46.247.92.sslip.io` | `api.internal` (container name) | 768m | 2026-09-29 @ a28f4f6 (deployment wfikzbrrzwaynup8uqkkm4we) |
 | app `akashi-ts-introspect` | jrsfoxtd9twkyj1lqpmmu8jh | Dockerfile `/services/ts-introspect/Dockerfile`, internal only (domain removed) | – | `ts-introspect.internal` | 512m | 2026-09-29 @ a6abc64 |
+| akashi-nli | hxw9imsx4dn8k7llok6igo8a | container `nli.internal`:8100, 1800m / 2 CPU, no public domain; api env AKASHI_NLI_URL=http://nli.internal:8100 |
 | private key `akashi-deploy-key` | 7izaxr1xhppq74ashloilmoc | deploy key (GitHub id 164816962, read-only) | – | – | – | – |
 
 ## DNS / TLS
