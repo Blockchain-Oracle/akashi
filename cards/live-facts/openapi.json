@@ -162,6 +162,44 @@
           }
         }
       }
+    },
+    "/v1/fx": {
+      "post": {
+        "summary": "Fx",
+        "operationId": "fx_v1_fx_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FxRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_FxResult_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -381,6 +419,83 @@
         ],
         "title": "Envelope[BusinessDaysResult]"
       },
+      "Envelope_FxResult_": {
+        "properties": {
+          "service": {
+            "type": "string",
+            "title": "Service"
+          },
+          "operation": {
+            "type": "string",
+            "title": "Operation"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResponseStatus"
+          },
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "deadline_ms": {
+            "type": "integer",
+            "title": "Deadline Ms"
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "title": "Elapsed Ms"
+          },
+          "unavailable": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unavailable"
+          },
+          "summary": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Summary"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/FxResult"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceRef"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "service",
+          "operation",
+          "version",
+          "status",
+          "as_of",
+          "deadline_ms",
+          "elapsed_ms"
+        ],
+        "title": "Envelope[FxResult]"
+      },
       "Envelope_HolidayResult_": {
         "properties": {
           "service": {
@@ -544,6 +659,125 @@
           "unknown"
         ],
         "title": "Freshness"
+      },
+      "FxRequest": {
+        "properties": {
+          "base": {
+            "type": "string",
+            "maxLength": 3,
+            "minLength": 3,
+            "title": "Base",
+            "description": "ISO 4217, e.g. USD"
+          },
+          "quotes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Quotes"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date",
+            "description": "Historical date (default: latest)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "base",
+          "quotes"
+        ],
+        "title": "FxRequest"
+      },
+      "FxResult": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "fx_rate",
+            "title": "Kind",
+            "default": "fx_rate"
+          },
+          "base": {
+            "type": "string",
+            "title": "Base"
+          },
+          "quote": {
+            "type": "string",
+            "title": "Quote"
+          },
+          "rate": {
+            "type": "number",
+            "title": "Rate"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "converted": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Converted"
+          },
+          "providers": {
+            "items": {
+              "$ref": "#/components/schemas/ProviderRate"
+            },
+            "type": "array",
+            "title": "Providers"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "base",
+          "quote",
+          "rate",
+          "date",
+          "providers",
+          "provenance"
+        ],
+        "title": "FxResult"
       },
       "HTTPValidationError": {
         "properties": {
@@ -734,6 +968,70 @@
         },
         "type": "object",
         "title": "Provenance"
+      },
+      "ProviderRate": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "rate": {
+            "type": "number",
+            "title": "Rate"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "rate_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate Type"
+          },
+          "issuer": {
+            "type": "boolean",
+            "title": "Issuer",
+            "default": false
+          },
+          "cadence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cadence"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          },
+          "business_days_old": {
+            "type": "integer",
+            "title": "Business Days Old"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "name",
+          "rate",
+          "date",
+          "freshness",
+          "business_days_old"
+        ],
+        "title": "ProviderRate"
       },
       "ResponseStatus": {
         "type": "string",

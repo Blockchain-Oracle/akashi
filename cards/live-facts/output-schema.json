@@ -497,6 +497,197 @@
               "provenance"
             ],
             "type": "object"
+          },
+          {
+            "properties": {
+              "kind": {
+                "const": "fx_rate",
+                "type": "string"
+              },
+              "base": {
+                "type": "string"
+              },
+              "quote": {
+                "type": "string"
+              },
+              "rate": {
+                "type": "number"
+              },
+              "date": {
+                "type": "string"
+              },
+              "amount": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "converted": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "providers": {
+                "items": {
+                  "properties": {
+                    "provider": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "rate": {
+                      "type": "number"
+                    },
+                    "date": {
+                      "type": "string"
+                    },
+                    "rate_type": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "issuer": {
+                      "type": "boolean"
+                    },
+                    "cadence": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "freshness": {
+                      "enum": [
+                        "fresh",
+                        "lagging",
+                        "stale",
+                        "unknown"
+                      ],
+                      "type": "string"
+                    },
+                    "business_days_old": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "provider",
+                    "name",
+                    "rate",
+                    "date",
+                    "freshness",
+                    "business_days_old"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "provenance": {
+                "properties": {
+                  "sources": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "as_of": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "age_seconds": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "freshness": {
+                    "enum": [
+                      "fresh",
+                      "lagging",
+                      "stale",
+                      "unknown"
+                    ],
+                    "type": "string"
+                  },
+                  "agreement": {
+                    "enum": [
+                      "agree",
+                      "minor_diff",
+                      "conflict",
+                      "single_source"
+                    ],
+                    "type": "string"
+                  },
+                  "spread_pct": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "licence": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "attribution": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "base",
+              "quote",
+              "rate",
+              "date",
+              "providers",
+              "provenance"
+            ],
+            "type": "object"
           }
         ]
       }

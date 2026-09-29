@@ -152,6 +152,51 @@
         "start"
       ],
       "type": "object"
+    },
+    {
+      "properties": {
+        "base": {
+          "description": "ISO 4217, e.g. USD",
+          "maxLength": 3,
+          "minLength": 3,
+          "type": "string"
+        },
+        "quotes": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 10,
+          "minItems": 1,
+          "type": "array"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Historical date (default: latest)"
+        }
+      },
+      "required": [
+        "base",
+        "quotes"
+      ],
+      "type": "object"
     }
   ]
 }

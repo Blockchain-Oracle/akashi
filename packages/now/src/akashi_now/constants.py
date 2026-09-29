@@ -50,3 +50,28 @@ MINOR_DIFF_MAX_SHARE: Final = 0.2
 MAX_BUSINESS_DAY_SPAN: Final = 3_650
 PUBLIC_CALENDAR: Final = "public"
 CALENDAR_DAYS_PER_BUSINESS_DAY_MAX: Final = 2  # generous: weekends + holiday clusters never exceed 2x
+
+# --- /fx (Frankfurter v2: per-provider calls; providers + cadence from /v2/providers) ---
+FRANKFURTER = UpstreamSpec(
+    "frankfurter",
+    "https://api.frankfurter.dev",
+    max_concurrency=10,
+    total_s=1.5,
+    licence="central-bank reference data",
+    attribution="Frankfurter (central-bank rates)",
+)
+ECB_XML = UpstreamSpec(
+    "ecb", "https://www.ecb.europa.eu", max_concurrency=2, total_s=2.0, attribution="European Central Bank"
+)
+FX_MAX_QUOTES: Final = 10
+FX_MAX_PROVIDERS: Final = 4
+FX_PROVIDER_PRIORITY: Final = ("ECB", "FRED", "BOC", "BOE", "RBA", "BOJ")
+FX_AGREE_PCT: Final = 0.5
+FX_MINOR_PCT: Final = 1.5
+FX_CONSENSUS_WINDOW_BUSINESS_DAYS: Final = 1  # fixings this close to the newest are compared as current
+FX_STALE_BUSINESS_DAYS: Final = 1  # beyond the provider's own cadence allowance
+FX_CADENCE_ALLOWANCE_DAYS: Final = {"daily": 1, "weekly": 5}  # business days a provider may legitimately trail
+TTL_FX_PROVIDERS: Final = timedelta(hours=24)
+TTL_FX_RATES: Final = timedelta(minutes=10)
+CURRENCY_CODE_LEN: Final = 3
+WEEKEND_DAYS: Final = frozenset({5, 6})

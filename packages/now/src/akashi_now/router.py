@@ -8,6 +8,8 @@ from akashi_core.constants.deadlines import NOW_DEADLINE_S
 from akashi_core.contract.build import build_envelope
 from akashi_core.contract.envelope import Envelope
 from akashi_core.deadline import current_deadline
+from akashi_now.fx.models import FxRequest, FxResult
+from akashi_now.fx.service import get_fx
 from akashi_now.holidays.models import BusinessDaysRequest, BusinessDaysResult, HolidayResult, HolidaysRequest
 from akashi_now.holidays.service import business_days, get_holidays
 from akashi_now.time.models import TimeRequest, TimeResult
@@ -57,5 +59,20 @@ async def business_days_route(body: BusinessDaysRequest) -> Envelope[BusinessDay
         results=[result],
         sources=[],
         unavailable=[],
+        summary_field="kind",
+    )
+
+
+@router.post("/fx")
+async def fx(body: FxRequest) -> Envelope[FxResult]:
+    deadline = current_deadline(NOW_DEADLINE_S)
+    results, sources, unavailable = await get_fx(body)
+    return build_envelope(
+        service=SERVICE_NOW,
+        operation="fx",
+        deadline=deadline,
+        results=results,
+        sources=sources,
+        unavailable=unavailable,
         summary_field="kind",
     )
