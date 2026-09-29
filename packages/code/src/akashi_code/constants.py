@@ -71,6 +71,8 @@ PKGSITE = UpstreamSpec(
     "pkgsite", "https://pkg.go.dev", max_concurrency=8, total_s=2.5, rate="40/second", attribution="pkg.go.dev API (v1)"
 )  # documented limit: 45 QPS per IP block
 
+DOCS_RS = UpstreamSpec("docs.rs", "https://docs.rs", max_concurrency=3, total_s=3.0, attribution="docs.rs rustdoc JSON")
+
 # deps.dev system names for publish history (RubyGems and Packagist are not covered by deps.dev).
 DEPS_DEV_SYSTEMS: Final = {
     "npm": "npm",
@@ -135,3 +137,7 @@ CLASS_BASE_MAX_DEPTH: Final = 3
 TTL_SYMBOLS: Final = None  # immutable (package, version) → cache forever (LRU-evicted only)
 WHEEL_PLATFORM_PREFERENCE: Final = ("py3-none-any", "py2.py3-none-any", "cp313-cp313-manylinux", "abi3-manylinux")
 PKGSITE_SIBLINGS_LIMIT: Final = 200  # names fetched for did-you-mean when a symbol is missing
+RUSTDOC_MAX_DECOMPRESSED_BYTES: Final = 64 << 20  # 64 MiB cap on decompressed rustdoc JSON
+RUSTDOC_FORMAT_MIN: Final = 39  # oldest rustdoc JSON format this projector understands
+RUSTDOC_FORMAT_MAX: Final = 99  # guard against incompatible future formats
+RUSTDOC_MAX_MODULE_DEPTH: Final = 6

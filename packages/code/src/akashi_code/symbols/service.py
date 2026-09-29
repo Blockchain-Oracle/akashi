@@ -5,6 +5,7 @@ import dataclasses
 from akashi_code.constants import TTL_SYMBOLS
 from akashi_code.models import Ecosystem, SymbolQuery, SymbolResult
 from akashi_code.symbols import go as go_symbols
+from akashi_code.symbols import rust as rust_symbols
 from akashi_code.symbols.base import SymbolAnswer
 from akashi_code.symbols.python import service as python_symbols
 from akashi_code.symbols.suggest import suggest
@@ -14,8 +15,12 @@ from akashi_core.contract.enums import SourceStatus, Tristate
 from akashi_core.contract.sources import SourceRef
 from akashi_core.errors import UpstreamFailure
 
-_LOOKUPS = {Ecosystem.pypi: python_symbols.lookup, Ecosystem.go: go_symbols.lookup}
-_SOURCE_NAME = {Ecosystem.pypi: "pypi-files", Ecosystem.go: "pkgsite"}
+_LOOKUPS = {
+    Ecosystem.pypi: python_symbols.lookup,
+    Ecosystem.go: go_symbols.lookup,
+    Ecosystem.cargo: rust_symbols.lookup,
+}
+_SOURCE_NAME = {Ecosystem.pypi: "pypi-files", Ecosystem.go: "pkgsite", Ecosystem.cargo: "docs.rs"}
 
 
 def _result(query: SymbolQuery, answer: SymbolAnswer, package_exists: Tristate, version: str | None) -> SymbolResult:

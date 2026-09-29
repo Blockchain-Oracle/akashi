@@ -5,6 +5,7 @@ from functools import cache
 from akashi_code.constants import (
     CRATES_INDEX,
     DEPS_DEV,
+    DOCS_RS,
     GO_PROXY,
     MAVEN_CENTRAL,
     NPM_DOWNLOADS,
@@ -79,7 +80,26 @@ def pkgsite() -> UpstreamClient:
     return UpstreamClient(PKGSITE)
 
 
-_ALL = (pkgsite, pypi_files, npm, npm_downloads, pypi, deps_dev, crates, go_proxy, maven, rubygems, packagist, nuget)
+@cache
+def docs_rs() -> UpstreamClient:
+    return UpstreamClient(DOCS_RS)
+
+
+_ALL = (
+    docs_rs,
+    pkgsite,
+    pypi_files,
+    npm,
+    npm_downloads,
+    pypi,
+    deps_dev,
+    crates,
+    go_proxy,
+    maven,
+    rubygems,
+    packagist,
+    nuget,
+)
 
 
 async def close_all() -> None:

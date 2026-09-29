@@ -6,9 +6,9 @@
 - [x] Models; npm + PyPI → /v1/package (+ /v1/packages)
 - [x] Top lists (loaded at api startup, disk-cached weekly; worker job later) + placeholder/typosquat/suspicious_new
 - [x] Other registries (cargo, go, maven, rubygems, packagist, nuget) + deps.dev history + /packages + /versions (range resolution: npm/cargo semver, PEP 440, exact)
-- [x] Python wheel range reads + AST index (typeshed stdlib still to do)
-- [ ] Go (pkgsite → zip fallback)
-- [ ] Rust (docs.rs rustdoc JSON)
+- [x] Python wheel range reads + AST index + stdlib via typeshed stubs
+- [x] Go via pkg.go.dev v1 (zip fallback not needed so far)
+- [x] Rust (docs.rs rustdoc JSON, format 61, projected + cached per crate version)
 - [ ] ts-introspect (TypeScript 6.0.3)
 - [ ] /symbol(s) with pending + background completion
 - [ ] /check via tree-sitter
@@ -28,6 +28,10 @@ axios fetchJson→no / getUri→yes+sig; zod z.string→yes; react-codeshift & h
 - **Version ordering bug found and fixed:** "newest first" by publish date put backports first (axios 0.34.0, rails 7.2.4); Go listed pseudo-versions. Now whichever grammar (semver / PEP 440) parses more versions orders them; Go pseudo-versions are filtered. NuGet/cargo `latest` = newest stable (NuGet was reporting 14.0.1-beta2).
 - **Python symbols live (wheel range reads, no full download):** requests 2.32.3 `Session.mount` → yes `def mount(self, prefix, adapter)` via the `from .sessions import Session` re-export · `Session.mountx` → no, did_you_mean `mount` · `requests.get` → `def get(url, params=None, **kwargs)` · pandas 2.2.3 `DataFrame.to_markdown` → full typed signature (frame.py 447 KB read out of a 12.7 MB wheel in 0.21 s) · `to_markdownx` → no after walking in-package bases (3.3 s cold) · numpy 2.1.3 `linalg.norm` → yes from the **.pyi** stub · requests@99.0.0 → package_or_version_not_found · httpx (no version) → latest 0.28.1, `async def get(...)`.
 - PyPI's CDN returns **416** for a suffix range larger than the file (requests wheel is 64,928 B): ranges are explicit (`bytes=start-end`) using the size from the PyPI JSON. Large wheels need a 2nd read for the central directory (pandas, numpy).
+- **stdlib (typeshed):** os.path.join → yes (3 overloads) · os.path.joinx → no, did_you_mean join (names from `from posixpath import *`) · asyncio.TaskGroup.create_task → yes · json.loads → yes (3 ms). Local stubs get a larger module budget (96) than network wheels (16). typeshed yields module names as **str** (a `".".join()` on them silently broke the map; caught by the live check).
+- **Go (pkg.go.dev v1):** `/v1beta` now 301 → use `/v1`. `filter` is a **Go expression** (`name == "X"`, `hasPrefix(name, "T.")`, `contains(name, ".") == false`), not a regex; paging param is `token`; empty `items` come back as **null**. Results: gin v1.10.0 Context.AbortWithError → `func (c *Context) AbortWithError(code int, err error) *Error` · AbortWithErr → no (AbortWithError, AbortWithStatus) · Contxt.JSON → no (Context) · x/time/rate NewLimiter → yes.
+- **Rust (docs.rs):** anyhow 1.0.86 → **unknown / rustdoc_json_unavailable** (pre-2025 build, confirmed) · latest 1.0.104 `Error::context` → `fn context<C>(self, context: C) -> Self` · `Result` → `type Result<T, E = Error> = core::result::Result<T, E>` · `Error::contxt` → no (context) · `Eror::msg` → no (Error) · itoa `Buffer::format` → `fn format<I>(&mut self, i: I) -> &str` · serde_json `from_str` → `fn from_str<'a, T>(s: &'a str) -> …` · missing crate → not_found. Warm ≈ 200 ms.
+- ⚠️ The Mac ran out of disk mid-session (ENOSPC, 265 MB free). Cause: pre-existing disk use plus ~1.8 GB of research-agent leftovers in the session scratchpad; the leftovers were deleted (12 GB free after). Tell the user.
 - Startup loads the top lists before the port opens (health waits for them). Test scripts must poll `/v1/health` rather than sleep.
 
 ## Handoff
