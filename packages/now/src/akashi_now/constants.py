@@ -75,3 +75,28 @@ TTL_FX_PROVIDERS: Final = timedelta(hours=24)
 TTL_FX_RATES: Final = timedelta(minutes=10)
 CURRENCY_CODE_LEN: Final = 3
 WEEKEND_DAYS: Final = frozenset({5, 6})
+
+# --- /weather (MET Norway everywhere, honouring Expires per its ToS; NWS inside the US) ---
+METNO = UpstreamSpec(
+    "met.no",
+    "https://api.met.no",
+    max_concurrency=10,
+    total_s=2.5,
+    licence="CC BY 4.0 (MET Norway)",
+    attribution="Data from MET Norway",
+)
+NWS = UpstreamSpec(
+    "nws", "https://api.weather.gov", max_concurrency=4, total_s=2.5, licence="public domain", attribution="NOAA/NWS"
+)
+METNO_COORD_DECIMALS: Final = 4  # met.no ToS: at most 4 decimals (cache-friendly)
+TEMP_AGREE_C: Final = 1.5
+TEMP_MINOR_C: Final = 3.0
+TTL_NWS_POINTS: Final = timedelta(days=30)
+TTL_WEATHER_FALLBACK: Final = timedelta(minutes=10)
+MIN_LATITUDE: Final = -90.0
+MAX_LATITUDE: Final = 90.0
+MIN_LONGITUDE: Final = -180.0
+MAX_LONGITUDE: Final = 180.0
+FAHRENHEIT_OFFSET: Final = 32.0
+FAHRENHEIT_SCALE: Final = 5.0 / 9.0
+MPH_TO_MS: Final = 0.44704

@@ -14,6 +14,8 @@ from akashi_now.holidays.models import BusinessDaysRequest, BusinessDaysResult, 
 from akashi_now.holidays.service import business_days, get_holidays
 from akashi_now.time.models import TimeRequest, TimeResult
 from akashi_now.time.service import get_time
+from akashi_now.weather.models import WeatherRequest, WeatherResult
+from akashi_now.weather.service import get_weather
 
 router = APIRouter(prefix="/v1")
 
@@ -72,6 +74,21 @@ async def fx(body: FxRequest) -> Envelope[FxResult]:
         operation="fx",
         deadline=deadline,
         results=results,
+        sources=sources,
+        unavailable=unavailable,
+        summary_field="kind",
+    )
+
+
+@router.post("/weather")
+async def weather(body: WeatherRequest) -> Envelope[WeatherResult]:
+    deadline = current_deadline(NOW_DEADLINE_S)
+    result, sources, unavailable = await get_weather(body)
+    return build_envelope(
+        service=SERVICE_NOW,
+        operation="weather",
+        deadline=deadline,
+        results=[result] if result else [],
         sources=sources,
         unavailable=unavailable,
         summary_field="kind",

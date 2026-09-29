@@ -1,0 +1,49 @@
+"""/weather request and result."""
+
+from typing import Literal
+
+from pydantic import BaseModel, Field, model_validator
+
+from akashi_core.contract.fields import UntrustedStr
+from akashi_now.constants import MAX_LATITUDE, MAX_LONGITUDE, MAX_PLACE_CHARS, MIN_LATITUDE, MIN_LONGITUDE
+from akashi_now.provenance import Provenance
+
+
+class WeatherRequest(BaseModel):
+    lat: float | None = Field(default=None, ge=MIN_LATITUDE, le=MAX_LATITUDE)
+    lon: float | None = Field(default=None, ge=MIN_LONGITUDE, le=MAX_LONGITUDE)
+    place: str | None = Field(default=None, max_length=MAX_PLACE_CHARS)
+
+    @model_validator(mode="after")
+    def _where(self) -> "WeatherRequest":
+        if self.place is None and (self.lat is None or self.lon is None):
+            raise ValueError("give lat and lon, or a place")
+        return self
+
+
+class SourceReading(BaseModel):
+    source: str
+    valid_for: str  # the forecast hour this reading describes
+    temperature_c: float | None = None
+    wind_speed_ms: float | None = None
+    humidity_pct: float | None = None
+    conditions: UntrustedStr | None = None
+    issued_at: str | None = None
+
+
+class WeatherResult(BaseModel):
+    kind: Literal["weather"] = "weather"
+    lat: float
+    lon: float
+    place: UntrustedStr | None = None
+    valid_for: str
+    temperature_c: float | None
+    wind_speed_ms: float | None = None
+    wind_from_deg: float | None = None
+    humidity_pct: float | None = None
+    precipitation_next_hour_mm: float | None = None
+    conditions: UntrustedStr | None = None
+    readings: list[SourceReading]
+    alerts: list[UntrustedStr] = Field(default_factory=list)
+    provenance: Provenance
+    notes: list[str] = Field(default_factory=list)

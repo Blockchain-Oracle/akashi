@@ -23,6 +23,7 @@ from akashi_now.fx.models import FxRequest, FxResult
 from akashi_now.holidays.models import BusinessDaysRequest, BusinessDaysResult, HolidayResult, HolidaysRequest
 from akashi_now.router import router as now_router
 from akashi_now.time.models import TimeRequest, TimeResult
+from akashi_now.weather.models import WeatherRequest, WeatherResult
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 CARDS_DIR = REPO_ROOT / "cards"
@@ -45,8 +46,8 @@ SPECS = [
     SchemaSpec(
         service_id=SERVICE_NOW,
         title="Akashi Live Facts",
-        results=[TimeResult, HolidayResult, BusinessDaysResult, FxResult],
-        requests=[TimeRequest, HolidaysRequest, BusinessDaysRequest, FxRequest],
+        results=[TimeResult, HolidayResult, BusinessDaysResult, FxResult, WeatherResult],
+        requests=[TimeRequest, HolidaysRequest, BusinessDaysRequest, FxRequest, WeatherRequest],
         router=now_router,
     ),
 ]
