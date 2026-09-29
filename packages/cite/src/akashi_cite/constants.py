@@ -176,3 +176,4 @@ NLI_ENTAIL_MIN: Final = 0.80
 NLI_CONTRA_MIN: Final = 0.80
 NLI_OPPOSING_MAX: Final = 0.20  # a "supported" sentence must not also look contradicting
 MIN_SENTENCE_CHARS: Final = 20
+MIN_CONTENT_WORD_CHARS: Final = 3  # shorter tokens ("of", "in") never count as topical overlap

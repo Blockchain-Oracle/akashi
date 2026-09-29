@@ -14,6 +14,7 @@ from rapidfuzz import fuzz
 from akashi_cite.constants import (
     DATACITE,
     EUROPEPMC,
+    MIN_CONTENT_WORD_CHARS,
     MIN_SENTENCE_CHARS,
     NLI,
     NLI_CONTRA_MIN,
@@ -46,6 +47,11 @@ USABLE_CITATIONS = frozenset({CitationVerdict.verified, CitationVerdict.mismatch
 ARXIV_DOI_PREFIX = "10.48550/"
 _ABBREVIATIONS = ("et al.", "e.g.", "i.e.", "vs.", "Fig.", "fig.", "approx.", "Dr.", "Prof.", "No.", "ca.", "cf.")
 _PROTECT = "․"  # one-dot leader stands in for an abbreviation's period while splitting
+_STOPWORDS = frozenset(
+    "the and for with that this from were was are has have had not but its into than then there their which who"
+    " whom what when where why how all any each more most other some such only own same very can will just also"
+    " been being does did doing our out over under again further once both few nor too per via".split()
+)
 _SENTENCE_RE = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9\"(\[])")
 
 
@@ -117,10 +123,23 @@ async def _abstract(doi: str, trail: Trail) -> tuple[str | None, str | None]:
     return None, None
 
 
-def _decide(premise_list: list[str], scores: list[ClaimScores]) -> tuple[ClaimVerdict, int]:
-    """(verdict, index of the deciding premise). Supported needs strong entailment without contradiction."""
-    best_e = max(range(len(scores)), key=lambda i: scores[i].entailment)
-    best_c = max(range(len(scores)), key=lambda i: scores[i].contradiction)
+def _content_words(text: str) -> set[str]:
+    return {w for w in norm(text).split() if len(w) >= MIN_CONTENT_WORD_CHARS and w not in _STOPWORDS}
+
+
+def _decide(premise_list: list[str], claim: str, scores: list[ClaimScores]) -> tuple[ClaimVerdict, int]:
+    """(verdict, index of the deciding premise); premise_list is ordered best lexical match first.
+
+    Only a premise that shares a content word with the claim may decide: the model can read a strong
+    "contradiction" into an unrelated sentence (Wakefield: "MRI and EEG tests were normal" vs "MMR causes autism").
+    Supported also needs the same sentence not to look contradicting.
+    """
+    words = _content_words(claim)
+    relevant = [i for i, p in enumerate(premise_list) if words & _content_words(p)]
+    if not relevant:
+        return ClaimVerdict.insufficient_evidence, 0
+    best_e = max(relevant, key=lambda i: scores[i].entailment)
+    best_c = max(relevant, key=lambda i: scores[i].contradiction)
     if scores[best_e].entailment >= NLI_ENTAIL_MIN and scores[best_e].contradiction < NLI_OPPOSING_MAX:
         return ClaimVerdict.supported, best_e
     if scores[best_c].contradiction >= NLI_CONTRA_MIN:
@@ -162,7 +181,7 @@ async def check_claim(req: ClaimRequest, trail: Trail) -> ClaimResult:
         return ClaimResult(
             verdict=ClaimVerdict.unverifiable, citation=cited, reasons=["the NLI model is unavailable"], retryable=True
         )
-    verdict, at = _decide(premise_list, scores)
+    verdict, at = _decide(premise_list, req.claim, scores)
     return ClaimResult(
         verdict=verdict,
         scores=scores[at],
