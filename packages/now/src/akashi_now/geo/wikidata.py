@@ -63,7 +63,10 @@ async def geocode(place: str) -> Place | None:
     result: Place | None = None
     if hits:
         entities = await _entities([h["id"] for h in hits])
-        for h in hits:  # search order: the most prominent item first
+        wanted = place.strip().casefold()
+        # Exact label matches first (search ranks "University of Chicago" above Chicago), then search order.
+        hits.sort(key=lambda h: (h.get("label") or "").casefold() != wanted)
+        for h in hits:
             claims = entities.get(h["id"], {}).get("claims", {})
             if (coord := _value(claims, WIKIDATA_COORDINATES)) is None:
                 continue
