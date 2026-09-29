@@ -37,7 +37,7 @@ Everything deploys on the user's Coolify server.
 - **Code quality:** constants, never magic numbers. Reusable code, clean structure, files ≤ 400 lines.
 - **The plan survives context clears** (the `docs/plan/` system below).
 - **Deadlines never justify a mediocre choice.**
-- **Every step that spends POKT or changes the server needs the user's explicit OK at that moment.**
+- **Autonomy (D-010, supersedes the earlier rule):** deploys, server config and Beta testnet txs are pre-approved. Confirm only destructive or real-money actions.
 
 ## 2. Locked decisions
 | Area | Decision | Evidence |

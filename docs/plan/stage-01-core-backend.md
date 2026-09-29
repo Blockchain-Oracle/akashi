@@ -14,7 +14,7 @@
 - [x] structlog + metrics on a separate port
 - [x] Dockerfile api (worker + ts-introspect Dockerfiles land with their code in S5/S3)
 - [ ] Dockerfiles worker/ts-introspect (non-root, uv sync --frozen, PYTHONTZPATH="")
-- [ ] [OK?] Deploy app-redis, api, ts-introspect on Coolify
+- [x] Deploy app-redis + api on Coolify (ts-introspect deploys with its code in S3)
 
 ## Gate
 `lint_backend.py --card --bad` passes; chunked curl OK; 413/400/404/405 JSON; `GET /cite` 200 (no 307).
@@ -29,7 +29,9 @@
 - **Pocket `lint_backend.py`:** 15/15 PASS across /cite /code /now (probes + 404/405 bad-input).
 - **SSRF guard:** blocks 169.254.169.254, 127.0.0.1, [::1], `app-redis`, `*.internal`, non-http schemes; example.com → 206 with a 64 KiB cap. ⚠️ DNS is checked, then httpx2 re-resolves (rebinding TOCTOU). **Pin the connection to the vetted IP in S4** when web fetching goes live.
 - Invalid-JSON → 400 `invalid_json` is not yet exercised (no POST route); verify in S3 with the first real endpoint.
+- **Coolify:** `redis_conf` must be **base64** (API 422 otherwise); the CLI has no redis-conf flag → PATCH `/api/v1/databases/{uuid}`. `--custom-internal-name api.internal` becomes the **container name** (and the network alias). `dockerfile_location` + `is_gzip_enabled:false` are set via PATCH `/api/v1/applications/{uuid}`. The internal Redis URL comes from the API `internal_db_url` (the CLI JSON hides it).
+- **Deployed checks:** probes 200 over the temporary sslip.io URL, 404 JSON, no Content-Encoding with Accept-Encoding: gzip, api RSS 39 MiB / 768 MiB, redis ping from api True. Server available memory 3.9 GiB after deploy.
 - Gates: `ruff check` (incl. PLR2004 no-magic-numbers) ✅ · `ruff format` ✅ · `pyright` 0 errors ✅.
 
 ## Handoff
-- Remaining: [OK?] deploy app-redis + api on Coolify (validates internal networking early); ts-introspect/worker Dockerfiles with their code.
+- **S1 done.** Deployed; see ids-and-txs.md → Coolify. Previously remaining: [OK?] deploy app-redis + api on Coolify (validates internal networking early); ts-introspect/worker Dockerfiles with their code.

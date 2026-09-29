@@ -11,6 +11,7 @@ Format: date · decision · evidence · consequence · approved by
 - **D-007** 2026-09-29 · LLM via stocklana's `resolveModel` (OpenAI key; AI Gateway fallback) · user.
 - **D-008** 2026-09-29 · CUPR: citation-verify 40,000 · code-reality-check 20,000 · live-facts 10,000 (under the Beta p95 of 50k) · runbook.
 - **D-009** 2026-09-29 · No CLAUDE.md or AGENTS.md; `agentRules: false` · user.
+- **D-010** 2026-09-29 · `[OK?]` markers for deploys, Coolify/server config and Beta testnet txs are **pre-approved**; confirm only destructive or real-money actions (volume deletion, repo public, paid services, MainNet) · user.
 
 ## Open questions
 - **Q-001** Domain name: the user is buying one. Blocks S2 step 5 onward (DNS, relayer URL, supplier stake).

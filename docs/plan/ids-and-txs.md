@@ -39,6 +39,8 @@
 | resource | uuid | type | domain | alias | mem | last deploy |
 |---|---|---|---|---|---|---|
 | project `akashi` | 43kqbdz2dncah0wuhzob5f7b | project | – | – | – | – |
+| app-redis `akashi-app-redis` | wr4snhvj0y0ww3u95x6veuew | Coolify Redis (redis_conf: maxmemory 128mb, allkeys-lru, no persistence) | internal only | host `wr4snhvj0y0ww3u95x6veuew:6379` | 160m | 2026-09-29 |
+| app `akashi-api` | qbjpovbitgqrjgafdcrigqmd | Dockerfile `/services/api/Dockerfile`, base `/`, gzip off | temp `http://qbjpovbitgqrjgafdcrigqmd.84.46.247.92.sslip.io` | `api.internal` (container name) | 768m | 2026-09-29 @ a28f4f6 (deployment wfikzbrrzwaynup8uqkkm4we) |
 | private key `akashi-deploy-key` | 7izaxr1xhppq74ashloilmoc | deploy key (GitHub id 164816962, read-only) | – | – | – | – |
 
 ## DNS / TLS
