@@ -37,12 +37,15 @@
           "name": {
             "maxLength": 214,
             "minLength": 1,
+            "pattern": "^[!-~]+$",
             "type": "string"
           },
           "version": {
             "anyOf": [
               {
                 "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[!-~]+$",
                 "type": "string"
               },
               {
@@ -78,12 +81,15 @@
                 "name": {
                   "maxLength": 214,
                   "minLength": 1,
+                  "pattern": "^[!-~]+$",
                   "type": "string"
                 },
                 "version": {
                   "anyOf": [
                     {
                       "maxLength": 128,
+                      "minLength": 1,
+                      "pattern": "^[!-~]+$",
                       "type": "string"
                     },
                     {
@@ -126,12 +132,15 @@
           "name": {
             "maxLength": 214,
             "minLength": 1,
+            "pattern": "^[!-~]+$",
             "type": "string"
           },
           "range": {
             "anyOf": [
               {
                 "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[ -~]+$",
                 "type": "string"
               },
               {
@@ -164,12 +173,15 @@
           "package": {
             "maxLength": 214,
             "minLength": 1,
+            "pattern": "^[!-~]+$",
             "type": "string"
           },
           "version": {
             "anyOf": [
               {
                 "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[!-~]+$",
                 "type": "string"
               },
               {
@@ -208,12 +220,15 @@
           "package": {
             "maxLength": 214,
             "minLength": 1,
+            "pattern": "^[!-~]+$",
             "type": "string"
           },
           "version": {
             "anyOf": [
               {
                 "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[!-~]+$",
                 "type": "string"
               },
               {
@@ -257,10 +272,19 @@
             "type": "string"
           },
           "versions": {
-            "additionalProperties": {
-              "type": "string"
-            },
             "maxProperties": 50,
+            "patternProperties": {
+              "^[!-~]+$": {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[!-~]+$",
+                "type": "string"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 214,
+              "minLength": 1
+            },
             "type": "object"
           }
         },
@@ -1052,21 +1076,21 @@
     "path": "/v1/check",
     "request": {
       "language": "python",
-      "code": "import reqeusts\nfrom fastapi import FastAPI\napp = FastAPI()\napp.add_magic_route('/')"
+      "code": "import reqeusts\nimport requests\nresp = requests.get_json(\"https://api.example.com\")\n"
     },
     "response": {
       "service": "code-reality-check",
       "operation": "check",
       "version": "1.0.0",
       "status": "complete",
-      "as_of": "2026-09-30T03:03:01+00:00",
+      "as_of": "2026-09-30T03:20:42+00:00",
       "deadline_ms": 7000,
-      "elapsed_ms": 356,
+      "elapsed_ms": 93,
       "unavailable": [],
       "summary": {
         "nonexistent_package": 1,
         "ok": 1,
-        "unknown": 1
+        "nonexistent_symbol": 1
       },
       "results": [
         {
@@ -1094,48 +1118,37 @@
           "line": 2,
           "column": 0,
           "end_line": 2,
-          "end_column": 27,
-          "text": "fastapi.FastAPI",
+          "end_column": 15,
+          "text": "requests",
           "ref_kind": "import",
-          "package": "fastapi",
-          "version": "0.142.1",
-          "target": "fastapi.FastAPI",
+          "package": "requests",
+          "version": "2.34.2",
+          "target": null,
           "verdict": "ok",
-          "signature": "class FastAPI(Starlette)",
+          "signature": null,
           "fix_hint": null,
           "did_you_mean": [],
           "reason": null
         },
         {
           "kind": "diagnostic",
-          "line": 4,
-          "column": 0,
-          "end_line": 4,
-          "end_column": 19,
-          "text": "app.add_magic_route",
+          "line": 3,
+          "column": 7,
+          "end_line": 3,
+          "end_column": 24,
+          "text": "requests.get_json",
           "ref_kind": "call",
-          "package": "fastapi",
-          "version": "0.142.1",
-          "target": "fastapi.FastAPI.add_magic_route",
-          "verdict": "unknown",
+          "package": "requests",
+          "version": "2.34.2",
+          "target": "requests.get_json",
+          "verdict": "nonexistent_symbol",
           "signature": null,
           "fix_hint": null,
           "did_you_mean": [],
-          "reason": "inherits_from_other_package"
+          "reason": null
         }
       ],
       "sources": [
-        {
-          "name": "pypi",
-          "status": "ok",
-          "url": "https://pypi.org/pypi/fastapi/json",
-          "licence": null,
-          "attribution": "pypi.org JSON API",
-          "as_of": null,
-          "fetched_at": null,
-          "latency_ms": 40,
-          "cache": null
-        },
         {
           "name": "pypi",
           "status": "not_found",
@@ -1145,6 +1158,17 @@
           "as_of": null,
           "fetched_at": null,
           "latency_ms": null,
+          "cache": null
+        },
+        {
+          "name": "pypi",
+          "status": "ok",
+          "url": "https://pypi.org/pypi/requests/json",
+          "licence": null,
+          "attribution": "pypi.org JSON API",
+          "as_of": null,
+          "fetched_at": null,
+          "latency_ms": 23,
           "cache": null
         },
         {

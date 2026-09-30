@@ -105,6 +105,7 @@
                       "anyOf": [
                         {
                           "maxLength": 2000,
+                          "minLength": 1,
                           "type": "string"
                         },
                         {
@@ -115,6 +116,8 @@
                     "doi": {
                       "anyOf": [
                         {
+                          "maxLength": 500,
+                          "pattern": "^(?:https?://(?:dx\\.)?doi\\.org/|doi:)?10\\.\\d{4,9}/[!-~]+$",
                           "type": "string"
                         },
                         {
@@ -125,6 +128,7 @@
                     "arxiv": {
                       "anyOf": [
                         {
+                          "pattern": "^(?:[Aa][Rr][Xx][Ii][Vv]:)?\\d{4}\\.\\d{4,5}(?:v\\d+)?$",
                           "type": "string"
                         },
                         {
@@ -135,6 +139,7 @@
                     "pmid": {
                       "anyOf": [
                         {
+                          "pattern": "^\\d{1,9}$",
                           "type": "string"
                         },
                         {
@@ -144,6 +149,8 @@
                     },
                     "authors": {
                       "items": {
+                        "maxLength": 200,
+                        "minLength": 1,
                         "type": "string"
                       },
                       "maxItems": 30,
@@ -164,6 +171,8 @@
                     "venue": {
                       "anyOf": [
                         {
+                          "maxLength": 500,
+                          "minLength": 1,
                           "type": "string"
                         },
                         {
@@ -174,6 +183,8 @@
                     "volume": {
                       "anyOf": [
                         {
+                          "maxLength": 500,
+                          "minLength": 1,
                           "type": "string"
                         },
                         {
@@ -184,6 +195,8 @@
                     "pages": {
                       "anyOf": [
                         {
+                          "maxLength": 500,
+                          "minLength": 1,
                           "type": "string"
                         },
                         {
@@ -194,6 +207,8 @@
                     "url": {
                       "anyOf": [
                         {
+                          "maxLength": 2000,
+                          "pattern": "^https?://[!-~]+$",
                           "type": "string"
                         },
                         {
@@ -204,6 +219,8 @@
                     "legal_cite": {
                       "anyOf": [
                         {
+                          "maxLength": 500,
+                          "minLength": 1,
                           "type": "string"
                         },
                         {
@@ -354,6 +371,7 @@
                     "anyOf": [
                       {
                         "maxLength": 2000,
+                        "minLength": 1,
                         "type": "string"
                       },
                       {
@@ -364,6 +382,8 @@
                   "doi": {
                     "anyOf": [
                       {
+                        "maxLength": 500,
+                        "pattern": "^(?:https?://(?:dx\\.)?doi\\.org/|doi:)?10\\.\\d{4,9}/[!-~]+$",
                         "type": "string"
                       },
                       {
@@ -374,6 +394,7 @@
                   "arxiv": {
                     "anyOf": [
                       {
+                        "pattern": "^(?:[Aa][Rr][Xx][Ii][Vv]:)?\\d{4}\\.\\d{4,5}(?:v\\d+)?$",
                         "type": "string"
                       },
                       {
@@ -384,6 +405,7 @@
                   "pmid": {
                     "anyOf": [
                       {
+                        "pattern": "^\\d{1,9}$",
                         "type": "string"
                       },
                       {
@@ -393,6 +415,8 @@
                   },
                   "authors": {
                     "items": {
+                      "maxLength": 200,
+                      "minLength": 1,
                       "type": "string"
                     },
                     "maxItems": 30,
@@ -413,6 +437,8 @@
                   "venue": {
                     "anyOf": [
                       {
+                        "maxLength": 500,
+                        "minLength": 1,
                         "type": "string"
                       },
                       {
@@ -423,6 +449,8 @@
                   "volume": {
                     "anyOf": [
                       {
+                        "maxLength": 500,
+                        "minLength": 1,
                         "type": "string"
                       },
                       {
@@ -433,6 +461,8 @@
                   "pages": {
                     "anyOf": [
                       {
+                        "maxLength": 500,
+                        "minLength": 1,
                         "type": "string"
                       },
                       {
@@ -443,6 +473,8 @@
                   "url": {
                     "anyOf": [
                       {
+                        "maxLength": 2000,
+                        "pattern": "^https?://[!-~]+$",
                         "type": "string"
                       },
                       {
@@ -453,6 +485,8 @@
                   "legal_cite": {
                     "anyOf": [
                       {
+                        "maxLength": 500,
+                        "minLength": 1,
                         "type": "string"
                       },
                       {
@@ -1752,13 +1786,12 @@
       "operation": "verify",
       "version": "1.0.0",
       "status": "complete",
-      "as_of": "2026-09-30T03:03:01+00:00",
+      "as_of": "2026-09-30T03:20:41+00:00",
       "deadline_ms": 8500,
-      "elapsed_ms": 720,
+      "elapsed_ms": 39,
       "unavailable": [],
       "summary": {
-        "verified": 1,
-        "ambiguous": 1
+        "verified": 2
       },
       "results": [
         {
@@ -1789,10 +1822,10 @@
           "kind": "citation",
           "index": 1,
           "input_kind": "scholarly",
-          "verdict": "ambiguous",
-          "confidence": 0.8333,
+          "verdict": "verified",
+          "confidence": 1.0,
           "matched": {
-            "doi": "10.65215/r5bs2d54",
+            "doi": "10.48550/arxiv.1706.03762",
             "title": "Attention Is All You Need",
             "authors": [
               "Vaswani",
@@ -1800,97 +1833,26 @@
               "Parmar",
               "Uszkoreit",
               "Jones",
-              "N.Gomez",
+              "Gomez",
               "Kaiser",
               "Polosukhin"
             ],
-            "year": 2025,
-            "venue": null,
+            "year": 2017,
+            "venue": "arXiv",
             "volume": null,
             "pages": null,
-            "type": "posted-content",
-            "url": "https://doi.org/10.65215/r5bs2d54",
-            "record_source": "crossref"
+            "type": "preprint",
+            "url": "https://arxiv.org/abs/1706.03762",
+            "record_source": "datacite"
           },
-          "field_diffs": [
-            {
-              "field": "year",
-              "given": "2017",
-              "found": "2025",
-              "severity": "major"
-            }
-          ],
+          "field_diffs": [],
           "retraction": {
             "status": "none",
             "date": null,
             "notice_doi": null,
             "source": null
           },
-          "candidates": [
-            {
-              "doi": "10.65215/r5bs2d54",
-              "title": "Attention Is All You Need",
-              "authors": [
-                "Vaswani",
-                "Shazeer",
-                "Parmar",
-                "Uszkoreit",
-                "Jones",
-                "N.Gomez",
-                "Kaiser",
-                "Polosukhin"
-              ],
-              "year": 2025,
-              "venue": null,
-              "volume": null,
-              "pages": null,
-              "type": "posted-content",
-              "url": "https://doi.org/10.65215/r5bs2d54",
-              "record_source": "crossref"
-            },
-            {
-              "doi": "10.65215/ysbyhc05",
-              "title": "Attention Is All You Need",
-              "authors": [
-                "Vaswani",
-                "Shazeer",
-                "Parmar",
-                "Uszkoreit",
-                "Jones",
-                "N.Gomez",
-                "Kaiser",
-                "Polosukhin"
-              ],
-              "year": 2025,
-              "venue": null,
-              "volume": null,
-              "pages": null,
-              "type": "posted-content",
-              "url": "https://doi.org/10.65215/ysbyhc05",
-              "record_source": "crossref"
-            },
-            {
-              "doi": "10.65215/mdcm8z23",
-              "title": "Attention Is All You Need",
-              "authors": [
-                "Vaswani",
-                "Shazeer",
-                "Parmar",
-                "Uszkoreit",
-                "Jones",
-                "N.Gomez",
-                "Kaiser",
-                "Polosukhin"
-              ],
-              "year": 2025,
-              "venue": null,
-              "volume": null,
-              "pages": null,
-              "type": "posted-content",
-              "url": "https://doi.org/10.65215/mdcm8z23",
-              "record_source": "crossref"
-            }
-          ],
+          "candidates": [],
           "legal": null,
           "web": null,
           "reasons": [],
@@ -1915,6 +1877,28 @@
           "url": null,
           "licence": null,
           "attribution": "Crossref REST API (metadata incl. Retraction Watch)",
+          "as_of": null,
+          "fetched_at": null,
+          "latency_ms": null,
+          "cache": null
+        },
+        {
+          "name": "datacite",
+          "status": "ok",
+          "url": null,
+          "licence": null,
+          "attribution": "DataCite REST API",
+          "as_of": null,
+          "fetched_at": null,
+          "latency_ms": null,
+          "cache": null
+        },
+        {
+          "name": "openalex",
+          "status": "ok",
+          "url": null,
+          "licence": "CC0",
+          "attribution": "OpenAlex (CC0)",
           "as_of": null,
           "fetched_at": null,
           "latency_ms": null,
