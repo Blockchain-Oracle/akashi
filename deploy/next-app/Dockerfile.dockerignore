@@ -1,0 +1,13 @@
+# Context for deploy/next-app/Dockerfile (BuildKit reads this instead of the root .dockerignore, which drops apps/).
+.git
+**/node_modules
+**/.next
+**/.turbo
+**/.venv
+**/__pycache__
+**/.ruff_cache
+.research
+.schemathesis
+.hypothesis
+data
+docs

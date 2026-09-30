@@ -1,0 +1,32 @@
+---
+title: Akashi documentation
+description: Pay-per-call verification for AI agents, on Pocket Network. Citations, code and live facts, each answer with its sources, its age and whether the sources agree.
+---
+
+Akashi (証, *proof*) checks the three things agents most often get wrong with confidence: whether a citation is
+real and says what it is cited for, whether the packages and symbols in a snippet exist, and what is true right
+now. Each check is a separate service with its own capability ID on Pocket Network.
+
+<Cards>
+  <Card title="典 Citation Verifier" description="citation-verify · POST /v1/verify, /v1/claim. DOIs, arXiv, PubMed, case law and web pages; retractions flagged." />
+  <Card title="符 Code Reality Check" description="code-reality-check · POST /v1/check, /v1/packages, /v1/package, /v1/versions, /v1/symbol, /v1/symbols." />
+  <Card title="今 Live Facts" description="live-facts · POST /v1/time, /v1/holidays, /v1/business-days, /v1/fx, /v1/weather, /v1/fact, /v1/news, /v1/stocks, /v1/jobs." />
+</Cards>
+
+## The response contract
+
+Every response is one JSON object, errors included. A success carries:
+
+| Field | Meaning |
+|---|---|
+| `status` | `complete`, or `partial` when an upstream source did not answer (named in `unavailable`) |
+| `as_of` | when the answer was assembled (UTC) |
+| `deadline_ms`, `elapsed_ms` | the hard stop for this service and the time taken |
+| `summary` | counts per verdict |
+| `results` | one typed result per input, each with its own provenance |
+| `sources` | every upstream consulted, with its status, licence and attribution |
+
+An error is `{"error": {"code", "message", "retryable", "details"}}` with a 4xx status. An upstream outage never
+becomes a 5xx: it becomes a partial result.
+
+Paths are prefix-free (`/v1/...`), exactly as Pocket gateways send them.
