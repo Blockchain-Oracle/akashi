@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
 import { ThemeToggle } from "@/components/shell/ThemeToggle";
-import { DOCS_URL, REPO_URL } from "@/lib/constants/site";
+import { DOCS_URL } from "@/lib/constants/site";
 
 export function SiteHeader() {
   return (
@@ -16,9 +16,6 @@ export function SiteHeader() {
         <nav className="flex items-center gap-5 text-sm text-muted-foreground">
           <a href={DOCS_URL} className="inline-flex items-center gap-1 hover:text-foreground">
             Docs <ArrowUpRight className="size-3.5" strokeWidth={1.5} aria-hidden />
-          </a>
-          <a href={REPO_URL} className="hover:text-foreground">
-            GitHub
           </a>
           <ThemeToggle />
         </nav>
