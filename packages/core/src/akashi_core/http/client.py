@@ -2,6 +2,8 @@
 
 import asyncio
 import time
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from http import HTTPStatus
 from typing import Any
 
@@ -62,6 +64,20 @@ class UpstreamClient:
     async def aclose(self) -> None:
         await self._client.aclose()
 
+    @asynccontextmanager
+    async def _slot(self, deadline: Deadline) -> AsyncIterator[None]:
+        """A concurrency slot, waited for no longer than the request deadline allows (a queue behind a slow
+        upstream must turn into a clean deadline_exceeded, not a response past the gateway's limit)."""
+        try:
+            async with asyncio.timeout(max(0.0, deadline.remaining() - DEADLINE_SAFETY_MARGIN_S)):
+                await self._gate.acquire()
+        except TimeoutError as exc:
+            raise UpstreamFailure(self.spec.name, "deadline_exceeded", "queued") from exc
+        try:
+            yield
+        finally:
+            self._gate.release()
+
     async def _admit(self, deadline: Deadline) -> None:
         """Take a rate-limit slot, waiting for the window to free up while the deadline allows it.
 
@@ -88,11 +104,11 @@ class UpstreamClient:
                 on=(httpx2.TransportError, RetryableStatus), attempts=attempts, timeout=deadline.remaining()
             ):
                 with attempt:
-                    budget = deadline.for_call(self.spec.total_s)
-                    if budget <= 0:
-                        raise UpstreamFailure(self.spec.name, "deadline_exceeded")
-                    timeout = httpx2.Timeout(budget, connect=min(self.spec.connect_s, budget), pool=DEFAULT_POOL_S)
-                    async with self._gate:
+                    async with self._slot(deadline):
+                        budget = deadline.for_call(self.spec.total_s)  # measured after any wait for the slot
+                        if budget <= 0:
+                            raise UpstreamFailure(self.spec.name, "deadline_exceeded")
+                        timeout = httpx2.Timeout(budget, connect=min(self.spec.connect_s, budget), pool=DEFAULT_POOL_S)
                         resp = await self._client.request(method, url, timeout=timeout, **kwargs)
                     if resp.status_code in _RETRYABLE_STATUS:
                         raise RetryableStatus(str(resp.status_code))

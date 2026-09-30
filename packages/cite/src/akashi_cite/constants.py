@@ -55,7 +55,9 @@ EUROPEPMC = UpstreamSpec(
     licence="abstracts: publisher terms (quoted as evidence, not redistributed)",
     attribution="Europe PMC",
 )
-NLI = UpstreamSpec("nli", "http://nli.internal:8100", max_concurrency=2, total_s=5.0, retry_attempts=1)
+NLI = UpstreamSpec(
+    "nli", "http://nli.internal:8100", max_concurrency=4, total_s=5.0, retry_attempts=1
+)  # the sidecar queues; warm scoring is ~0.35 s
 WEB = UpstreamSpec("web", "https://example.invalid", max_concurrency=4, total_s=3.0, retry_attempts=1)
 
 # --- request limits ---
