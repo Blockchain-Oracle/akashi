@@ -1,0 +1,39 @@
+---
+title: Citation Verifier
+eyebrow: 典 Services · citation-verify
+description: Checks that a citation exists and matches what it claims to be, and whether a source supports a claim. Scholarly works, US case law and web pages.
+---
+
+## Endpoints
+
+| Endpoint | Input | Answer |
+|---|---|---|
+| `POST /v1/verify` | `{"citations": [...]}`, up to 10 strings | one verdict per citation |
+| `POST /v1/claim` | a claim and the source it is attributed to | whether the source supports it |
+
+Each citation is read for what it is: a DOI, arXiv, PubMed or bibliographic reference (checked against Crossref,
+DataCite, OpenAlex and PubMed), a US case citation (checked against the Caselaw Access Project) or a URL (fetched,
+with the Wayback Machine alongside).
+
+## Citation verdicts
+
+| Verdict | Meaning |
+|---|---|
+| `verified` | the work exists and the cited title, authors, year and venue match it |
+| `mismatch` | the work exists but a field is wrong; `field_diffs` shows each one, e.g. year 2016 → 2015 |
+| `not_found` | no record matches after a complete search of every source |
+| `retracted` | the work exists and has been retracted (corrections and expressions of concern are flagged, not overturned) |
+| `ambiguous` | two records fit about equally well; `candidates` lists them |
+| `unverifiable` | the sources could not be asked in time, or the input is outside coverage; `retryable` says whether to try again |
+
+`not_found` is only given after a complete search. When a source is missing, the answer is `unverifiable`
+instead, because absence was not established.
+
+## Claim verdicts
+
+| Verdict | Meaning |
+|---|---|
+| `supported` | a sentence of the source entails the claim |
+| `contradicted` | a sentence of the source contradicts it |
+| `insufficient_evidence` | the source was read and says neither |
+| `unverifiable` | the source text could not be obtained |

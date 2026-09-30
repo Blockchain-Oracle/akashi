@@ -1,15 +1,7 @@
 import { SiteFooter } from "@/components/shell/SiteFooter";
 import { SiteHeader } from "@/components/shell/SiteHeader";
-import { DEADLINE_MS, ENDPOINTS, PRICE_USDC, SERVICES, type ServiceKey } from "@/lib/constants/services";
+import { DEADLINE_MS, ENDPOINTS, PRICE_USDC, SERVICE_ORDER, SERVICES } from "@/lib/constants/services";
 import { MS_PER_SECOND } from "@/lib/constants/ui";
-
-const SUMMARY: Record<ServiceKey, string> = {
-  cite: "Checks that a citation is real and says what it is cited for: DOIs, arXiv, PubMed, case law and web pages, with retractions flagged.",
-  code: "Checks that the packages, versions and symbols in a snippet exist before anyone installs them, with typosquats and placeholders flagged.",
-  now: "Current facts with their sources compared and their age stated: time, holidays, exchange rates, weather, news, stocks, jobs and Wikidata.",
-};
-
-const ORDER: readonly ServiceKey[] = ["cite", "code", "now"];
 
 export default function Home() {
   return (
@@ -32,7 +24,7 @@ export default function Home() {
             Services
           </h2>
           <ol className="mt-6 divide-y divide-border border-y border-border">
-            {ORDER.map((key) => {
+            {SERVICE_ORDER.map((key) => {
               const service = SERVICES[key];
               return (
                 <li key={key} className="grid gap-4 py-8 sm:grid-cols-[3rem_1fr]">
@@ -45,7 +37,7 @@ export default function Home() {
                       <span className="mb-1.5 flex-1 self-end border-b border-dotted border-border" aria-hidden />
                       <code className="font-mono text-sm text-muted-foreground">{service.id}</code>
                     </div>
-                    <p className="mt-3 max-w-2xl text-pretty text-muted-foreground">{SUMMARY[key]}</p>
+                    <p className="mt-3 max-w-2xl text-pretty text-muted-foreground">{service.summary}</p>
                     <p className="mt-4 font-mono text-xs text-muted-foreground">
                       POST {ENDPOINTS[key].join(" · ")}
                     </p>

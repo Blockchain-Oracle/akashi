@@ -31,7 +31,7 @@ Format: date · decision · evidence · consequence · approved by
 - **D-026** 2026-09-30 · **Supply chain:** every JS dependency (transitive too) must be ≥ 7 days old (`minimumReleaseAge: 10080` in pnpm-workspace.yaml); direct pins chosen the same way; `mdast-util-to-markdown` pinned to 2.1.2 (2.1.3 breaks fumadocs); Next 16.3.4 + React 19.2.8 + TS 5.9.3 · found in S7.
 - **D-027** 2026-09-30 · **One Dockerfile for both Next apps** (`deploy/next-app/Dockerfile`, `--build-arg APP=web|docs`, turbo prune → standalone, non-root, curl health check) with its own `Dockerfile.dockerignore` (the root one drops apps/). Env names: `NEXT_PUBLIC_APP_URL` (not _SITE_URL), server `AKASHI_API_URL` · S7.
 ## Open questions
-- **Q-007** GHCR is private (repo private): make the akashi-web/akashi-docs packages public, or give Coolify a read:packages token? Blocks S7's Coolify image resources.
+- ~~Q-007~~ resolved 2026-09-30: user chose a read-only token; the server's existing ghcr.io docker login already pulls both private images, so none was needed. Packages stay private.
 - **Q-001** Domain name: the user is buying one. Blocks S2 step 5 onward (DNS, relayer URL, supplier stake).
 - ~~Q-002~~ resolved: repo Blockchain-Oracle/akashi (private); Coolify project `akashi` created.
 - **Q-003** (for organizers, asked in S2) staging app = test.agent.pocket.network? · how Beta services get listed · gateway delegation · test tx = claim tx? · one endpoint for 3 submissions OK?

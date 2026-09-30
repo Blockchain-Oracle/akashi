@@ -1,4 +1,4 @@
-import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/layouts/docs/page";
+import { DocsBody, DocsPage } from "fumadocs-ui/layouts/docs/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -13,9 +13,12 @@ export default async function Page({ params }: Props) {
   if (!page) notFound();
   const MDX = page.data.body;
   return (
-    <DocsPage toc={page.data.toc}>
-      <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription>{page.data.description}</DocsDescription>
+    <DocsPage toc={page.data.toc} breadcrumb={{ enabled: false }}>
+      <header className="page-head">
+        {page.data.eyebrow && <p className="page-eyebrow">{page.data.eyebrow}</p>}
+        <h1 className="page-title">{page.data.title}</h1>
+        {page.data.description && <p className="page-description">{page.data.description}</p>}
+      </header>
       <DocsBody>
         <MDX components={getMDXComponents({ a: createRelativeLink(source, page) })} />
       </DocsBody>

@@ -46,12 +46,36 @@ export const AGREEMENT_TONE = {
   single_source: "unknown",
 } as const satisfies Record<string, VerdictTone>;
 
-/** The three services: capability ID, internal prefix, kanji index and display name. */
+/** The three services: capability ID, internal prefix, kanji index, display name and one-line summary. */
 export const SERVICES = {
-  cite: { id: "citation-verify", prefix: "/cite", kanji: "典", name: "Citation Verifier" },
-  code: { id: "code-reality-check", prefix: "/code", kanji: "符", name: "Code Reality Check" },
-  now: { id: "live-facts", prefix: "/now", kanji: "今", name: "Live Facts" },
+  cite: {
+    id: "citation-verify",
+    prefix: "/cite",
+    kanji: "典",
+    name: "Citation Verifier",
+    summary:
+      "Checks that a citation is real and says what it is cited for: DOIs, arXiv, PubMed, case law and web pages, with retractions flagged.",
+  },
+  code: {
+    id: "code-reality-check",
+    prefix: "/code",
+    kanji: "符",
+    name: "Code Reality Check",
+    summary:
+      "Checks that the packages, versions and symbols in a snippet exist before anyone installs them, with typosquats and placeholders flagged.",
+  },
+  now: {
+    id: "live-facts",
+    prefix: "/now",
+    kanji: "今",
+    name: "Live Facts",
+    summary:
+      "Current facts with their sources compared and their age stated: time, holidays, exchange rates, weather, news, stocks, jobs and Wikidata.",
+  },
 } as const;
+
+/** Display order everywhere (nav, ledgers, docs). */
+export const SERVICE_ORDER = ["cite", "code", "now"] as const;
 
 export type ServiceKey = keyof typeof SERVICES;
 export { SEAL, WORDMARK } from "./marks.generated";

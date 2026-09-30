@@ -1,26 +1,26 @@
-import { Seal, Wordmark } from "@akashi/brand/react";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 
-import { site } from "@/lib/site";
+import { EmptySlot, Header } from "@/components/header";
 import { source } from "@/lib/source";
 
-function Title() {
-  return (
-    <span className="docs-brand">
-      <Seal className="size-6" label={null} />
-      <Wordmark className="h-3 w-auto" kanji={false} />
-      <span className="text-sm text-fd-muted-foreground">Docs</span>
-    </span>
-  );
-}
+// The header spans the full width above sidebar, page and table of contents (Fumadocs' own header is mobile-only).
+const GRID = {
+  gridTemplate: "var(--docs-grid)",
+  "--fd-docs-row-1": "var(--docs-header-height)",
+  "--fd-docs-row-2": "var(--docs-header-height)",
+  "--fd-docs-row-3": "calc(var(--docs-header-height) + var(--fd-toc-popover-height))",
+} as React.CSSProperties;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <DocsLayout
       tree={source.getPageTree()}
-      nav={{ title: <Title />, url: "/" }}
-      links={[{ text: "Try it", url: site.app, external: true }]}
-      githubUrl={site.repo}
+      tabs={false}
+      slots={{ header: Header, navTitle: EmptySlot }}
+      searchToggle={{ enabled: false }}
+      themeSwitch={{ enabled: false }}
+      sidebar={{ collapsible: false, defaultOpenLevel: 1 }}
+      containerProps={{ style: GRID }}
     >
       {children}
     </DocsLayout>

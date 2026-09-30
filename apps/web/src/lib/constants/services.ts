@@ -1,5 +1,5 @@
 import { SERVICE_ROUTES } from "@akashi/api-client";
-import { SERVICES, type ServiceKey } from "@akashi/brand";
+import { SERVICE_ORDER, SERVICES, type ServiceKey } from "@akashi/brand";
 
 /** Backend hard stops (specs/backend.md §2.10), mirrored for the deadline bar and the honest loading state. */
 export const DEADLINE_MS: Record<ServiceKey, number> = {
@@ -21,4 +21,4 @@ export const ENDPOINTS = Object.fromEntries(
   ]),
 ) as Record<ServiceKey, string[]>;
 
-export { SERVICES, type ServiceKey };
+export { SERVICE_ORDER, SERVICES, type ServiceKey };

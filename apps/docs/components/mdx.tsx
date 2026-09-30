@@ -5,8 +5,23 @@ import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import defaultComponents from "fumadocs-ui/mdx";
 import type { MDXComponents } from "mdx/types";
 
+import { Exhibit } from "@/components/exhibit";
+import { ServiceLedger } from "@/components/service-ledger";
+
 export function getMDXComponents(components?: MDXComponents) {
-  return { ...defaultComponents, Callout, Card, Cards, Step, Steps, Tab, Tabs, ...components } satisfies MDXComponents;
+  return {
+    ...defaultComponents,
+    Callout,
+    Card,
+    Cards,
+    Exhibit,
+    ServiceLedger,
+    Step,
+    Steps,
+    Tab,
+    Tabs,
+    ...components,
+  } satisfies MDXComponents;
 }
 
 export const useMDXComponents = getMDXComponents;

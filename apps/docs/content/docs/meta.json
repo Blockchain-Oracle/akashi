@@ -1,1 +1,4 @@
-{ "title": "Akashi Docs", "pages": ["index"] }
+{
+  "title": "Akashi Docs",
+  "pages": ["---Start---", "index", "contract", "---Services---", "services/cite", "services/code", "services/now"]
+}

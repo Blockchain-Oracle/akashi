@@ -63,3 +63,5 @@
 ## Submission
 | service | submitted (date) | fields snapshot |
 |---|---|---|
+| app `akashi-web` | uaydz8sozk7g4fgbqr49rj2a | Docker Image `ghcr.io/blockchain-oracle/akashi-web:main` (private; server's ghcr login) | temp `http://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io` | – | 320m | env AKASHI_API_URL=http://api.internal:8000 |
+| app `akashi-docs` | k7ds7ucqsnaxw5lorj8a9buu | Docker Image `ghcr.io/blockchain-oracle/akashi-docs:main` (private) | temp `http://k7ds7ucqsnaxw5lorj8a9buu.84.46.247.92.sslip.io` | – | 192m | GitHub vars NEXT_PUBLIC_APP_URL / NEXT_PUBLIC_DOCS_URL = the two temp URLs (baked at build) |
