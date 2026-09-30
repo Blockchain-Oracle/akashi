@@ -1,12 +1,13 @@
 import { SERVICE_ORDER, SERVICES } from "@akashi/brand";
 import Link from "next/link";
 
+import { ClaimCheck } from "@/components/diagrams/claim-check";
+import { PlainSteps } from "@/components/diagrams/plain-steps";
 import { Registration } from "@/components/diagrams/registration";
 import { RequestPath } from "@/components/diagrams/request-path";
 import { Footer } from "@/components/landing/footer";
 import { NetworkStatus } from "@/components/landing/network-status";
 import { ONCHAIN } from "@/lib/onchain";
-import { site } from "@/lib/site";
 
 export const revalidate = 60; // the live status pill
 
@@ -27,33 +28,43 @@ export default function HomePage() {
       <section className="mx-auto flex w-full max-w-5xl flex-col items-center px-6 pt-20 text-center md:pt-28">
         <NetworkStatus />
         <h1 className="mt-7 max-w-3xl text-balance font-display text-5xl leading-[1.02] tracking-[-0.02em] md:text-7xl">
-          Verification for agents on <em>Pocket</em>.
+          AI answers confidently. Akashi checks <em>first</em>.
         </h1>
-        <p className="mt-5 text-fd-muted-foreground text-lg md:text-xl">
-          Citations, code and live facts, checked against the records.
+        <p className="mt-5 max-w-xl text-balance text-fd-muted-foreground text-lg md:text-xl">
+          A fact-checker AI agents call on Pocket Network before they answer.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
-            href="/docs/pocket/how-a-call-flows"
+            href="/docs"
             className="rounded-full bg-fd-primary px-6 py-3 font-medium text-fd-primary-foreground text-sm transition hover:opacity-90 active:scale-[0.97]"
           >
-            How it connects
+            What is Akashi?
           </Link>
-          <a
-            href={site.app}
+          <Link
+            href="/docs/pocket/how-a-call-flows"
             className="rounded-full border border-fd-border bg-fd-card px-6 py-3 font-medium text-sm transition hover:bg-fd-secondary active:scale-[0.97]"
           >
-            Open Akashi
-          </a>
+            How it runs on Pocket
+          </Link>
         </div>
       </section>
 
       <section className="mx-auto w-full max-w-5xl px-6 pt-14">
-        <RequestPath />
+        <ClaimCheck />
       </section>
 
       <section className="mx-auto w-full max-w-5xl px-6 pt-20">
-        <h2 className="font-display text-3xl md:text-4xl">Three Pocket services</h2>
+        <h2 className="font-display text-3xl md:text-4xl">How it works</h2>
+        <PlainSteps className="mt-6" />
+      </section>
+
+      <section className="mx-auto w-full max-w-5xl px-6 pt-20">
+        <h2 className="font-display text-3xl md:text-4xl">How it runs on Pocket</h2>
+        <RequestPath className="mt-6" />
+      </section>
+
+      <section className="mx-auto w-full max-w-5xl px-6 pt-20">
+        <h2 className="font-display text-3xl md:text-4xl">Three checks, three Pocket services</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {SERVICE_ORDER.map((key) => (
             <Link

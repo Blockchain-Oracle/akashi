@@ -1,21 +1,40 @@
 ---
-title: Overview
-description: Three verification services for agents, served on Pocket Network.
+title: What is Akashi?
+description: A fact-checker that AI agents can call before they answer.
 ---
 
-<RequestPath />
+AI assistants answer confidently, even when they are wrong. They cite court cases that never existed, suggest
+software that was never published, and quote prices from last year.
 
-Akashi answers one question for agents: **is this real, and is it current?** It runs as three Pocket services.
-Agents reach them through the Agentic Portal and pay $0.005 per call.
+**Akashi checks these things against the original records before the AI answers.** It says what it found, where
+it looked, and how current it is.
+
+<ClaimCheck />
+
+## Why it matters
+
+- In 2023, lawyers in New York were fined for filing a brief with court cases that ChatGPT had invented.
+- AI coding tools suggest packages that do not exist, and attackers publish malware under those exact names.
+- An AI only knows the world up to its training date. Rates, prices and holidays change every day.
+
+## How it works
+
+<PlainSteps />
+
+## Where Pocket Network fits
+
+Akashi runs on **Pocket Network**, a network where AI agents pay for services one call at a time: no account, no
+subscription. Pocket delivers the question and takes the payment. Akashi does the checking.
+
+## The three checks
 
 <Cards>
-  <Card title="典 Citation Verifier" href="/docs/services/cite" description="citation-verify · real, retracted, or invented" />
-  <Card title="符 Code Reality Check" href="/docs/services/code" description="code-reality-check · packages and symbols that exist" />
-  <Card title="今 Live Facts" href="/docs/services/now" description="live-facts · current facts, sources compared" />
+  <Card title="典 Is this source real?" href="/docs/services/cite" description="Court cases, research papers and web pages" />
+  <Card title="符 Does this code exist?" href="/docs/services/code" description="Packages and functions an AI suggests" />
+  <Card title="今 Is this still true today?" href="/docs/services/now" description="Time, holidays, exchange rates, weather, news" />
 </Cards>
 
 <Cards>
-  <Card title="How a call reaches Akashi" href="/docs/pocket/how-a-call-flows" description="Agent → portal → gateway → RelayMiner → Akashi" />
-  <Card title="Registered on Pocket" href="/docs/pocket/registration" description="Service IDs, prices and transactions" />
-  <Card title="For judges" href="/docs/judges" description="What to check, and where" />
+  <Card title="Words, explained" href="/docs/glossary" description="Agent, Pocket, verdict, relay: in plain English" />
+  <Card title="How it runs on Pocket" href="/docs/pocket/how-a-call-flows" description="The technical path of one call" />
 </Cards>

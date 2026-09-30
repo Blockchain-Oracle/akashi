@@ -6,10 +6,10 @@ import { site } from "@/lib/site";
 
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
-    title: "On Pocket",
+    title: "Start here",
     links: [
-      { label: "How a call flows", href: "/docs/pocket/how-a-call-flows" },
-      { label: "Registration", href: "/docs/pocket/registration" },
+      { label: "What is Akashi?", href: "/docs" },
+      { label: "How it runs on Pocket", href: "/docs/pocket/how-a-call-flows" },
       { label: "For judges", href: "/docs/judges" },
     ],
   },

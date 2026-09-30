@@ -1,7 +1,9 @@
 {
   "title": "Akashi Docs",
   "pages": [
+    "---Start here---",
     "index",
+    "glossary",
     "judges",
     "---Akashi on Pocket---",
     "...pocket",

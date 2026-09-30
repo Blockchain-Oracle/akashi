@@ -8,9 +8,11 @@ import { TypeTable } from "fumadocs-ui/components/type-table";
 import defaultComponents from "fumadocs-ui/mdx";
 import type { MDXComponents } from "mdx/types";
 
+import { ClaimCheck } from "@/components/diagrams/claim-check";
 import { EnvelopeAnatomy } from "@/components/diagrams/envelope-anatomy";
 import { McpFlow } from "@/components/diagrams/mcp-flow";
 import { PaymentHandshake } from "@/components/diagrams/payment-handshake";
+import { PlainSteps } from "@/components/diagrams/plain-steps";
 import { Registration } from "@/components/diagrams/registration";
 import { RequestPath } from "@/components/diagrams/request-path";
 import { ServicePipeline } from "@/components/diagrams/service-pipeline";
@@ -23,9 +25,11 @@ export function getMDXComponents(components?: MDXComponents) {
     ...defaultComponents,
     Accordion,
     Accordions,
+    ClaimCheck,
     EnvelopeAnatomy,
     McpFlow,
     PaymentHandshake,
+    PlainSteps,
     Registration,
     RequestPath,
     ServicePipeline,
