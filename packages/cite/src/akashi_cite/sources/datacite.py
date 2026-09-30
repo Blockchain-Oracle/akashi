@@ -57,14 +57,20 @@ SEARCH_ROWS = 5
 _LUCENE_SPECIAL_RE = re.compile(r"[^\w\s]")  # + - : ( ) " etc. would be parsed as query syntax
 
 
-async def search_arxiv(title: str) -> list[Record]:
-    """Exact-phrase title search over arXiv's DataCite records: precise where relevance ranking is not."""
+async def search_arxiv(title: str, surname: str | None = None) -> list[Record]:
+    """Exact-phrase title search over arXiv's DataCite records: precise where relevance ranking is not.
+
+    With the first author's surname the query is narrowed to it: a famous title ("Attention Is All You Need") is a
+    substring of dozens of later papers, and the original falls outside the returned rows.
+    """
     phrase = " ".join(_LUCENE_SPECIAL_RE.sub(" ", title).split())
     if not phrase:
         return []
-    key = cache_key("cite", "datacite", "arxiv-title", phrase.lower())
+    family = " ".join(_LUCENE_SPECIAL_RE.sub(" ", surname or "").split())
+    key = cache_key("cite", "datacite", "arxiv-title", f"{phrase.lower()}|{family.lower()}")
     if (hit := await cache.get(key)) is None:
-        query = quote(f'titles.title:"{phrase}"')
+        lucene = f'titles.title:"{phrase}"' + (f' AND creators.familyName:"{family}"' if family else "")
+        query = quote(lucene)
         data, _ = await clients.datacite().get_json(
             f"/dois?query={query}&client-id={ARXIV_CLIENT_ID}&page%5Bsize%5D={SEARCH_ROWS}"
         )

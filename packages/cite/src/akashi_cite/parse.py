@@ -118,7 +118,8 @@ def _structured(c: StructuredCitation) -> Parsed:
     if c.doi:
         return replace(base, doi=clean_doi(c.doi))
     if c.arxiv:
-        return replace(base, doi=(ARXIV_DOI_PREFIX + c.arxiv.split("v")[0]).lower())
+        arxiv_id = c.arxiv.lower().removeprefix("arxiv:").split("v")[0]
+        return replace(base, doi=(ARXIV_DOI_PREFIX + arxiv_id).lower())
     if c.pmid:
         return replace(base, pmid=c.pmid)
     if c.legal_cite:

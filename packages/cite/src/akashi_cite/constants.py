@@ -127,7 +127,6 @@ CONFIDENCE_WEB_LIVE: Final = 0.9
 CONFIDENCE_ARCHIVED_ONLY: Final = 0.7
 CONFIDENCE_NONE: Final = 0.0
 CONFIDENCE_SEARCH_MISS_MAX: Final = 0.9  # "no match found" is absence of evidence, never certainty
-CONFIDENCE_SEARCH_MISS_PARTIAL: Final = 0.6  # ...and weaker still when the broad index (OpenAlex) was down
 VENUE_DIFF_MIN: Final = 0.6  # venue similarity below this is reported as a (minor) diff
 MAX_CANDIDATES: Final = 3
 MAX_RECORD_AUTHORS: Final = 10

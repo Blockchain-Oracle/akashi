@@ -37,6 +37,20 @@ class InputKind(StrEnum):
 LOOKUP_FIELDS = ("raw", "doi", "arxiv", "pmid", "title", "url", "legal_cite")
 
 
+# Identifier formats, checked at the boundary: fuzzing sent control characters in a pmid straight into PubMed's URL.
+DOI_PATTERN = r"^(?:https?://(?:dx\.)?doi\.org/|doi:)?10\.\d{4,9}/[!-~]+$"
+ARXIV_ID_PATTERN = r"^(?:[Aa][Rr][Xx][Ii][Vv]:)?\d{4}\.\d{4,5}(?:v\d+)?$"
+PMID_PATTERN = r"^\d{1,9}$"
+HTTP_URL_PATTERN = r"^https?://[!-~]+$"
+MAX_FIELD_CHARS = 500  # venue, volume, pages, a legal cite
+MAX_AUTHOR_CHARS = 200
+
+# Free text must carry text: blanks reached the parsers (lxml "Document is empty", an IndexError on an author).
+Text = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=MAX_CITATION_CHARS)]
+ShortText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=MAX_FIELD_CHARS)]
+AuthorName = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=MAX_AUTHOR_CHARS)]
+
+
 class StructuredCitation(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
@@ -44,18 +58,18 @@ class StructuredCitation(BaseModel):
         }
     )
 
-    raw: str | None = Field(default=None, max_length=MAX_CITATION_CHARS)
-    doi: str | None = None
-    arxiv: str | None = None
-    pmid: str | None = None
-    title: str | None = Field(default=None, max_length=MAX_CITATION_CHARS)
-    authors: list[str] = Field(default_factory=list, max_length=MAX_AUTHORS)
+    raw: Text | None = None
+    doi: str | None = Field(default=None, pattern=DOI_PATTERN, max_length=MAX_FIELD_CHARS)
+    arxiv: str | None = Field(default=None, pattern=ARXIV_ID_PATTERN)
+    pmid: str | None = Field(default=None, pattern=PMID_PATTERN)
+    title: Text | None = None
+    authors: list[AuthorName] = Field(default_factory=list, max_length=MAX_AUTHORS)
     year: int | None = Field(default=None, ge=MIN_YEAR, le=MAX_YEAR)
-    venue: str | None = None
-    volume: str | None = None
-    pages: str | None = None
-    url: str | None = None
-    legal_cite: str | None = None
+    venue: ShortText | None = None
+    volume: ShortText | None = None
+    pages: ShortText | None = None
+    url: str | None = Field(default=None, pattern=HTTP_URL_PATTERN, max_length=MAX_CITATION_CHARS)
+    legal_cite: ShortText | None = None
 
     @model_validator(mode="after")
     def _has_lookup_field(self) -> "StructuredCitation":
@@ -64,9 +78,7 @@ class StructuredCitation(BaseModel):
         return self
 
 
-# A bare string must carry text: an empty one reached the parsers (lxml: "Document is empty").
-CitationText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=MAX_CITATION_CHARS)]
-CitationInput = CitationText | StructuredCitation
+CitationInput = Text | StructuredCitation
 
 
 class VerifyOptions(BaseModel):

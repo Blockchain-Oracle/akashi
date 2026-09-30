@@ -39,11 +39,22 @@ def error_response(
     return AkashiJSONResponse(body.model_dump(mode="json"), status_code=status)
 
 
+_UNION_TAG_SUFFIX = "-str"  # e.g. "constrained-str"
+_BARE_TYPE_TAGS = frozenset({"str", "int", "float", "bool"})
+
+
+def _is_union_tag(part: object) -> bool:
+    """Pydantic names the union branch in `loc` ("function-after[...]", "constrained-str"); callers need the field."""
+    if not isinstance(part, str):
+        return False
+    return "[" in part or part.endswith(_UNION_TAG_SUFFIX) or part in _BARE_TYPE_TAGS
+
+
 def _format_validation(exc: RequestValidationError) -> list[str]:
     # Field-by-field, never the raw repr (which leaks internal file/line info — FastAPI docs).
     out: list[str] = []
     for err in exc.errors()[:MAX_ERROR_DETAILS]:
-        loc = ".".join(str(p) for p in err.get("loc", ())[1:]) or "body"
+        loc = ".".join(str(p) for p in err.get("loc", ())[1:] if not _is_union_tag(p)) or "body"
         out.append(f"{loc}: {err.get('msg', 'invalid')}"[:MAX_DETAIL_CHARS])
     return out
 

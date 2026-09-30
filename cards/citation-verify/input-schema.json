@@ -91,6 +91,7 @@
                     "anyOf": [
                       {
                         "maxLength": 2000,
+                        "minLength": 1,
                         "type": "string"
                       },
                       {
@@ -101,6 +102,8 @@
                   "doi": {
                     "anyOf": [
                       {
+                        "maxLength": 500,
+                        "pattern": "^(?:https?://(?:dx\\.)?doi\\.org/|doi:)?10\\.\\d{4,9}/[!-~]+$",
                         "type": "string"
                       },
                       {
@@ -111,6 +114,7 @@
                   "arxiv": {
                     "anyOf": [
                       {
+                        "pattern": "^(?:[Aa][Rr][Xx][Ii][Vv]:)?\\d{4}\\.\\d{4,5}(?:v\\d+)?$",
                         "type": "string"
                       },
                       {
@@ -121,6 +125,7 @@
                   "pmid": {
                     "anyOf": [
                       {
+                        "pattern": "^\\d{1,9}$",
                         "type": "string"
                       },
                       {
@@ -130,6 +135,8 @@
                   },
                   "authors": {
                     "items": {
+                      "maxLength": 200,
+                      "minLength": 1,
                       "type": "string"
                     },
                     "maxItems": 30,
@@ -150,6 +157,8 @@
                   "venue": {
                     "anyOf": [
                       {
+                        "maxLength": 500,
+                        "minLength": 1,
                         "type": "string"
                       },
                       {
@@ -160,6 +169,8 @@
                   "volume": {
                     "anyOf": [
                       {
+                        "maxLength": 500,
+                        "minLength": 1,
                         "type": "string"
                       },
                       {
@@ -170,6 +181,8 @@
                   "pages": {
                     "anyOf": [
                       {
+                        "maxLength": 500,
+                        "minLength": 1,
                         "type": "string"
                       },
                       {
@@ -180,6 +193,8 @@
                   "url": {
                     "anyOf": [
                       {
+                        "maxLength": 2000,
+                        "pattern": "^https?://[!-~]+$",
                         "type": "string"
                       },
                       {
@@ -190,6 +205,8 @@
                   "legal_cite": {
                     "anyOf": [
                       {
+                        "maxLength": 500,
+                        "minLength": 1,
                         "type": "string"
                       },
                       {
@@ -340,6 +357,7 @@
                   "anyOf": [
                     {
                       "maxLength": 2000,
+                      "minLength": 1,
                       "type": "string"
                     },
                     {
@@ -350,6 +368,8 @@
                 "doi": {
                   "anyOf": [
                     {
+                      "maxLength": 500,
+                      "pattern": "^(?:https?://(?:dx\\.)?doi\\.org/|doi:)?10\\.\\d{4,9}/[!-~]+$",
                       "type": "string"
                     },
                     {
@@ -360,6 +380,7 @@
                 "arxiv": {
                   "anyOf": [
                     {
+                      "pattern": "^(?:[Aa][Rr][Xx][Ii][Vv]:)?\\d{4}\\.\\d{4,5}(?:v\\d+)?$",
                       "type": "string"
                     },
                     {
@@ -370,6 +391,7 @@
                 "pmid": {
                   "anyOf": [
                     {
+                      "pattern": "^\\d{1,9}$",
                       "type": "string"
                     },
                     {
@@ -379,6 +401,8 @@
                 },
                 "authors": {
                   "items": {
+                    "maxLength": 200,
+                    "minLength": 1,
                     "type": "string"
                   },
                   "maxItems": 30,
@@ -399,6 +423,8 @@
                 "venue": {
                   "anyOf": [
                     {
+                      "maxLength": 500,
+                      "minLength": 1,
                       "type": "string"
                     },
                     {
@@ -409,6 +435,8 @@
                 "volume": {
                   "anyOf": [
                     {
+                      "maxLength": 500,
+                      "minLength": 1,
                       "type": "string"
                     },
                     {
@@ -419,6 +447,8 @@
                 "pages": {
                   "anyOf": [
                     {
+                      "maxLength": 500,
+                      "minLength": 1,
                       "type": "string"
                     },
                     {
@@ -429,6 +459,8 @@
                 "url": {
                   "anyOf": [
                     {
+                      "maxLength": 2000,
+                      "pattern": "^https?://[!-~]+$",
                       "type": "string"
                     },
                     {
@@ -439,6 +471,8 @@
                 "legal_cite": {
                   "anyOf": [
                     {
+                      "maxLength": 500,
+                      "minLength": 1,
                       "type": "string"
                     },
                     {

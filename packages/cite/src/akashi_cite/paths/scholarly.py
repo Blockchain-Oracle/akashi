@@ -6,7 +6,6 @@ from dataclasses import replace
 from akashi_cite.constants import (
     CONFIDENCE_IDENTIFIER,
     CONFIDENCE_SEARCH_MISS_MAX,
-    CONFIDENCE_SEARCH_MISS_PARTIAL,
     CROSSREF,
     DATACITE,
     DOI_HANDLE,
@@ -30,7 +29,9 @@ from akashi_core.errors import UpstreamFailure
 from akashi_core.fanout import FanOutResult, fan_out
 
 ARXIV_DOI_PREFIX = "10.48550/"  # arXiv DOIs are registered with DataCite; arXiv itself is never called live
-PARTIAL_COVERAGE_NOTE = "OpenAlex did not answer: venues without DOIs (e.g. JMLR, older NeurIPS) were not searched"
+PARTIAL_COVERAGE_REASON = (
+    "OpenAlex did not answer, so venues without DOIs (e.g. JMLR, older NeurIPS) were not searched; retry"
+)
 _SPECS = {
     "doi.org": DOI_HANDLE,
     "crossref": CROSSREF,
@@ -145,12 +146,13 @@ def _rank(p: Parsed, records: list[Record]) -> list[Scored]:
     return sorted((score(p, r) for r in records if _is_work(r)), key=lambda s: s.score, reverse=True)
 
 
-async def _ranked(p: Parsed, trail: Trail) -> tuple[list[Scored] | None, bool, bool]:
+async def _ranked(p: Parsed, trail: Trail) -> tuple[list[Scored] | None, bool]:
     """(candidates best-first or None when no index answered, whether the search was complete).
 
-    Crossref first. When nothing it returns is plausible, the title alone goes to DataCite's arXiv records
-    (exact phrase; where most ML papers live) and OpenAlex search, in parallel. "Complete" means Crossref and at
-    least one fallback answered: only then is "no match" evidence of fabrication rather than a coverage gap.
+    Crossref first. When nothing it returns verifies cleanly, the title alone goes to DataCite's arXiv records
+    (exact phrase; where most ML papers live) and OpenAlex search, in parallel. "Complete" means Crossref and
+    OpenAlex answered: only then is "no match" evidence of fabrication rather than a coverage gap (OpenAlex is the
+    only index covering DOI-less venues; calibration saw a real JMLR paper come back not_found without it).
     Our composite decides, never an upstream relevance score: Crossref's grows with query length (the right
     paper scores 26.8 for a short structured query, 65.9 for a full reference string).
     """
@@ -159,15 +161,18 @@ async def _ranked(p: Parsed, trail: Trail) -> tuple[list[Scored] | None, bool, b
     try:
         ranked = _rank(p, await crossref.bibliographic(query))
         trail.ok(CROSSREF)
-        if ranked and ranked[0].score >= MISMATCH_MIN:
-            return ranked, True, True
+        # Stop early only on a clean match. A blocking diff (e.g. a 2025 repost of a 2017 paper) may just mean
+        # Crossref lacks the real record, which the fallbacks hold (NeurIPS has no DOIs; arXiv is DataCite).
+        if ranked and ranked[0].score >= MISMATCH_MIN and not ranked[0].blocking:
+            return ranked, True
     except UpstreamFailure as failure:
         trail.failure(CROSSREF, failure)
     title = p.title or title_guess(query)
+    surname = first_surname(p.raw, p.authors)
     got: FanOutResult[list[Record]] = await fan_out(
         {
-            "crossref": crossref.title_author(title, first_surname(p.raw, p.authors)),
-            "datacite": datacite.search_arxiv(title),
+            "crossref": crossref.title_author(title, surname),
+            "datacite": datacite.search_arxiv(title, surname),
             "openalex": openalex.search(title),
         },
         current_deadline(CITE_DEADLINE_S),
@@ -175,27 +180,26 @@ async def _ranked(p: Parsed, trail: Trail) -> tuple[list[Scored] | None, bool, b
     trail.record(_SPECS, got)
     fallback: list[Scored] = [s for records in got.ok.values() for s in _rank(p, records)]
     if ranked is None and not got.ok:
-        return None, False, False
+        return None, False
     merged: list[Scored] = [*(ranked or []), *fallback]
     merged.sort(key=lambda s: s.score, reverse=True)
-    return merged, ranked is not None and bool(got.ok), "openalex" in got.ok
+    return merged, ranked is not None and "openalex" in got.ok
 
 
 async def by_search(index: int, p: Parsed, options: VerifyOptions, trail: Trail) -> CitationResult:
-    ranked, complete, broad = await _ranked(p, trail)
+    ranked, complete = await _ranked(p, trail)
     if ranked is None:
         return unverifiable(index, InputKind.scholarly, "bibliographic search unavailable", retryable=True)
     verdict = decide(ranked)
     if verdict is CitationVerdict.not_found and not complete:  # absence is evidence only if the search was complete
-        return unverifiable(index, InputKind.scholarly, "an index did not answer; retry", retryable=True)
+        return unverifiable(index, InputKind.scholarly, PARTIAL_COVERAGE_REASON, retryable=True)
     if verdict is CitationVerdict.not_found:
-        cap = CONFIDENCE_SEARCH_MISS_MAX if broad else CONFIDENCE_SEARCH_MISS_PARTIAL
         return CitationResult(
             index=index,
             input_kind=InputKind.scholarly,
             verdict=verdict,
-            confidence=round(min(cap, 1 - (ranked[0].score if ranked else 0.0)), 4),
-            reasons=["no published work matches this citation", *([] if broad else [PARTIAL_COVERAGE_NOTE])],
+            confidence=round(min(CONFIDENCE_SEARCH_MISS_MAX, 1 - (ranked[0].score if ranked else 0.0)), 4),
+            reasons=["no published work matches this citation"],
         )
     best = ranked[0]
     result = CitationResult(

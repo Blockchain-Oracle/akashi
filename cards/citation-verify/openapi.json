@@ -1174,7 +1174,8 @@
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 2000
+                "maxLength": 2000,
+                "minLength": 1
               },
               {
                 "type": "null"
@@ -1185,7 +1186,9 @@
           "doi": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "maxLength": 500,
+                "pattern": "^(?:https?://(?:dx\\.)?doi\\.org/|doi:)?10\\.\\d{4,9}/[!-~]+$"
               },
               {
                 "type": "null"
@@ -1196,7 +1199,8 @@
           "arxiv": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "pattern": "^(?:[Aa][Rr][Xx][Ii][Vv]:)?\\d{4}\\.\\d{4,5}(?:v\\d+)?$"
               },
               {
                 "type": "null"
@@ -1207,7 +1211,8 @@
           "pmid": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "pattern": "^\\d{1,9}$"
               },
               {
                 "type": "null"
@@ -1219,7 +1224,8 @@
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 2000
+                "maxLength": 2000,
+                "minLength": 1
               },
               {
                 "type": "null"
@@ -1229,7 +1235,9 @@
           },
           "authors": {
             "items": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 200,
+              "minLength": 1
             },
             "type": "array",
             "maxItems": 30,
@@ -1251,7 +1259,9 @@
           "venue": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "maxLength": 500,
+                "minLength": 1
               },
               {
                 "type": "null"
@@ -1262,7 +1272,9 @@
           "volume": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "maxLength": 500,
+                "minLength": 1
               },
               {
                 "type": "null"
@@ -1273,7 +1285,9 @@
           "pages": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "maxLength": 500,
+                "minLength": 1
               },
               {
                 "type": "null"
@@ -1284,7 +1298,9 @@
           "url": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "maxLength": 2000,
+                "pattern": "^https?://[!-~]+$"
               },
               {
                 "type": "null"
@@ -1295,7 +1311,9 @@
           "legal_cite": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "maxLength": 500,
+                "minLength": 1
               },
               {
                 "type": "null"
