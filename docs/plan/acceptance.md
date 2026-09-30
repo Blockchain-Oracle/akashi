@@ -16,3 +16,15 @@ Every tx, claim, audit run and deploy, in order. **Failed attempts stay in.**
 | 2026-09-29 16:45 | S4 | citation calibration against production | api | – | ok: real 40/40 verified · fabricated 40/40 not_found | – |
 | 2026-09-29 17:30 | S4 | akashi-nli created + deployed; api redeployed with /claim | Coolify | – | ok: nli healthy (load 3.4 s, 1.21 GiB loaded, 8 pairs 0.35 s); claim gate 6/6 correct; bodies validate against output-schema | – |
 | 2026-09-30 02:30 | S5 | live-facts: time/holidays/business-days/fx/weather/fact/news/jobs deployed; volume + 2 scheduled tasks | Coolify | – | ok: 8/8 bodies schema-valid; probe +00:00; 20-concurrent memory gate within limits; claims 3.9–5.4 s cold after D-020 | – |
+| 2026-09-30 02:34 | S6 | api deployed @792fa2c: `/specs/<id>.openapi.json` | Coolify | gijqd3kb… | ok: healthy; live sha256 = repo for all 3 specs | – |
+| 2026-09-30 02:45 | S6 | lint_backend ×3 (card healthchecks + bad-input probes) | api | – | ok: 8/8 · 6/6 · 7/7 | – |
+| 2026-09-30 02:47 | S6 | schemathesis ×3 (first pass) | api | – | FAIL: 500 on /symbols `[""]`; 405 without Allow; undocumented 400/413; either/or rules not in schema | fixed 90147fc |
+| 2026-09-30 02:47 | S6 | **prod bug**: `/check` `import reqeusts` → `ok` on every cached lookup (enum lost in JSON cache) | api | – | FAIL (live since S3; S3 gate only saw cold calls) | fixed aae8329 |
+| 2026-09-30 02:55 | S6 | schemathesis ×3 (second pass, 226–459 cases) | api | – | FAIL: 500s on blank citation / blank place | fixed 98a0d6c |
+| 2026-09-30 03:05 | S6 | schemathesis gate pass 3 (783 / 614 / 972 cases) | api | – | cite 1×500 (pmid control char, blank authors) · code 1×500 (control char in package name) · **now PASS 972/972** | fixed a731410, 3a460fa |
+| 2026-09-30 03:05 | S6 | latency (pre-fix build) | api | scripts/latency.py | ok: cold p95 cite 2.04 s / code 1.54 s / now 1.75 s; warm 0.48 / 0.80 / 1.04 s (targets 6 / 6.5 / 3 s) | – |
+| 2026-09-30 03:10 | S2 | pocketd 0.1.35 + pocket-ap 0.1.2 installed; 5 test-keyring keys | local | – | ok (mnemonics in ~/.akashi-secrets, 0600) | – |
+| 2026-09-30 03:11 | S2 | faucet 100,000 POKT → owner | beta | FEC5A45873198A060221980E3E2D64DE026ED7EAB2DA70464998374A69DDCCEB | ok h 691087 | – |
+| 2026-09-30 03:12 | S2 | bank sends: operator 62,000; apps 1,200 ×3 | beta | 7A833ED7… · 184F7708… · 0E86F5E4… · 86B2171F… | ok (first attempt of app-code/app-now: account sequence mismatch, resent after commit) | – |
+| 2026-09-30 03:14 | S2 | operator pubkey (1 upokt self-send) | beta | A55CA353B75A0214D2E1026B80887CB90BE7DAE443503085FFA7B9BA5201C620 | ok h 691094, secp256k1 pubkey on account | – |
+| 2026-09-30 03:18 | S2 | add-service ×3 (40k / 20k / 10k CUPR, v1 cards) | beta | 8CA28E2F… h691097 · 0829C8D9… h691098 · 33CD6B89… h691099 | ok: name/CUPR/owner read back; `encode_card.py diff` identical ×3; pocketd validate-card ✅ ×3 | – |

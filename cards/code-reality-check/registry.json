@@ -1,0 +1,1165 @@
+{
+  "serviceId": "code-reality-check",
+  "displayName": "Code Reality Check",
+  "description": "Catch hallucinated dependencies before an AI agent installs or calls them, across npm, PyPI, crates.io, Go, Maven, RubyGems, Packagist and NuGet. POST /v1/check with {language, code} and get a diagnostic per import and call (nonexistent package, likely typo-squat, placeholder, suspiciously new, deprecated, nonexistent symbol) as one JSON object. POST /v1/package, /v1/versions and /v1/symbol answer single questions. Pay per request in USDC; no account, no API key.",
+  "category": "security",
+  "protocols": [
+    "rest"
+  ],
+  "methods": {
+    "GET /v1/version": "read",
+    "GET /v1/health": "read",
+    "POST /v1/package": "read",
+    "POST /v1/packages": "read",
+    "POST /v1/versions": "read",
+    "POST /v1/symbol": "read",
+    "POST /v1/symbols": "read",
+    "POST /v1/check": "read"
+  },
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "anyOf": [
+      {
+        "properties": {
+          "ecosystem": {
+            "enum": [
+              "npm",
+              "pypi",
+              "cargo",
+              "go",
+              "maven",
+              "rubygems",
+              "packagist",
+              "nuget"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 214,
+            "minLength": 1,
+            "type": "string"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "ecosystem",
+          "name"
+        ],
+        "type": "object"
+      },
+      {
+        "properties": {
+          "items": {
+            "items": {
+              "properties": {
+                "ecosystem": {
+                  "enum": [
+                    "npm",
+                    "pypi",
+                    "cargo",
+                    "go",
+                    "maven",
+                    "rubygems",
+                    "packagist",
+                    "nuget"
+                  ],
+                  "type": "string"
+                },
+                "name": {
+                  "maxLength": 214,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "version": {
+                  "anyOf": [
+                    {
+                      "maxLength": 128,
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "ecosystem",
+                "name"
+              ],
+              "type": "object"
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      {
+        "properties": {
+          "ecosystem": {
+            "enum": [
+              "npm",
+              "pypi",
+              "cargo",
+              "go",
+              "maven",
+              "rubygems",
+              "packagist",
+              "nuget"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 214,
+            "minLength": 1,
+            "type": "string"
+          },
+          "range": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "ecosystem",
+          "name"
+        ],
+        "type": "object"
+      },
+      {
+        "properties": {
+          "ecosystem": {
+            "enum": [
+              "npm",
+              "pypi",
+              "cargo",
+              "go",
+              "maven",
+              "rubygems",
+              "packagist",
+              "nuget"
+            ],
+            "type": "string"
+          },
+          "package": {
+            "maxLength": 214,
+            "minLength": 1,
+            "type": "string"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "symbol": {
+            "maxLength": 300,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "ecosystem",
+          "package",
+          "symbol"
+        ],
+        "type": "object"
+      },
+      {
+        "properties": {
+          "ecosystem": {
+            "enum": [
+              "npm",
+              "pypi",
+              "cargo",
+              "go",
+              "maven",
+              "rubygems",
+              "packagist",
+              "nuget"
+            ],
+            "type": "string"
+          },
+          "package": {
+            "maxLength": 214,
+            "minLength": 1,
+            "type": "string"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "symbols": {
+            "items": {
+              "maxLength": 300,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "ecosystem",
+          "package",
+          "symbols"
+        ],
+        "type": "object"
+      },
+      {
+        "properties": {
+          "language": {
+            "enum": [
+              "python",
+              "typescript",
+              "javascript",
+              "go",
+              "rust"
+            ],
+            "type": "string"
+          },
+          "code": {
+            "maxLength": 49152,
+            "minLength": 1,
+            "type": "string"
+          },
+          "versions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "maxProperties": 50,
+            "type": "object"
+          }
+        },
+        "required": [
+          "language",
+          "code"
+        ],
+        "type": "object"
+      }
+    ]
+  },
+  "outputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "properties": {
+      "service": {
+        "type": "string"
+      },
+      "operation": {
+        "type": "string"
+      },
+      "version": {
+        "type": "string"
+      },
+      "status": {
+        "enum": [
+          "complete",
+          "partial"
+        ],
+        "type": "string"
+      },
+      "as_of": {
+        "type": "string"
+      },
+      "deadline_ms": {
+        "type": "integer"
+      },
+      "elapsed_ms": {
+        "type": "integer"
+      },
+      "unavailable": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "summary": {
+        "additionalProperties": {
+          "type": "integer"
+        },
+        "type": "object"
+      },
+      "results": {
+        "type": "array",
+        "items": {
+          "anyOf": [
+            {
+              "properties": {
+                "kind": {
+                  "const": "package",
+                  "type": "string"
+                },
+                "ecosystem": {
+                  "enum": [
+                    "npm",
+                    "pypi",
+                    "cargo",
+                    "go",
+                    "maven",
+                    "rubygems",
+                    "packagist",
+                    "nuget"
+                  ],
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "version": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "verdict": {
+                  "enum": [
+                    "ok",
+                    "does_not_exist",
+                    "placeholder",
+                    "likely_typo",
+                    "suspicious_new",
+                    "deprecated",
+                    "yanked",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                "exists": {
+                  "enum": [
+                    "yes",
+                    "no",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                "risk_signals": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "typo_of": {
+                  "anyOf": [
+                    {
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "distance": {
+                          "type": "integer"
+                        },
+                        "method": {
+                          "type": "string"
+                        },
+                        "target_rank": {
+                          "anyOf": [
+                            {
+                              "type": "integer"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "distance",
+                        "method"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "did_you_mean": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "latest": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "version_exists": {
+                  "enum": [
+                    "yes",
+                    "no",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                "deprecated": {
+                  "type": "boolean"
+                },
+                "deprecated_reason": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "yanked": {
+                  "type": "boolean"
+                },
+                "yanked_reason": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "description": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "first_published": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "latest_published": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "versions_count": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "downloads_last_week": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "popularity_rank": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "versions_tail": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "evidence": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "see_also": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "retryable": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "ecosystem",
+                "name",
+                "verdict",
+                "exists"
+              ],
+              "type": "object"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "const": "versions",
+                  "type": "string"
+                },
+                "ecosystem": {
+                  "enum": [
+                    "npm",
+                    "pypi",
+                    "cargo",
+                    "go",
+                    "maven",
+                    "rubygems",
+                    "packagist",
+                    "nuget"
+                  ],
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "exists": {
+                  "enum": [
+                    "yes",
+                    "no",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                "range": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "resolved": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "range_syntax": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "dist_tags": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "versions": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "truncated": {
+                  "type": "boolean"
+                },
+                "evidence": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "retryable": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "ecosystem",
+                "name",
+                "exists"
+              ],
+              "type": "object"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "const": "symbol",
+                  "type": "string"
+                },
+                "ecosystem": {
+                  "enum": [
+                    "npm",
+                    "pypi",
+                    "cargo",
+                    "go",
+                    "maven",
+                    "rubygems",
+                    "packagist",
+                    "nuget"
+                  ],
+                  "type": "string"
+                },
+                "package": {
+                  "type": "string"
+                },
+                "symbol": {
+                  "type": "string"
+                },
+                "package_exists": {
+                  "enum": [
+                    "yes",
+                    "no",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                "resolved_version": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "exists": {
+                  "enum": [
+                    "yes",
+                    "no",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                "symbol_kind": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "signature": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "overloads": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "defined_in": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "did_you_mean": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "evidence_source": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "pending": {
+                  "type": "boolean"
+                },
+                "retry_after_ms": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "reason": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "ecosystem",
+                "package",
+                "symbol",
+                "package_exists",
+                "exists"
+              ],
+              "type": "object"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "const": "diagnostic",
+                  "type": "string"
+                },
+                "line": {
+                  "type": "integer"
+                },
+                "column": {
+                  "type": "integer"
+                },
+                "end_line": {
+                  "type": "integer"
+                },
+                "end_column": {
+                  "type": "integer"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "ref_kind": {
+                  "enum": [
+                    "import",
+                    "call",
+                    "attribute"
+                  ],
+                  "type": "string"
+                },
+                "package": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "version": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "target": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "verdict": {
+                  "enum": [
+                    "ok",
+                    "nonexistent_package",
+                    "placeholder",
+                    "likely_typo",
+                    "suspicious_new",
+                    "nonexistent_symbol",
+                    "deprecated",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                "signature": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "fix_hint": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "did_you_mean": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "reason": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "line",
+                "column",
+                "end_line",
+                "end_column",
+                "text",
+                "ref_kind",
+                "verdict"
+              ],
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "sources": {
+        "items": {
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "ok",
+                "not_found",
+                "unavailable",
+                "rate_limited",
+                "skipped_budget",
+                "not_applicable"
+              ],
+              "type": "string"
+            },
+            "url": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "licence": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "attribution": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "as_of": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fetched_at": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "latency_ms": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cache": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "hit",
+                    "miss",
+                    "stale"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "name",
+            "status"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "notes": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "error": {
+        "properties": {
+          "code": {
+            "enum": [
+              "invalid_json",
+              "invalid_input",
+              "not_found",
+              "method_not_allowed",
+              "payload_too_large",
+              "unsupported",
+              "internal"
+            ],
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "details": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "retryable"
+        ],
+        "type": "object"
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "example": {
+    "method": "POST",
+    "path": "/v1/check",
+    "request": {
+      "language": "python",
+      "code": "import reqeusts\nfrom fastapi import FastAPI\napp = FastAPI()\napp.add_magic_route('/')"
+    },
+    "response": {
+      "service": "code-reality-check",
+      "operation": "check",
+      "version": "1.0.0",
+      "status": "complete",
+      "as_of": "2026-09-30T03:03:01+00:00",
+      "deadline_ms": 7000,
+      "elapsed_ms": 356,
+      "unavailable": [],
+      "summary": {
+        "nonexistent_package": 1,
+        "ok": 1,
+        "unknown": 1
+      },
+      "results": [
+        {
+          "kind": "diagnostic",
+          "line": 1,
+          "column": 0,
+          "end_line": 1,
+          "end_column": 15,
+          "text": "reqeusts",
+          "ref_kind": "import",
+          "package": "reqeusts",
+          "version": null,
+          "target": null,
+          "verdict": "nonexistent_package",
+          "signature": null,
+          "fix_hint": "did you mean 'requests'?",
+          "did_you_mean": [
+            "requests",
+            "grequests"
+          ],
+          "reason": "'reqeusts' is not published on pypi; closest popular name: 'requests' (distance 1)"
+        },
+        {
+          "kind": "diagnostic",
+          "line": 2,
+          "column": 0,
+          "end_line": 2,
+          "end_column": 27,
+          "text": "fastapi.FastAPI",
+          "ref_kind": "import",
+          "package": "fastapi",
+          "version": "0.142.1",
+          "target": "fastapi.FastAPI",
+          "verdict": "ok",
+          "signature": "class FastAPI(Starlette)",
+          "fix_hint": null,
+          "did_you_mean": [],
+          "reason": null
+        },
+        {
+          "kind": "diagnostic",
+          "line": 4,
+          "column": 0,
+          "end_line": 4,
+          "end_column": 19,
+          "text": "app.add_magic_route",
+          "ref_kind": "call",
+          "package": "fastapi",
+          "version": "0.142.1",
+          "target": "fastapi.FastAPI.add_magic_route",
+          "verdict": "unknown",
+          "signature": null,
+          "fix_hint": null,
+          "did_you_mean": [],
+          "reason": "inherits_from_other_package"
+        }
+      ],
+      "sources": [
+        {
+          "name": "pypi",
+          "status": "ok",
+          "url": "https://pypi.org/pypi/fastapi/json",
+          "licence": null,
+          "attribution": "pypi.org JSON API",
+          "as_of": null,
+          "fetched_at": null,
+          "latency_ms": 40,
+          "cache": null
+        },
+        {
+          "name": "pypi",
+          "status": "not_found",
+          "url": null,
+          "licence": null,
+          "attribution": "pypi.org JSON API",
+          "as_of": null,
+          "fetched_at": null,
+          "latency_ms": null,
+          "cache": null
+        },
+        {
+          "name": "pypi-files",
+          "status": "ok",
+          "url": null,
+          "licence": null,
+          "attribution": null,
+          "as_of": null,
+          "fetched_at": null,
+          "latency_ms": null,
+          "cache": null
+        }
+      ],
+      "notes": []
+    }
+  }
+}

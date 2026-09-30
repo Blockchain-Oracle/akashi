@@ -1,0 +1,14 @@
+{
+  "prefix": "/code",
+  "displayName": "Code Reality Check",
+  "category": "security",
+  "description": "Catch hallucinated dependencies before an AI agent installs or calls them, across npm, PyPI, crates.io, Go, Maven, RubyGems, Packagist and NuGet. POST /v1/check with {language, code} and get a diagnostic per import and call (nonexistent package, likely typo-squat, placeholder, suspiciously new, deprecated, nonexistent symbol) as one JSON object. POST /v1/package, /v1/versions and /v1/symbol answer single questions. Pay per request in USDC; no account, no API key.",
+  "example": {
+    "method": "POST",
+    "path": "/v1/check",
+    "request": {
+      "language": "python",
+      "code": "import reqeusts\nfrom fastapi import FastAPI\napp = FastAPI()\napp.add_magic_route('/')"
+    }
+  }
+}
