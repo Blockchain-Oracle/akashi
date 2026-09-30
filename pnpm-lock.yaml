@@ -122,6 +122,9 @@ importers:
       '@akashi/brand':
         specifier: workspace:*
         version: link:../../packages/brand
+      '@akashi/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       clsx:
         specifier: 'catalog:'
         version: 2.1.1
@@ -207,6 +210,9 @@ importers:
       '@akashi/model':
         specifier: workspace:*
         version: link:../../packages/model
+      '@akashi/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       class-variance-authority:
         specifier: 'catalog:'
         version: 0.7.1
@@ -321,6 +327,43 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+
+  packages/ui:
+    dependencies:
+      '@akashi/brand':
+        specifier: workspace:*
+        version: link:../brand
+      clsx:
+        specifier: 'catalog:'
+        version: 2.1.1
+      lucide-react:
+        specifier: 'catalog:'
+        version: 1.47.0(react@19.2.8)
+      motion:
+        specifier: 'catalog:'
+        version: 13.4.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      tailwind-merge:
+        specifier: 'catalog:'
+        version: 3.7.0
+    devDependencies:
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.18
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.5(jiti@2.7.0)(supports-color@10.2.2)
+      eslint-config-next:
+        specifier: 'catalog:'
+        version: 16.3.4(@typescript-eslint/parser@8.70.1(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@5.9.3)
+      react:
+        specifier: 'catalog:'
+        version: 19.2.8
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      typescript-eslint:
+        specifier: 'catalog:'
+        version: 8.70.1(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@5.9.3)
 
   services/ts-introspect:
     dependencies:

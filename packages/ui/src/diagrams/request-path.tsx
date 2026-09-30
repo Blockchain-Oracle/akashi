@@ -5,7 +5,7 @@ import { Bot, Network, ReceiptText, Server } from "lucide-react";
 import { useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 
-import { cn } from "@/lib/cn";
+import { cn } from "../cn";
 
 const STEP_MS = 1_700;
 const ICON_STROKE = 1.5;
@@ -46,7 +46,7 @@ export function RequestPath({ className }: { className?: string }) {
 
   const current = STEPS[step] ?? STEPS[0]!;
   return (
-    <figure className={cn("not-prose rounded-3xl border border-fd-border bg-fd-card p-5 md:p-8", className)}>
+    <figure className={cn("not-prose rounded-3xl border border-border bg-card p-5 md:p-8", className)}>
       <div className="flex flex-col items-stretch md:flex-row md:items-center">
         {NODES.map((node, i) => {
           const active = !reduce && (i === current.hop || i === current.hop + 1);
@@ -55,15 +55,15 @@ export function RequestPath({ className }: { className?: string }) {
               <div
                 className={cn(
                   "flex w-full items-center gap-3 rounded-2xl border px-4 py-3 transition-colors duration-300 md:w-auto md:flex-col md:gap-2 md:px-3 md:py-4 md:text-center",
-                  active ? "border-fd-primary bg-fd-primary/5" : "border-fd-border bg-fd-background",
+                  active ? "border-primary bg-primary/5" : "border-border bg-background",
                 )}
               >
-                <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl", active ? "text-fd-primary" : "text-fd-foreground")}>
+                <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl", active ? "text-primary" : "text-foreground")}>
                   {node.Icon ? <node.Icon className="size-6" strokeWidth={ICON_STROKE} /> : <Seal className="size-8" label={null} />}
                 </span>
                 <span>
                   <span className="block font-medium text-sm">{node.title}</span>
-                  <span className="block text-fd-muted-foreground text-xs">{node.role}</span>
+                  <span className="block text-muted-foreground text-xs">{node.role}</span>
                 </span>
               </div>
               {i < NODES.length - 1 && <Hop active={!reduce && current.hop === i} dir={current.dir} />}
@@ -71,19 +71,19 @@ export function RequestPath({ className }: { className?: string }) {
           );
         })}
       </div>
-      <figcaption className="mt-6 flex items-baseline gap-3 border-fd-border border-t pt-4 font-mono text-sm">
+      <figcaption className="mt-6 flex items-baseline gap-3 border-border border-t pt-4 font-mono text-sm">
         {reduce ? (
-          <ol className="list-decimal space-y-1 pl-5 text-fd-muted-foreground">
+          <ol className="list-decimal space-y-1 pl-5 text-muted-foreground">
             {STEPS.map((s) => (
               <li key={s.text}>{s.text}</li>
             ))}
           </ol>
         ) : (
           <>
-            <span className="text-fd-muted-foreground tabular-nums">
+            <span className="shrink-0 whitespace-nowrap text-muted-foreground tabular-nums">
               {String(step + 1).padStart(2, "0")} / {STEPS.length}
             </span>
-            <span key={step} className="rp-caption text-fd-foreground">
+            <span key={step} className="rp-caption text-foreground">
               {current.text}
             </span>
           </>
@@ -95,8 +95,8 @@ export function RequestPath({ className }: { className?: string }) {
 
 function Hop({ active, dir }: { active: boolean; dir: Dir }) {
   return (
-    <div className="relative h-8 w-px shrink-0 bg-fd-border md:h-px md:w-auto md:min-w-6 md:flex-1">
-      {active && <span className={cn("rp-dot", dir === "fwd" ? "rp-dot-fwd bg-fd-primary" : "rp-dot-back bg-verdict-verified")} />}
+    <div className="relative h-8 w-px shrink-0 bg-border md:h-px md:w-auto md:min-w-6 md:flex-1">
+      {active && <span className={cn("rp-dot", dir === "fwd" ? "rp-dot-fwd bg-primary" : "rp-dot-back bg-verdict-verified")} />}
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 
-import { cn } from "@/lib/cn";
+import { cn } from "../cn";
 
 const STEP_MS = 1_600;
 
@@ -27,26 +27,26 @@ export function PaymentHandshake({ className }: { className?: string }) {
   }, [reduce]);
 
   return (
-    <figure className={cn("not-prose rounded-3xl border border-fd-border bg-fd-card p-5 md:p-8", className)}>
+    <figure className={cn("not-prose rounded-3xl border border-border bg-card p-5 md:p-8", className)}>
       <div className="flex justify-between font-medium text-sm">
         <span>Agent</span>
         <span>Agentic Portal</span>
       </div>
-      <div className="relative mt-3 space-y-3 border-fd-border border-x px-3 py-2">
+      <div className="relative mt-3 space-y-3 border-border border-x px-3 py-2">
         {MESSAGES.map((m, i) => (
           <div
             key={m.label}
             className={cn("transition-opacity duration-300", i < step ? "opacity-100" : "opacity-15")}
           >
             <div className={cn("flex items-center gap-2", m.dir === "left" && "flex-row-reverse")}>
-              <span className={cn("h-px flex-1", m.dir === "right" ? "bg-fd-primary" : "bg-verdict-verified")} />
-              <span className={cn("text-xs", m.dir === "right" ? "text-fd-primary" : "text-verdict-verified")}>
+              <span className={cn("h-px flex-1", m.dir === "right" ? "bg-primary" : "bg-verdict-verified")} />
+              <span className={cn("text-xs", m.dir === "right" ? "text-primary" : "text-verdict-verified")}>
                 {m.dir === "right" ? "▶" : "◀"}
               </span>
             </div>
             <div className={cn("mt-1 font-mono text-xs", m.dir === "left" && "text-right")}>
-              <span className="text-fd-foreground">{m.label}</span>
-              <span className="text-fd-muted-foreground"> · {m.detail}</span>
+              <span className="text-foreground">{m.label}</span>
+              <span className="text-muted-foreground"> · {m.detail}</span>
             </div>
           </div>
         ))}

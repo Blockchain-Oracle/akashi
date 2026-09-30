@@ -3,6 +3,7 @@ packages:
   - "packages/api-client"
   - "packages/brand"
   - "packages/model"
+  - "packages/ui"
   - "services/ts-introspect"
 
 # Supply chain: never resolve a release younger than 7 days, transitive ones included (minutes). A brand-new

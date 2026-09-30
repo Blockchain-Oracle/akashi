@@ -22,9 +22,9 @@
 >
 > **Tick each checkbox in the same commit as its artifact.** Record every tx and deploy in `acceptance.md` / `ids-and-txs.md`.
 
-Current stage: **S7 web foundation** — scaffold, brand, 21st context, env done; Dockerfile + GHCR workflow written, image builds unverified at handoff, Coolify resources pending Q-007
+Current stage: **S8 Evidence desk + story** — desk live (all six chips land), story below the desk built; left: kind picker, Lighthouse, design.json decisions
 Last commit: see `git log -1` (S6 + S2 steps 1–4, 2026-09-30)
-In-flight step: none. Web + docs live on HTTPS (temp sslip hosts); docs follow docs/plan/specs/docs-writing.md (Pocket-first, diagrams, types). Next: the backend findings in stage-07 Findings, then S8 (Evidence desk + playgrounds in the web app). Blocked on the domain (Q-001) for S2 step 5+ and the rest of S6.
+In-flight step: none. Web + docs live on HTTPS (temp sslip hosts); diagrams shared through packages/ui. Next: S8 kind picker + Lighthouse, then S9 (playgrounds + Pay via Pocket). Blocked on the domain (Q-001) for S2 step 5+ and the rest of S6.
 Done: S6 (partial) schemathesis PASS ×3, calibration 40/40·40/40, cards v1 on-chain (h 691097–9), registry packages + sage-service.yaml built · S2 steps 1–4 ✅ · S5 ✅ (stocks live 2026-09-30, flagged demo, D-023) · S0 ✅ · S4 ✅ citation-verify live (verify + claim; calibration 40/40 · 40/40; NLI sidecar) · S3 ✅ code-reality-check live (package/packages/versions/symbol/symbols/check) · (repo github.com/Blockchain-Oracle/akashi, private · Coolify project akashi) · S1 ✅ (api live at temp http://qbjpovbitgqrjgafdcrigqmd.84.46.247.92.sslip.io)
 Blockers:
 - Q-001: the domain has not been bought yet (blocks S2 from step 5)

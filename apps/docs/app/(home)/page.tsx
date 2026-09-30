@@ -1,13 +1,13 @@
 import { SERVICE_ORDER, SERVICES } from "@akashi/brand";
 import Link from "next/link";
 
-import { ClaimCheck } from "@/components/diagrams/claim-check";
-import { PlainSteps } from "@/components/diagrams/plain-steps";
-import { Registration } from "@/components/diagrams/registration";
-import { RequestPath } from "@/components/diagrams/request-path";
+import { ClaimCheck } from "@akashi/ui/diagrams/claim-check";
+import { PlainSteps } from "@akashi/ui/diagrams/plain-steps";
+import { Registration } from "@akashi/ui/diagrams/registration";
+import { RequestPath } from "@akashi/ui/diagrams/request-path";
 import { Footer } from "@/components/landing/footer";
 import { NetworkStatus } from "@/components/landing/network-status";
-import { ONCHAIN } from "@/lib/onchain";
+import { ONCHAIN } from "@akashi/ui/onchain";
 
 export const revalidate = 60; // the live status pill
 

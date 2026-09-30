@@ -1,4 +1,5 @@
 import { Desk } from "@/features/desk/Desk";
+import { Story } from "@/features/story/Story";
 import { SiteFooter } from "@/components/shell/SiteFooter";
 import { SiteHeader } from "@/components/shell/SiteHeader";
 
@@ -17,6 +18,7 @@ export default function Home() {
         <section className="mt-10" aria-label="Evidence desk">
           <Desk />
         </section>
+        <Story />
       </main>
       <SiteFooter />
     </>

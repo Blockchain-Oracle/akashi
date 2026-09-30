@@ -12,6 +12,7 @@
   "dependencies": {
     "@akashi/api-client": "workspace:*",
     "@akashi/brand": "workspace:*",
+    "@akashi/ui": "workspace:*",
     "clsx": "catalog:",
     "fumadocs-core": "catalog:",
     "fumadocs-mdx": "catalog:",

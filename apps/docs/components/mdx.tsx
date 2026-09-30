@@ -8,16 +8,16 @@ import { TypeTable } from "fumadocs-ui/components/type-table";
 import defaultComponents from "fumadocs-ui/mdx";
 import type { MDXComponents } from "mdx/types";
 
-import { ClaimCheck } from "@/components/diagrams/claim-check";
-import { EnvelopeAnatomy } from "@/components/diagrams/envelope-anatomy";
-import { McpFlow } from "@/components/diagrams/mcp-flow";
-import { PaymentHandshake } from "@/components/diagrams/payment-handshake";
-import { PlainSteps } from "@/components/diagrams/plain-steps";
-import { Registration } from "@/components/diagrams/registration";
-import { RequestPath } from "@/components/diagrams/request-path";
-import { ServicePipeline } from "@/components/diagrams/service-pipeline";
-import { SessionTimeline } from "@/components/diagrams/session-timeline";
-import { VerdictGrid } from "@/components/diagrams/verdict-grid";
+import { ClaimCheck } from "@akashi/ui/diagrams/claim-check";
+import { EnvelopeAnatomy } from "@akashi/ui/diagrams/envelope-anatomy";
+import { McpFlow } from "@akashi/ui/diagrams/mcp-flow";
+import { PaymentHandshake } from "@akashi/ui/diagrams/payment-handshake";
+import { PlainSteps } from "@akashi/ui/diagrams/plain-steps";
+import { Registration } from "@akashi/ui/diagrams/registration";
+import { RequestPath } from "@akashi/ui/diagrams/request-path";
+import { ServicePipeline } from "@akashi/ui/diagrams/service-pipeline";
+import { SessionTimeline } from "@akashi/ui/diagrams/session-timeline";
+import { VerdictGrid } from "@akashi/ui/diagrams/verdict-grid";
 
 /** Stock Fumadocs components, available in every page without an import. */
 export function getMDXComponents(components?: MDXComponents) {

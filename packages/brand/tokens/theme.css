@@ -45,6 +45,7 @@
   --radius-chip: 999px;
   --hairline: 1px;
   --shadow-receipt: 0 1px 0 oklch(0 0 0 / 0.04), 0 12px 32px -12px oklch(0.2 0.01 260 / 0.28);
+  --receipt-drop: drop-shadow(0 12px 14px oklch(0.2 0.01 260 / 0.22)); /* the same shadow, for a torn (masked) receipt */
 
   --ease-seal: cubic-bezier(0.2, 0.8, 0.2, 1);
   --duration-state: 180ms; /* state changes: 150–240 ms */
@@ -75,6 +76,7 @@
   --verdict-unknown: oklch(0.62 0.01 260);
 
   --shadow-receipt: 0 1px 0 oklch(1 0 0 / 0.04), 0 12px 32px -12px oklch(0 0 0 / 0.6);
+  --receipt-drop: drop-shadow(0 12px 14px oklch(0 0 0 / 0.55));
 }
 
 @theme inline {

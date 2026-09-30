@@ -5,8 +5,8 @@ import { Seal } from "@akashi/brand/react";
 import { Bot } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
-import { Verdict } from "@/components/landing/verdict";
-import { cn } from "@/lib/cn";
+import { Verdict } from "../verdict";
+import { cn } from "../cn";
 
 const ICON_STROKE = 1.5;
 const ROW_STAGGER_S = 0.35;
@@ -55,19 +55,19 @@ export function ClaimCheck({ className }: { className?: string }) {
           transition={{ duration: DURATION_S, ease: EASE, delay: i * ROW_STAGGER_S }}
           className="grid gap-3 md:grid-cols-2 md:gap-4"
         >
-          <div className="flex gap-3 rounded-2xl border border-fd-border bg-fd-background p-4">
-            <Bot className="mt-0.5 size-5 shrink-0 text-fd-muted-foreground" strokeWidth={ICON_STROKE} />
+          <div className="flex gap-3 rounded-2xl border border-border bg-background p-4">
+            <Bot className="mt-0.5 size-5 shrink-0 text-muted-foreground" strokeWidth={ICON_STROKE} />
             <div>
-              <div className="text-fd-muted-foreground text-xs">An AI assistant says</div>
+              <div className="text-muted-foreground text-xs">An AI assistant says</div>
               <p className="mt-1 text-sm">“{c.says}”</p>
             </div>
           </div>
-          <div className="flex gap-3 rounded-2xl border border-fd-border bg-fd-card p-4">
+          <div className="flex gap-3 rounded-2xl border border-border bg-card p-4">
             <Seal className="mt-0.5 size-6 shrink-0" label={null} />
             <div>
               <Verdict tone={c.tone} word={c.word} />
               <p className="mt-1 text-sm">{c.found}</p>
-              <div className="mt-1 text-fd-muted-foreground text-xs">Checked against {c.where}</div>
+              <div className="mt-1 text-muted-foreground text-xs">Checked against {c.where}</div>
             </div>
           </div>
         </motion.div>

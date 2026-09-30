@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 
-import { cn } from "@/lib/cn";
+import { cn } from "../cn";
 
 const TOOLS = [
   { name: "search_services", cost: "free", does: "finds citation-verify, code-reality-check, live-facts" },
@@ -11,17 +11,17 @@ const TOOLS = [
 /** An agent in Claude or Cursor reaching Akashi through Pocket's MCP server: three tools, one paid. */
 export function McpFlow({ className }: { className?: string }) {
   return (
-    <figure className={cn("not-prose grid gap-3 rounded-3xl border border-fd-border bg-fd-card p-5 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-stretch md:p-8", className)}>
+    <figure className={cn("not-prose grid gap-3 rounded-3xl border border-border bg-card p-5 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-stretch md:p-8", className)}>
       {TOOLS.map((t, i) => (
         <div key={t.name} className="contents">
-          <div className={cn("rounded-2xl border p-4", t.cost === "free" ? "border-fd-border bg-fd-background" : "border-fd-primary/60 bg-fd-primary/5")}>
+          <div className={cn("rounded-2xl border p-4", t.cost === "free" ? "border-border bg-background" : "border-primary/60 bg-primary/5")}>
             <div className="flex items-baseline justify-between gap-2">
               <code className="font-mono text-sm">{t.name}</code>
-              <span className={cn("font-mono text-xs", t.cost === "free" ? "text-fd-muted-foreground" : "text-fd-primary")}>{t.cost}</span>
+              <span className={cn("font-mono text-xs", t.cost === "free" ? "text-muted-foreground" : "text-primary")}>{t.cost}</span>
             </div>
-            <p className="mt-2 text-fd-muted-foreground text-xs">{t.does}</p>
+            <p className="mt-2 text-muted-foreground text-xs">{t.does}</p>
           </div>
-          {i < TOOLS.length - 1 && <ArrowRight className="mx-auto size-4 rotate-90 self-center text-fd-muted-foreground md:rotate-0" aria-hidden />}
+          {i < TOOLS.length - 1 && <ArrowRight className="mx-auto size-4 rotate-90 self-center text-muted-foreground md:rotate-0" aria-hidden />}
         </div>
       ))}
     </figure>

@@ -1,7 +1,7 @@
 import { type VerdictTone } from "@akashi/brand";
 import { VerdictGlyph } from "@akashi/brand/react";
 
-import { cn } from "@/lib/cn";
+import { cn } from "./cn";
 
 // Tailwind needs the full class names in source; these map each tone to its token colour.
 const TONE_CLASS: Record<VerdictTone, string> = {

@@ -1,7 +1,7 @@
 import { type VerdictTone } from "@akashi/brand";
 
-import { Verdict } from "@/components/landing/verdict";
-import { cn } from "@/lib/cn";
+import { Verdict } from "../verdict";
+import { cn } from "../cn";
 
 type Row = [word: string, tone: VerdictTone, meaning: string];
 
@@ -46,11 +46,11 @@ const SETS: Record<string, Row[]> = {
 /** A verdict vocabulary: glyph + word + colour, and what each one means. */
 export function VerdictGrid({ set, className }: { set: keyof typeof SETS; className?: string }) {
   return (
-    <div className={cn("not-prose grid gap-px overflow-hidden rounded-2xl border border-fd-border bg-fd-border sm:grid-cols-2", className)}>
+    <div className={cn("not-prose grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2", className)}>
       {(SETS[set] ?? []).map(([word, tone, meaning]) => (
-        <div key={word} className="bg-fd-card px-4 py-3">
+        <div key={word} className="bg-card px-4 py-3">
           <Verdict tone={tone} word={word} />
-          <p className="mt-1 text-fd-muted-foreground text-xs">{meaning}</p>
+          <p className="mt-1 text-muted-foreground text-xs">{meaning}</p>
         </div>
       ))}
     </div>

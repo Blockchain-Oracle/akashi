@@ -1,7 +1,7 @@
 import { Seal } from "@akashi/brand/react";
 import { Bot, Coins, FileCheck2 } from "lucide-react";
 
-import { cn } from "@/lib/cn";
+import { cn } from "../cn";
 
 const ICON_STROKE = 1.5;
 
@@ -17,13 +17,13 @@ export function PlainSteps({ className }: { className?: string }) {
   return (
     <ol className={cn("not-prose grid gap-3 sm:grid-cols-2 lg:grid-cols-4", className)}>
       {STEPS.map((s, i) => (
-        <li key={s.title} className="rounded-2xl border border-fd-border bg-fd-card p-4">
+        <li key={s.title} className="rounded-2xl border border-border bg-card p-4">
           <div className="flex items-center justify-between">
-            {s.Icon ? <s.Icon className="size-6 text-fd-primary" strokeWidth={ICON_STROKE} /> : <Seal className="size-7" label={null} />}
-            <span className="font-mono text-fd-muted-foreground text-xs">{i + 1}</span>
+            {s.Icon ? <s.Icon className="size-6 text-primary" strokeWidth={ICON_STROKE} /> : <Seal className="size-7" label={null} />}
+            <span className="font-mono text-muted-foreground text-xs">{i + 1}</span>
           </div>
           <div className="mt-3 font-medium text-sm">{s.title}</div>
-          <p className="mt-1 text-fd-muted-foreground text-xs">{s.body}</p>
+          <p className="mt-1 text-muted-foreground text-xs">{s.body}</p>
         </li>
       ))}
     </ol>

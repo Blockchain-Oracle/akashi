@@ -1,0 +1,35 @@
+{
+  "name": "@akashi/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./diagrams.css": "./src/diagrams.css",
+    "./onchain": "./src/onchain.ts",
+    "./cn": "./src/cn.ts",
+    "./*": "./src/*.tsx"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint ."
+  },
+  "peerDependencies": {
+    "react": "^19.2.0"
+  },
+  "dependencies": {
+    "@akashi/brand": "workspace:*",
+    "clsx": "catalog:",
+    "lucide-react": "catalog:",
+    "motion": "catalog:",
+    "tailwind-merge": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-next": "catalog:",
+    "react": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  }
+}
