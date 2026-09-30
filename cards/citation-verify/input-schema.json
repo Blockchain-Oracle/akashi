@@ -148,6 +148,29 @@
       "type": "object"
     },
     {
+      "anyOf": [
+        {
+          "properties": {
+            "citation": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "citation"
+          ]
+        },
+        {
+          "properties": {
+            "evidence_text": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "evidence_text"
+          ]
+        }
+      ],
       "properties": {
         "claim": {
           "maxLength": 1000,

@@ -37,3 +37,4 @@ models/
 
 # runtime data written by the api/worker (top lists, indexes)
 /data/
+.schemathesis/

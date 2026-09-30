@@ -3,13 +3,13 @@
 from datetime import date
 from typing import Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from akashi_core.contract.fields import UntrustedStr
 from akashi_now.constants import MAX_BUSINESS_DAY_SPAN, MAX_HOLIDAY_YEAR, MIN_HOLIDAY_YEAR, PUBLIC_CALENDAR
 from akashi_now.provenance import Provenance
 
-CountryCode = Field(min_length=2, max_length=2, description="ISO 3166-1 alpha-2")
+CountryCode = Field(min_length=2, max_length=2, pattern="^[A-Za-z]{2}$", description="ISO 3166-1 alpha-2")
 
 
 class HolidaysRequest(BaseModel):
@@ -32,6 +32,15 @@ class HolidayResult(BaseModel):
 
 
 class BusinessDaysRequest(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "oneOf": [
+                {"required": ["end"], "properties": {"end": {"type": "string"}}},
+                {"required": ["add_days"], "properties": {"add_days": {"type": "integer"}}},
+            ]
+        }
+    )
+
     country: str = CountryCode
     subdivision: str | None = Field(default=None, max_length=10)
     calendar: str = Field(default=PUBLIC_CALENDAR, max_length=10)

@@ -1,7 +1,7 @@
 """Request/response models for code-reality-check."""
 
 from enum import StrEnum
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
@@ -107,18 +107,21 @@ class VersionsResult(BaseModel):
     retryable: bool = False
 
 
+SymbolName = Annotated[str, Field(min_length=1, max_length=MAX_SYMBOL_CHARS)]
+
+
 class SymbolQuery(BaseModel):
     ecosystem: Ecosystem
     package: str = Field(min_length=1, max_length=MAX_PACKAGE_NAME_CHARS)
     version: str | None = Field(default=None, max_length=MAX_VERSION_CHARS)
-    symbol: str = Field(min_length=1, max_length=MAX_SYMBOL_CHARS)
+    symbol: SymbolName
 
 
 class SymbolsQuery(BaseModel):
     ecosystem: Ecosystem
     package: str = Field(min_length=1, max_length=MAX_PACKAGE_NAME_CHARS)
     version: str | None = Field(default=None, max_length=MAX_VERSION_CHARS)
-    symbols: list[str] = Field(min_length=1, max_length=MAX_SYMBOLS_PER_REQUEST)
+    symbols: list[SymbolName] = Field(min_length=1, max_length=MAX_SYMBOLS_PER_REQUEST)
 
 
 class SymbolResult(BaseModel):

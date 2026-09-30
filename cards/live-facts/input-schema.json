@@ -2,6 +2,30 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "anyOf": [
     {
+      "anyOf": [
+        {
+          "properties": {
+            "zone": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "zone"
+          ]
+        },
+        {
+          "properties": {
+            "place": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "place"
+          ]
+        }
+      ],
       "properties": {
         "zone": {
           "anyOf": [
@@ -67,6 +91,7 @@
           "description": "ISO 3166-1 alpha-2",
           "maxLength": 2,
           "minLength": 2,
+          "pattern": "^[A-Za-z]{2}$",
           "type": "string"
         },
         "year": {
@@ -99,11 +124,34 @@
       "type": "object"
     },
     {
+      "oneOf": [
+        {
+          "properties": {
+            "end": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "end"
+          ]
+        },
+        {
+          "properties": {
+            "add_days": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "add_days"
+          ]
+        }
+      ],
       "properties": {
         "country": {
           "description": "ISO 3166-1 alpha-2",
           "maxLength": 2,
           "minLength": 2,
+          "pattern": "^[A-Za-z]{2}$",
           "type": "string"
         },
         "subdivision": {
@@ -159,10 +207,15 @@
           "description": "ISO 4217, e.g. USD",
           "maxLength": 3,
           "minLength": 3,
+          "pattern": "^[A-Za-z]{3}$",
           "type": "string"
         },
         "quotes": {
           "items": {
+            "description": "ISO 4217, e.g. USD",
+            "maxLength": 3,
+            "minLength": 3,
+            "pattern": "^[A-Za-z]{3}$",
             "type": "string"
           },
           "maxItems": 10,
@@ -199,6 +252,32 @@
       "type": "object"
     },
     {
+      "anyOf": [
+        {
+          "properties": {
+            "lat": {
+              "type": "number"
+            },
+            "lon": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "lat",
+            "lon"
+          ]
+        },
+        {
+          "properties": {
+            "place": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "place"
+          ]
+        }
+      ],
       "properties": {
         "lat": {
           "anyOf": [

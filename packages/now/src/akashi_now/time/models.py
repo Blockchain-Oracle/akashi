@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from akashi_core.contract.fields import UntrustedStr
 from akashi_now.constants import MAX_CONVERT_TO, MAX_PLACE_CHARS
@@ -11,6 +11,15 @@ from akashi_now.provenance import Provenance
 
 
 class TimeRequest(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "anyOf": [
+                {"required": ["zone"], "properties": {"zone": {"type": "string", "minLength": 1}}},
+                {"required": ["place"], "properties": {"place": {"type": "string", "minLength": 1}}},
+            ]
+        }
+    )
+
     zone: str | None = Field(default=None, max_length=MAX_PLACE_CHARS, description="IANA zone, e.g. Africa/Casablanca")
     place: str | None = Field(default=None, max_length=MAX_PLACE_CHARS, description="City or country name")
     country: str | None = Field(default=None, min_length=2, max_length=2, description="ISO 3166-1 alpha-2 hint")

@@ -61,7 +61,10 @@ async def _on_validation(_: Request, exc: RequestValidationError) -> AkashiJSONR
 
 async def _on_http(_: Request, exc: StarletteHTTPException) -> AkashiJSONResponse:
     code = _STATUS_TO_CODE.get(exc.status_code, ErrorCode.invalid_input)
-    return error_response(exc.status_code, code, str(exc.detail))
+    response = error_response(exc.status_code, code, str(exc.detail))
+    if exc.headers:  # e.g. Starlette's `Allow` on a 405 (RFC 9110 §15.5.6)
+        response.headers.update(exc.headers)
+    return response
 
 
 async def _on_akashi(_: Request, exc: AkashiError) -> AkashiJSONResponse:

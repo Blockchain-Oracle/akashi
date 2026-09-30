@@ -1,19 +1,28 @@
 """/fx request and result."""
 
 import datetime as dt
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field, field_validator
 
 from akashi_now.constants import CURRENCY_CODE_LEN, FX_MAX_QUOTES
 from akashi_now.provenance import Freshness, Provenance
 
-Currency = Field(min_length=CURRENCY_CODE_LEN, max_length=CURRENCY_CODE_LEN, description="ISO 4217, e.g. USD")
+CURRENCY_PATTERN = f"^[A-Za-z]{{{CURRENCY_CODE_LEN}}}$"
+CurrencyCode = Annotated[
+    str,
+    Field(
+        min_length=CURRENCY_CODE_LEN,
+        max_length=CURRENCY_CODE_LEN,
+        pattern=CURRENCY_PATTERN,
+        description="ISO 4217, e.g. USD",
+    ),
+]
 
 
 class FxRequest(BaseModel):
-    base: str = Currency
-    quotes: list[str] = Field(min_length=1, max_length=FX_MAX_QUOTES)
+    base: CurrencyCode
+    quotes: list[CurrencyCode] = Field(min_length=1, max_length=FX_MAX_QUOTES)
     amount: float | None = Field(default=None, gt=0)
     date: dt.date | None = Field(default=None, description="Historical date (default: latest)")
 
@@ -25,10 +34,7 @@ class FxRequest(BaseModel):
     @field_validator("quotes")
     @classmethod
     def _uppers(cls, v: list[str]) -> list[str]:
-        codes = [q.upper() for q in v]
-        if any(len(q) != CURRENCY_CODE_LEN for q in codes):
-            raise ValueError("quotes are ISO 4217 codes (3 letters)")
-        return list(dict.fromkeys(codes))
+        return list(dict.fromkeys(q.upper() for q in v))
 
 
 class ProviderRate(BaseModel):

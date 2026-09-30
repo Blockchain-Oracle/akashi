@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from akashi_core.contract.fields import UntrustedStr
 from akashi_now.constants import MAX_LATITUDE, MAX_LONGITUDE, MAX_PLACE_CHARS, MIN_LATITUDE, MIN_LONGITUDE
@@ -10,6 +10,15 @@ from akashi_now.provenance import Provenance
 
 
 class WeatherRequest(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "anyOf": [
+                {"required": ["lat", "lon"], "properties": {"lat": {"type": "number"}, "lon": {"type": "number"}}},
+                {"required": ["place"], "properties": {"place": {"type": "string"}}},
+            ]
+        }
+    )
+
     lat: float | None = Field(default=None, ge=MIN_LATITUDE, le=MAX_LATITUDE)
     lon: float | None = Field(default=None, ge=MIN_LONGITUDE, le=MAX_LONGITUDE)
     place: str | None = Field(default=None, max_length=MAX_PLACE_CHARS)

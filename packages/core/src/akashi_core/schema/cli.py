@@ -14,6 +14,8 @@ from fastapi import APIRouter, FastAPI
 from pydantic import BaseModel
 
 from akashi_core.app.probes import probe_router
+from akashi_core.constants.http import HTTP_BAD_REQUEST, HTTP_PAYLOAD_TOO_LARGE, HTTP_UNPROCESSABLE
+from akashi_core.contract.envelope import ErrorEnvelope
 from akashi_core.schema.generate import JSON_SCHEMA_DIALECT, model_schema, output_schema
 
 
@@ -31,10 +33,18 @@ def _input_schema(requests: list[type[BaseModel]]) -> dict[str, Any]:
     return {"$schema": JSON_SCHEMA_DIALECT, "anyOf": [model_schema(r) for r in requests]}
 
 
+# What the handlers in akashi_core.app.handlers actually send; replaces FastAPI's default HTTPValidationError.
+ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+    HTTP_BAD_REQUEST: {"model": ErrorEnvelope, "description": "Body is not valid JSON."},
+    HTTP_PAYLOAD_TOO_LARGE: {"model": ErrorEnvelope, "description": "Body over the size limit."},
+    HTTP_UNPROCESSABLE: {"model": ErrorEnvelope, "description": "Valid JSON that fails validation."},
+}
+
+
 def openapi_document(spec: SchemaSpec) -> dict[str, Any]:
     app = FastAPI(title=spec.title, version="1.0.0", openapi_url="/openapi.json")
     app.include_router(probe_router(spec.service_id))
-    app.include_router(spec.router)
+    app.include_router(spec.router, responses=ERROR_RESPONSES)
     return app.openapi()  # paths are prefix-free (/v1/...), as gateways and the portal call them
 
 

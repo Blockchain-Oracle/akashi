@@ -3,7 +3,7 @@
 from enum import StrEnum
 from typing import Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from akashi_cite.constants import (
     MAX_AUTHORS,
@@ -132,6 +132,16 @@ class ClaimVerdict(StrEnum):
 
 
 class ClaimRequest(BaseModel):
+    # The cross-field rule below, stated in the schema so generated clients never send a request we reject.
+    model_config = ConfigDict(
+        json_schema_extra={
+            "anyOf": [
+                {"required": ["citation"], "properties": {"citation": {"type": "object"}}},
+                {"required": ["evidence_text"], "properties": {"evidence_text": {"type": "string", "minLength": 1}}},
+            ]
+        }
+    )
+
     claim: str = Field(min_length=1, max_length=MAX_CLAIM_CHARS)
     citation: CitationInput | None = None
     evidence_text: str | None = Field(default=None, max_length=MAX_EVIDENCE_CHARS)
