@@ -136,3 +136,20 @@ NEWS_INSERT_BATCH: Final = 1_000
 SECONDS_PER_HOUR: Final = 3_600
 GKG_COLUMNS: Final = 27
 GKG_DATE, GKG_DOMAIN, GKG_URL, GKG_LOCATIONS, GKG_EXTRAS = 1, 3, 4, 9, 26
+
+# --- /jobs (local index of public ATS boards, refreshed every 6 h by a scheduled task; never fetched live) ---
+GREENHOUSE = UpstreamSpec("greenhouse", "https://boards-api.greenhouse.io", max_concurrency=4, total_s=20.0)
+LEVER = UpstreamSpec("lever", "https://api.lever.co", max_concurrency=4, total_s=20.0)
+ASHBY = UpstreamSpec("ashby", "https://api.ashbyhq.com", max_concurrency=4, total_s=20.0)
+JOBS_DB: Final = "jobs.db"
+JOBS_INGEST_BUDGET_S: Final = 600.0
+JOBS_BOARD_CONCURRENCY: Final = 4
+JOBS_MAX_QUERY_CHARS: Final = 200
+JOBS_MAX_COMPANIES: Final = 20
+JOBS_MAX_LIMIT: Final = 50
+JOBS_DEFAULT_LIMIT: Final = 10
+JOBS_MAX_POSTED_WITHIN_DAYS: Final = 90
+JOBS_STALE_INDEX_HOURS: Final = 12  # two missed refreshes
+SECONDS_PER_DAY: Final = 86_400
+MS_PER_S: Final = 1_000
+THOUSAND: Final = 1_000

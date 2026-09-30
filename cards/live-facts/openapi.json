@@ -314,6 +314,44 @@
           }
         }
       }
+    },
+    "/v1/jobs": {
+      "post": {
+        "summary": "Jobs",
+        "operationId": "jobs_v1_jobs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Job_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -763,6 +801,83 @@
           "elapsed_ms"
         ],
         "title": "Envelope[HolidayResult]"
+      },
+      "Envelope_Job_": {
+        "properties": {
+          "service": {
+            "type": "string",
+            "title": "Service"
+          },
+          "operation": {
+            "type": "string",
+            "title": "Operation"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResponseStatus"
+          },
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "deadline_ms": {
+            "type": "integer",
+            "title": "Deadline Ms"
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "title": "Elapsed Ms"
+          },
+          "unavailable": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unavailable"
+          },
+          "summary": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Summary"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/Job"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceRef"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "service",
+          "operation",
+          "version",
+          "status",
+          "as_of",
+          "deadline_ms",
+          "elapsed_ms"
+        ],
+        "title": "Envelope[Job]"
       },
       "Envelope_NewsStory_": {
         "properties": {
@@ -1395,6 +1510,216 @@
           "year"
         ],
         "title": "HolidaysRequest"
+      },
+      "Job": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "job",
+            "title": "Kind",
+            "default": "job"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "company": {
+            "type": "string",
+            "title": "Company"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "department": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department"
+          },
+          "remote": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remote"
+          },
+          "salary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Salary"
+          },
+          "salary_min": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Salary Min"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "posted_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Posted At"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "ats": {
+            "type": "string",
+            "enum": [
+              "greenhouse",
+              "lever",
+              "ashby"
+            ],
+            "title": "Ats"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "company",
+          "url",
+          "ats",
+          "provenance"
+        ],
+        "title": "Job"
+      },
+      "JobsRequest": {
+        "properties": {
+          "query": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Query",
+            "description": "Words in the title/team"
+          },
+          "companies": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Companies"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "remote": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remote"
+          },
+          "salary_min": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Salary Min",
+            "description": "Only postings that state a salary at or above"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 3,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "posted_within_days": {
+            "type": "integer",
+            "maximum": 90.0,
+            "minimum": 1.0,
+            "title": "Posted Within Days",
+            "default": 90
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "default": 10
+          }
+        },
+        "type": "object",
+        "title": "JobsRequest"
       },
       "NewsRequest": {
         "properties": {

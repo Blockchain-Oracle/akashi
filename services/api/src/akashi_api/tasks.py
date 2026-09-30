@@ -10,9 +10,10 @@ import orjson
 from akashi_core.cache.store import cache
 from akashi_core.obs.logging import configure_logging
 from akashi_core.settings import get_settings
+from akashi_now.jobs import ingest as jobs
 from akashi_now.news import ingest as gdelt
 
-TASKS: dict[str, Callable[[], Awaitable[dict[str, Any]]]] = {"gdelt": gdelt.run}
+TASKS: dict[str, Callable[[], Awaitable[dict[str, Any]]]] = {"gdelt": gdelt.run, "jobs": jobs.run}
 
 
 async def _run(name: str) -> dict[str, Any]:

@@ -1260,6 +1260,185 @@
               "provenance"
             ],
             "type": "object"
+          },
+          {
+            "properties": {
+              "kind": {
+                "const": "job",
+                "type": "string"
+              },
+              "company": {
+                "type": "string"
+              },
+              "location": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "department": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "remote": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "salary": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "salary_min": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "currency": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "posted_at": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "url": {
+                "type": "string"
+              },
+              "ats": {
+                "enum": [
+                  "greenhouse",
+                  "lever",
+                  "ashby"
+                ],
+                "type": "string"
+              },
+              "provenance": {
+                "properties": {
+                  "sources": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "as_of": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "age_seconds": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "freshness": {
+                    "enum": [
+                      "fresh",
+                      "lagging",
+                      "stale",
+                      "unknown"
+                    ],
+                    "type": "string"
+                  },
+                  "agreement": {
+                    "enum": [
+                      "agree",
+                      "minor_diff",
+                      "conflict",
+                      "single_source"
+                    ],
+                    "type": "string"
+                  },
+                  "spread_pct": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "licence": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "attribution": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "title",
+              "company",
+              "url",
+              "ats",
+              "provenance"
+            ],
+            "type": "object"
           }
         ]
       }

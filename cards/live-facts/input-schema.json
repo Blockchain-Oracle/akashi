@@ -294,6 +294,85 @@
         "query"
       ],
       "type": "object"
+    },
+    {
+      "properties": {
+        "query": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Words in the title/team"
+        },
+        "companies": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "type": "array"
+        },
+        "location": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "remote": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "salary_min": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Only postings that state a salary at or above"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "maxLength": 3,
+              "minLength": 3,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "posted_within_days": {
+          "maximum": 90,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "limit": {
+          "maximum": 50,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "type": "object"
     }
   ]
 }
