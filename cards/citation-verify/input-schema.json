@@ -7,9 +7,85 @@
           "items": {
             "anyOf": [
               {
+                "maxLength": 2000,
+                "minLength": 1,
                 "type": "string"
               },
               {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "raw": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "raw"
+                    ]
+                  },
+                  {
+                    "properties": {
+                      "doi": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "doi"
+                    ]
+                  },
+                  {
+                    "properties": {
+                      "arxiv": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "arxiv"
+                    ]
+                  },
+                  {
+                    "properties": {
+                      "pmid": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "pmid"
+                    ]
+                  },
+                  {
+                    "properties": {},
+                    "required": [
+                      "title"
+                    ]
+                  },
+                  {
+                    "properties": {
+                      "url": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ]
+                  },
+                  {
+                    "properties": {
+                      "legal_cite": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "legal_cite"
+                    ]
+                  }
+                ],
                 "properties": {
                   "raw": {
                     "anyOf": [
@@ -180,9 +256,85 @@
         "citation": {
           "anyOf": [
             {
+              "maxLength": 2000,
+              "minLength": 1,
               "type": "string"
             },
             {
+              "anyOf": [
+                {
+                  "properties": {
+                    "raw": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "raw"
+                  ]
+                },
+                {
+                  "properties": {
+                    "doi": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "doi"
+                  ]
+                },
+                {
+                  "properties": {
+                    "arxiv": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "arxiv"
+                  ]
+                },
+                {
+                  "properties": {
+                    "pmid": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "pmid"
+                  ]
+                },
+                {
+                  "properties": {},
+                  "required": [
+                    "title"
+                  ]
+                },
+                {
+                  "properties": {
+                    "url": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ]
+                },
+                {
+                  "properties": {
+                    "legal_cite": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "legal_cite"
+                  ]
+                }
+              ],
               "properties": {
                 "raw": {
                   "anyOf": [

@@ -270,6 +270,7 @@
         {
           "properties": {
             "place": {
+              "minLength": 1,
               "type": "string"
             }
           },
@@ -307,6 +308,7 @@
           "anyOf": [
             {
               "maxLength": 100,
+              "minLength": 1,
               "type": "string"
             },
             {

@@ -14,14 +14,14 @@ class WeatherRequest(BaseModel):
         json_schema_extra={
             "anyOf": [
                 {"required": ["lat", "lon"], "properties": {"lat": {"type": "number"}, "lon": {"type": "number"}}},
-                {"required": ["place"], "properties": {"place": {"type": "string"}}},
+                {"required": ["place"], "properties": {"place": {"type": "string", "minLength": 1}}},
             ]
         }
     )
 
     lat: float | None = Field(default=None, ge=MIN_LATITUDE, le=MAX_LATITUDE)
     lon: float | None = Field(default=None, ge=MIN_LONGITUDE, le=MAX_LONGITUDE)
-    place: str | None = Field(default=None, max_length=MAX_PLACE_CHARS)
+    place: str | None = Field(default=None, min_length=1, max_length=MAX_PLACE_CHARS)
 
     @model_validator(mode="after")
     def _where(self) -> "WeatherRequest":

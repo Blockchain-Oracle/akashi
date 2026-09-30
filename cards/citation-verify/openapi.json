@@ -321,7 +321,9 @@
           "citation": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "maxLength": 2000,
+                "minLength": 1
               },
               {
                 "$ref": "#/components/schemas/StructuredCitation"
@@ -1088,6 +1090,85 @@
         "title": "SourceStatus"
       },
       "StructuredCitation": {
+        "anyOf": [
+          {
+            "properties": {
+              "raw": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "raw"
+            ]
+          },
+          {
+            "properties": {
+              "doi": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "doi"
+            ]
+          },
+          {
+            "properties": {
+              "arxiv": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "arxiv"
+            ]
+          },
+          {
+            "properties": {
+              "pmid": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "pmid"
+            ]
+          },
+          {
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "title"
+            ]
+          },
+          {
+            "properties": {
+              "url": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "url"
+            ]
+          },
+          {
+            "properties": {
+              "legal_cite": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "legal_cite"
+            ]
+          }
+        ],
         "properties": {
           "raw": {
             "anyOf": [
@@ -1248,7 +1329,9 @@
             "items": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 2000,
+                  "minLength": 1
                 },
                 {
                   "$ref": "#/components/schemas/StructuredCitation"

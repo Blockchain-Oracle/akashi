@@ -2623,7 +2623,8 @@
           {
             "properties": {
               "place": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
               }
             },
             "required": [
@@ -2662,7 +2663,8 @@
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 100
+                "maxLength": 100,
+                "minLength": 1
               },
               {
                 "type": "null"

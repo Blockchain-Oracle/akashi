@@ -1,9 +1,9 @@
 """Request/response models for citation-verify."""
 
 from enum import StrEnum
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 from akashi_cite.constants import (
     MAX_AUTHORS,
@@ -33,7 +33,17 @@ class InputKind(StrEnum):
     statute = "statute"
 
 
+# Fields a lookup can start from; authors, year, venue, volume and pages only narrow a match.
+LOOKUP_FIELDS = ("raw", "doi", "arxiv", "pmid", "title", "url", "legal_cite")
+
+
 class StructuredCitation(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "anyOf": [{"required": [f], "properties": {f: {"type": "string", "minLength": 1}}} for f in LOOKUP_FIELDS]
+        }
+    )
+
     raw: str | None = Field(default=None, max_length=MAX_CITATION_CHARS)
     doi: str | None = None
     arxiv: str | None = None
@@ -47,8 +57,16 @@ class StructuredCitation(BaseModel):
     url: str | None = None
     legal_cite: str | None = None
 
+    @model_validator(mode="after")
+    def _has_lookup_field(self) -> "StructuredCitation":
+        if not any(getattr(self, f) for f in LOOKUP_FIELDS):
+            raise ValueError(f"a structured citation needs one of {', '.join(LOOKUP_FIELDS)}")
+        return self
 
-CitationInput = str | StructuredCitation
+
+# A bare string must carry text: an empty one reached the parsers (lxml: "Document is empty").
+CitationText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=MAX_CITATION_CHARS)]
+CitationInput = CitationText | StructuredCitation
 
 
 class VerifyOptions(BaseModel):
