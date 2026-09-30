@@ -1,0 +1,85 @@
+---
+title: Code Reality Check
+description: How Akashi checks that the packages, versions and functions in generated code exist before anyone installs or runs them. The service behind code-reality-check.
+---
+
+Models suggest packages that were never published and methods that a library does not have. Attackers register
+the invented names ("slopsquatting") and wait. The Code Reality Check asks the registries themselves and answers
+before anything is installed.
+
+It serves these endpoints under the capability ID `code-reality-check`:
+
+| Endpoint | What it answers |
+|---|---|
+| [`POST /v1/check`](/docs/reference/code/check) | Every import and call in a snippet (Python, TypeScript, JavaScript, Go, Rust) |
+| [`POST /v1/package`](/docs/reference/code/package) · [`/v1/packages`](/docs/reference/code/packages) | Is this package real and safe to install? One, or up to 100 |
+| [`POST /v1/versions`](/docs/reference/code/versions) | Which versions exist, and what a range resolves to |
+| [`POST /v1/symbol`](/docs/reference/code/symbol) · [`/v1/symbols`](/docs/reference/code/symbols) | Does this function, class or method exist in this version? |
+
+## How a check works
+
+A request has a deadline of **7 seconds**.
+
+<Steps>
+<Step>
+
+### Ask the registry
+
+Package facts come from the ecosystem's own registry: npm, PyPI, crates.io, the Go module proxy, Maven Central,
+RubyGems, Packagist or NuGet. Publish history comes from deps.dev where it covers the ecosystem.
+
+</Step>
+<Step>
+
+### Look for risk signals
+
+- **Placeholder:** npm's `0.0.1-security` holding version, a description such as "security holding package" or
+  "reserved", or an npm package under 1 KB with no entry point.
+- **Typo of a popular package:** a name within one or two edits of a package on the npm or PyPI popularity lists
+  (one edit for names of five characters or fewer), where the popular one is at least 100 times more popular.
+- **Suspiciously new:** first published less than 90 days ago with fewer than 1,000 downloads a week, or with at
+  most two versions.
+
+</Step>
+<Step>
+
+### Read the real API
+
+Symbols are checked against the published package itself: TypeScript declarations for npm, stubs and source read
+from the wheel for PyPI, rustdoc JSON from docs.rs for crates, and pkg.go.dev for Go.
+
+</Step>
+<Step>
+
+### Answer with evidence
+
+Every verdict carries `evidence` strings saying exactly what was seen, and a `did_you_mean` list when a close real
+name exists.
+
+</Step>
+</Steps>
+
+## The verdicts at a glance
+
+For a package, the first verdict in this list that applies wins.
+
+| Verdict | Meaning |
+|---|---|
+| `does_not_exist` | Not published on the registry |
+| `placeholder` | Published, but holds nothing (a security placeholder or reserved name) |
+| `likely_typo` | A near-miss of a popular package; `typo_of` names it |
+| `suspicious_new` | Brand new with almost no use |
+| `yanked` · `deprecated` | Withdrawn or deprecated by its maintainer, with the reason |
+| `ok` | Exists, and none of the above applies |
+| `unknown` | The registry did not answer in time; `retryable: true` |
+
+`unknown` never means "does not exist". Symbols answer `exists: yes`, `no` or `unknown` for the same reason.
+
+## Next steps
+
+<Cards>
+  <Card title="Check a code snippet" href="/docs/services/code/snippet-check" description="Paste code, get one diagnostic per import and call." />
+  <Card title="Check packages before you install them" href="/docs/services/code/packages-and-typosquats" description="Typosquats, placeholders and versions." />
+  <Card title="Check that a function exists" href="/docs/services/code/symbols" description="Real signatures from the published package." />
+  <Card title="API reference" href="/docs/reference/code/check" description="Every field of every endpoint." />
+</Cards>

@@ -1,0 +1,197 @@
+---
+title: Get an exchange rate
+description: Get the rate between two currencies from the central banks that publish it, with each bank's fixing, its age in business days and whether the banks agree.
+---
+
+You will call `/v1/fx` for a currency pair and read which central bank each number came from. You need a way to call
+Akashi (the [mppx CLI](/docs/calling/curl-and-mppx) is the quickest; see [Calling Akashi](/docs/calling)).
+
+## When to use it
+
+- **Converting a price or an invoice** where the rate must be an official one and its date must be stated.
+- **Checking a rate a model quoted.** Rates move daily; the answer shows the fixing date of every source.
+- **Spotting disagreement.** For some currencies the central banks that publish a rate differ by several percent;
+  the answer says so instead of averaging.
+
+Rates are central-bank reference fixings (published once a day, or once a week), not live market quotes.
+
+## Request
+
+<TypeTable
+  type={{
+    base: { type: "string", description: "ISO 4217 code of the currency you have, e.g. USD.", required: true },
+    quotes: { type: "string[]", description: "ISO 4217 codes you want rates for; 1 to 10.", required: true },
+    amount: { type: "number", description: "An amount of base to convert; the answer adds converted." },
+    date: { type: "string (date)", description: "A historical date instead of the latest fixings." },
+  }}
+/>
+
+## Send it
+
+```json title="Request body"
+{ "base": "USD", "quotes": ["EUR"] }
+```
+
+```bash title="Terminal"
+MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/live-facts/v1/fx -J '{"base":"USD","quotes":["EUR"]}' --protocol x402
+```
+
+<Callout type="warn" title="Not listed on the portal yet">
+  Akashi is registered on Pocket Network (Beta) but not yet listed on the agent portal, so this call works once
+  `live-facts` is listed. The answer on this page is real, captured from the running service.
+</Callout>
+
+## The answer
+
+```json title="POST /v1/fx · 187 ms"
+{
+  "service": "live-facts",
+  "operation": "fx",
+  "version": "1.0.0",
+  "status": "complete",
+  "as_of": "2026-09-30T09:17:20+00:00",
+  "deadline_ms": 4000,
+  "elapsed_ms": 187,
+  "unavailable": [],
+  "summary": {
+    "fx_rate": 1
+  },
+  "results": [
+    {
+      "kind": "fx_rate",
+      "base": "USD",
+      "quote": "EUR",
+      "rate": 0.88067,
+      "date": "2026-09-29",
+      "amount": null,
+      "converted": null,
+      "providers": [
+        {
+          "provider": "FRED",
+          "name": "Federal Reserve Bank of St. Louis",
+          "rate": 0.87719,
+          "date": "2026-09-25",
+          "rate_type": "H.10",
+          "issuer": false,
+          "cadence": "weekly",
+          "freshness": "lagging",
+          "business_days_old": 3
+        },
+        {
+          "provider": "BOE",
+          "name": "Bank of England",
+          "rate": 0.87986,
+          "date": "2026-09-28",
+          "rate_type": "spot rate",
+          "issuer": false,
+          "cadence": "daily",
+          "freshness": "lagging",
+          "business_days_old": 2
+        },
+        {
+          "provider": "BOC",
+          "name": "Bank of Canada",
+          "rate": 0.88212,
+          "date": "2026-09-29",
+          "rate_type": "indicative rate",
+          "issuer": false,
+          "cadence": "daily",
+          "freshness": "fresh",
+          "business_days_old": 1
+        },
+        {
+          "provider": "ECB",
+          "name": "European Central Bank",
+          "rate": 0.88067,
+          "date": "2026-09-29",
+          "rate_type": "reference rate",
+          "issuer": true,
+          "cadence": "daily",
+          "freshness": "fresh",
+          "business_days_old": 1
+        }
+      ],
+      "provenance": {
+        "sources": [
+          "BOE",
+          "BOC",
+          "ECB"
+        ],
+        "as_of": "2026-09-29",
+        "age_seconds": 119840,
+        "freshness": "fresh",
+        "agreement": "agree",
+        "spread_pct": 0.2566,
+        "licence": "central-bank reference data",
+        "attribution": "Central-bank reference rates via Frankfurter (frankfurter.dev)"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "name": "frankfurter",
+      "status": "ok",
+      "url": null,
+      "licence": "central-bank reference data",
+      "attribution": "Central-bank reference rates via Frankfurter (frankfurter.dev)",
+      "as_of": null,
+      "fetched_at": null,
+      "latency_ms": null,
+      "cache": null
+    }
+  ],
+  "notes": []
+}
+```
+
+## Reading the answer
+
+- **`rate`** is **0.88067**, the European Central Bank's fixing. When the quote currency's own central bank has a
+  current fixing (`issuer: true`), its rate is the headline; otherwise the headline is the median of the current
+  fixings.
+- **`providers`** lists every bank consulted, up to four: the currency's issuers first, then ECB, FRED, BOC, BOE, RBA
+  and BOJ, then any other bank that publishes the pair. Rates come through Frankfurter, which serves each bank's own
+  fixing.
+- **`date`** and **`business_days_old`** give each fixing's age. Banks publish at different hours, so fixings within
+  one business day of the newest are compared as current; that is why BOC and ECB (29 September) and BOE
+  (28 September) all count.
+- **FRED is `lagging`**: its H.10 series is weekly, so a fixing from 25 September is on schedule but older than the
+  rest. It is listed and left out of the comparison. A fixing becomes `stale` only when it is older than its bank's
+  cadence allows (2 business days for a daily bank, 6 for a weekly one).
+- **`agreement: agree`** with **`spread_pct: 0.2566`**: the current fixings are within 0.5 % of each other. Up to
+  1.5 % is `minor_diff`; beyond that, `conflict`.
+
+## Edge cases
+
+<Accordions>
+  <Accordion title="The banks disagree">
+    USD→NGN is published by the Central Bank of Nigeria and by the central banks of Tanzania, Angola and The Gambia.
+    On 30 September 2026 The Gambia's fixing was about 9 % below the others: the answer kept the Central Bank of
+    Nigeria's rate as the headline, listed every fixing, and reported `agreement: conflict` with `spread_pct: 9.55`.
+    See the worked example in [How Live Facts works](/docs/services/now).
+  </Accordion>
+  <Accordion title="Which banks count as independent">
+    Only banks that publish their own daily or weekly fixing are compared. Euro-area national banks republish the
+    ECB's fixing to the digit, so only the ECB counts for them; aggregators with no country (IMF, BIS) and monthly
+    averages are left out.
+  </Accordion>
+  <Accordion title="No central bank publishes the pair">
+    The call fails with `422 invalid_input`, naming the pair.
+  </Accordion>
+  <Accordion title="Frankfurter is down">
+    The answer falls back to the ECB's own daily XML file and computes cross rates from it. The envelope is `partial`,
+    `unavailable` names `frankfurter`, and each result has one provider, `ECB` ("European Central Bank (direct)").
+  </Accordion>
+  <Accordion title="How fresh is a repeated call">
+    Rates are cached for 10 minutes and the list of banks for 24 hours. Fixings change at most once a day, so this does
+    not hide a newer rate for long.
+  </Accordion>
+</Accordions>
+
+## Next steps
+
+<Cards>
+  <Card title="Get the weather" href="/docs/services/now/weather" description="Two weather services compared in the US." />
+  <Card title="How Live Facts works" href="/docs/services/now" description="Freshness and agreement, explained." />
+  <Card title="API reference: /v1/fx" href="/docs/reference/now/fx" description="Every field of the request and response." />
+</Cards>

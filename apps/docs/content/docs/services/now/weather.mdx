@@ -1,0 +1,183 @@
+---
+title: Get the weather
+description: Get the forecast for the current hour at a place or coordinates from MET Norway, cross-checked against the US National Weather Service inside the United States, with NWS alerts.
+---
+
+You will call `/v1/weather` for a point and read how the two forecasts compare. You need a way to call Akashi (the
+[mppx CLI](/docs/calling/curl-and-mppx) is the quickest; see [Calling Akashi](/docs/calling)).
+
+## When to use it
+
+- **"What is it like outside right now?"** for a trip, an event or a delivery.
+- **Checking a US forecast against a second service**, with active NWS alerts for the point.
+
+The values are the **forecast for the current hour**, not a weather-station observation; every answer says so in its
+notes.
+
+## Request
+
+<TypeTable
+  type={{
+    lat: { type: "number", description: "Latitude, −90 to 90. Give lat and lon, or place." },
+    lon: { type: "number", description: "Longitude, −180 to 180." },
+    place: { type: "string", description: "A place name, looked up on Wikidata. Give this or lat and lon. Up to 100 characters." },
+  }}
+/>
+
+Coordinates are rounded to 4 decimal places (about 11 m), as MET Norway's terms ask.
+
+## Send it
+
+```json title="Request body"
+{ "lat": 40.7128, "lon": -74.006 }
+```
+
+```bash title="Terminal"
+MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/live-facts/v1/weather -J '{"lat":40.7128,"lon":-74.006}' --protocol x402
+```
+
+<Callout type="warn" title="Not listed on the portal yet">
+  Akashi is registered on Pocket Network (Beta) but not yet listed on the agent portal, so this call works once
+  `live-facts` is listed. The answer on this page is real, captured from the running service.
+</Callout>
+
+## The answer
+
+```json title="POST /v1/weather · New York City · 248 ms"
+{
+  "service": "live-facts",
+  "operation": "weather",
+  "version": "1.0.0",
+  "status": "complete",
+  "as_of": "2026-09-30T09:17:56+00:00",
+  "deadline_ms": 4000,
+  "elapsed_ms": 248,
+  "unavailable": [],
+  "summary": {
+    "weather": 1
+  },
+  "results": [
+    {
+      "kind": "weather",
+      "lat": 40.7128,
+      "lon": -74.006,
+      "place": null,
+      "valid_for": "2026-09-30T09:00:00Z",
+      "temperature_c": 15.0,
+      "wind_speed_ms": 1.8,
+      "wind_from_deg": 307.5,
+      "humidity_pct": 93.5,
+      "precipitation_next_hour_mm": 0.0,
+      "conditions": "clearsky_night",
+      "readings": [
+        {
+          "source": "met.no",
+          "valid_for": "2026-09-30T09:00:00Z",
+          "temperature_c": 15.0,
+          "wind_speed_ms": 1.8,
+          "humidity_pct": 93.5,
+          "conditions": "clearsky_night",
+          "issued_at": "2026-09-30T08:19:59Z"
+        },
+        {
+          "source": "nws",
+          "valid_for": "2026-09-30T09:00:00+00:00",
+          "temperature_c": 16.7,
+          "wind_speed_ms": 2.2,
+          "humidity_pct": 90.0,
+          "conditions": "Partly Cloudy",
+          "issued_at": "2026-09-30T06:37:45+00:00"
+        }
+      ],
+      "alerts": [],
+      "provenance": {
+        "sources": [
+          "met.no",
+          "nws"
+        ],
+        "as_of": "2026-09-30T08:19:59Z",
+        "age_seconds": 3477,
+        "freshness": "fresh",
+        "agreement": "minor_diff",
+        "spread_pct": null,
+        "licence": "CC BY 4.0 (MET Norway)",
+        "attribution": "Data from MET Norway"
+      },
+      "notes": [
+        "values are the forecast for the current hour (nowcast), not a station observation",
+        "temperature gap between sources: 1.7 °C"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "name": "met.no",
+      "status": "ok",
+      "url": null,
+      "licence": null,
+      "attribution": null,
+      "as_of": null,
+      "fetched_at": null,
+      "latency_ms": null,
+      "cache": null
+    },
+    {
+      "name": "nws",
+      "status": "ok",
+      "url": null,
+      "licence": null,
+      "attribution": null,
+      "as_of": null,
+      "fetched_at": null,
+      "latency_ms": null,
+      "cache": null
+    }
+  ],
+  "notes": []
+}
+```
+
+## Reading the answer
+
+- **The top-level values** (`temperature_c`, `wind_speed_ms`, `wind_from_deg`, `humidity_pct`,
+  `precipitation_next_hour_mm`, `conditions`) come from MET Norway, for the hour in `valid_for`.
+- **`readings`** holds each source's own forecast for the same hour. NWS reports °F and mph; they are converted to
+  °C and m/s so the two can be compared.
+- **`agreement`** is decided on the temperature gap in degrees, not a percentage (a percentage is meaningless near
+  0 °C): up to 1.5 °C is `agree`, up to 3.0 °C `minor_diff`, beyond that `conflict`. Here the gap is 1.7 °C, so
+  `minor_diff`, and a note states the gap.
+- **`as_of`** is when MET Norway issued the forecast, and `age_seconds` how long ago that was.
+- **`alerts`** lists the headlines of active NWS alerts for the point; it is empty here.
+- **`licence`** is CC BY 4.0: show "Data from MET Norway" wherever you display the values.
+
+## Edge cases
+
+<Accordions>
+  <Accordion title="Outside the United States">
+    Only MET Norway answers, so `agreement` is `single_source`. For `{"place": "Oslo"}` the answer resolved the place
+    to "Oslo (capital city of Norway)" and used MET Norway alone. With bare coordinates outside the US, NWS is asked, answers that
+    the point is outside its coverage, and is listed as `not_applicable`.
+  </Accordion>
+  <Accordion title="A place name matches a region">
+    A place is the top Wikidata match for the name. `{"place": "New York"}` resolved to New York State (43, −75),
+    not the city. Pass coordinates, or a more specific name such as "New York City", when the point matters.
+  </Accordion>
+  <Accordion title="The place cannot be found">
+    The call fails with `422 invalid_input` and asks for `lat` and `lon` instead.
+  </Accordion>
+  <Accordion title="How fresh is a repeated call">
+    MET Norway's forecast is cached until the time in its `Expires` header, as its terms require; the NWS grid lookup
+    for a point is cached for 30 days. A forecast is never older than the one MET Norway currently serves.
+  </Accordion>
+  <Accordion title="Neither service answers">
+    The envelope is `partial`, `unavailable` names both, and `results` is empty. It is never a server error.
+  </Accordion>
+</Accordions>
+
+## Next steps
+
+<Cards>
+  <Card title="Find recent news" href="/docs/services/now/news" description="Headlines from GDELT and Hacker News." />
+  <Card title="How Live Facts works" href="/docs/services/now" description="Freshness and agreement, explained." />
+  <Card title="API reference: /v1/weather" href="/docs/reference/now/weather" description="Every field of the request and response." />
+</Cards>

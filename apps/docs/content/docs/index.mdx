@@ -1,24 +1,33 @@
 ---
-title: Evidence for what agents claim
-eyebrow: 証 akashi · documentation
-description: Three pay-per-call verification services on Pocket Network. Each answer states what was checked, against which records, how old they are and whether the sources agree.
+title: Introduction
+description: Akashi (証, proof) is three pay-per-call verification services for AI agents on Pocket Network. Each answer states what was checked, against which records, how old they are and whether the sources agree.
 ---
 
-Agents are fluent and often wrong in the same three places: a citation that does not exist, a package or method
-that was never published, and a fact that was true last year. Akashi (証, *proof*) checks each of them against the
-records themselves and answers with evidence, not an opinion.
+Agents are fluent and often wrong in three places: a citation that does not exist, a package or method that was
+never published, and a fact that was true last year. Akashi checks each of them against the records themselves.
 
-<ServiceLedger />
+<Cards>
+  <Card title="Quickstart" href="/docs/start/quickstart" description="Make your first call in three minutes." />
+  <Card title="For judges" href="/docs/start/judges" description="What to try, and what each answer proves." />
+  <Card title="API reference" href="/docs/reference" description="Every endpoint, generated from the published OpenAPI, with a playground." />
+  <Card title="The response contract" href="/docs/contract/response" description="The envelope every call returns, partial results and errors." />
+</Cards>
+
+## The three services
+
+<Cards>
+  <Card title="典 Citation Verifier" href="/docs/services/cite" description="citation-verify · Is the citation real, does it say what it is cited for, has it been retracted?" />
+  <Card title="符 Code Reality Check" href="/docs/services/code" description="code-reality-check · Do the packages, versions and symbols in a snippet exist?" />
+  <Card title="今 Live Facts" href="/docs/services/now" description="live-facts · Time, holidays, exchange rates, weather, news, stocks, jobs and Wikidata, with sources compared." />
+</Cards>
 
 ## What an answer looks like
 
 In *Mata v. Avianca* (S.D.N.Y. 2023), a brief cited *Varghese v. China Southern Airlines Co.*, 925 F.3d 1339
-(11th Cir. 2019), a case a chatbot had invented. This is Akashi checking that citation: a real response from the
-running service.
+(11th Cir. 2019), a case a chatbot had invented. This is Akashi checking that citation, a real response from the
+running service:
 
-<Exhibit request="POST /v1/verify · citation-verify" result="not_found · 441 ms" tone="not-found">
-
-```json
+```json title="POST /v1/verify · citation-verify · 441 ms"
 {
   "service": "citation-verify",
   "operation": "verify",
@@ -77,14 +86,6 @@ running service.
 }
 ```
 
-</Exhibit>
-
-The verdict comes with its reason. Page 1339 of volume 925 of the Federal Reporter lies inside another case,
-*J.D. v. Azar* (pages 1291–1349), so no case can begin there. The source is named (the Caselaw Access Project, CC0),
-the link lets anyone check it, and `retryable: false` says asking again will not change the answer.
-
-## Read next
-
-- [The response contract](/contract): the envelope every call returns, partial results and errors.
-- [Citation Verifier](/services/cite), [Code Reality Check](/services/code) and [Live Facts](/services/now): what
-  each service checks and every verdict it can give.
+The verdict comes with its reason: page 1339 of volume 925 lies inside another case, *J.D. v. Azar* (pages
+1291–1349), so no case can begin there. The source is named, the link lets anyone check it, and
+`retryable: false` says that asking again will not change the answer.

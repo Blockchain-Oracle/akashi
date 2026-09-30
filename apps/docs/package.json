@@ -12,14 +12,19 @@
   "dependencies": {
     "@akashi/api-client": "workspace:*",
     "@akashi/brand": "workspace:*",
+    "clsx": "catalog:",
     "fumadocs-core": "catalog:",
     "fumadocs-mdx": "catalog:",
+    "fumadocs-openapi": "catalog:",
     "fumadocs-ui": "catalog:",
     "lucide-react": "catalog:",
+    "motion": "catalog:",
     "next": "catalog:",
     "next-themes": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "shiki": "catalog:",
+    "tailwind-merge": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

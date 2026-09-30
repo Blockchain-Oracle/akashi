@@ -1,0 +1,65 @@
+---
+title: For judges
+description: Ten minutes of checks that show what each Akashi service does, with the answer you should get.
+---
+
+Each check below is a real input with the verdict Akashi gives today. Run them in the API reference playground
+(free, calls Akashi directly) or, once Akashi is listed, through the Pocket portal (paid, $0.005 each).
+
+## How to run a check
+
+<Tabs groupId="route" items={["API reference playground", "Pocket portal"]} persist>
+<Tab value="API reference playground">
+
+Open the endpoint's page under **API reference**, paste the request body into the playground and press **Send**.
+The request goes straight to the Akashi API, unmetered.
+
+</Tab>
+<Tab value="Pocket portal">
+
+With a funded test wallet (see the [quickstart](/docs/start/quickstart)):
+
+```bash title="Terminal"
+MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 \
+  https://test.agent.pocket.network/v1/citation-verify/v1/verify \
+  -J '{"citations":["Varghese v. China Southern Airlines Co., 925 F.3d 1339 (11th Cir. 2019)"]}' \
+  --protocol x402 -i
+```
+
+</Tab>
+</Tabs>
+
+## 典 Citation Verifier
+
+`POST /v1/verify` with `{"citations": [...]}`:
+
+| Citation | Verdict | What it shows |
+|---|---|---|
+| `Varghese v. China Southern Airlines Co., 925 F.3d 1339 (11th Cir. 2019)` | `not_found` | the invented case from *Mata v. Avianca*: page 1339 falls inside *J.D. v. Azar* (1291–1349) |
+| `10.1016/S0140-6736(97)11096-0` | `retracted` | Wakefield's 1998 MMR paper, retracted on 2010-02-06 |
+| `arXiv:1706.03762` | `verified` | *Attention Is All You Need*, matched to the 2017 arXiv record |
+
+## 符 Code Reality Check
+
+`POST /v1/packages` with `{"items": [{"ecosystem": "...", "name": "..."}]}`, and `POST /v1/check` for a snippet:
+
+| Input | Verdict | What it shows |
+|---|---|---|
+| npm `react-codeshift` | `placeholder` | a name registered to hold nothing; the evidence quotes its description |
+| npm `left-padx` | `does_not_exist` | suggests `left-pad`, one edit away |
+| PyPI `reqeusts` | `does_not_exist` | suggests `requests` |
+| JavaScript `axios.fetchJson("/api")` | `nonexistent_symbol` | axios has no `fetchJson`, checked against its published type definitions |
+
+## 今 Live Facts
+
+| Request | Answer | What it shows |
+|---|---|---|
+| `/v1/time` `{"zone": "Africa/Casablanca", "at": "2026-11-15T18:00:00Z"}` | `utc_offset: +00:00`, tzdb `2026d` | the pinned tz database, not a model's memory |
+| `/v1/fx` `{"base": "USD", "quotes": ["EUR"]}` | `agreement: agree`, each central bank's fixing and age | ECB and Bank of Canada current; Bank of England and FRED marked `lagging` on their own schedules |
+| `/v1/stocks` `{"symbols": ["AAPL", "APPL"]}` | `AAPL` ok with its close cross-checked; `APPL` `not_found`, suggesting `AAPL` | a typo is caught instead of priced |
+
+## What to look for
+
+- The verdict is a fixed word, and every verdict carries its reason and source.
+- Nothing is invented to fill a gap: a source that did not answer is named in `unavailable`.
+- `retryable` says whether asking again could change the answer.

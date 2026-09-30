@@ -1,4 +1,21 @@
 {
   "title": "Akashi Docs",
-  "pages": ["---Start---", "index", "contract", "---Services---", "services/cite", "services/code", "services/now"]
+  "pages": [
+    "index",
+    "---Get started---",
+    "...start",
+    "---Call Akashi---",
+    "...calling",
+    "---Services---",
+    "services/cite",
+    "services/code",
+    "services/now",
+    "---Contract---",
+    "...contract",
+    "---Data---",
+    "...data",
+    "changelog",
+    "---API reference---",
+    "...reference"
+  ]
 }

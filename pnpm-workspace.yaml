@@ -50,6 +50,8 @@ catalog:
   fumadocs-core: 16.15.13
   fumadocs-ui: "npm:@fumadocs/base-ui@16.15.13"
   fumadocs-mdx: 15.4.3
+  fumadocs-openapi: 12.0.2
+  shiki: 4.4.3
   "@types/mdx": 2.0.14
   openapi-typescript: 7.13.0
   openapi-fetch: 0.17.0

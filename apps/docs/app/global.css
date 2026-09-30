@@ -1,15 +1,12 @@
 @import "tailwindcss";
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
+@import "fumadocs-openapi/css/preset.css";
 @import "@akashi/brand/tokens.css";
 @source "../node_modules/fumadocs-ui/dist";
+@source "../node_modules/fumadocs-openapi/dist";
 
-/*
- * Akashi docs: the same certificate ledger as the app (packages/brand/tokens/theme.css). Hairlines do the layout,
- * Newsreader titles, Plex Sans text, Plex Mono for labels and data, indigo only for interaction.
- */
-
-/* Fumadocs reads its own --color-fd-* variables: point them at the brand tokens, which switch with .dark. */
+/* Stock Fumadocs layout and components; only the theme variables point at the Akashi brand tokens. */
 :root,
 :root.dark {
   --color-fd-background: var(--background);
@@ -30,424 +27,40 @@
   --color-fd-ring: var(--ring);
 }
 
-:root {
-  --docs-header-height: 4rem;
-  --docs-eyebrow: 0.6875rem;
-  --docs-measure: 72ch;
-}
-
-/* Defined on the layout element, not :root: it reads --fd-sidebar-col and --fd-toc-width, which Fumadocs sets
-   there, and a custom property resolves its var() references where it is declared. */
-#nd-docs-layout {
-  --docs-grid: "header header header" "sidebar toc-popover toc" "sidebar main toc" 1fr / var(--fd-sidebar-col)
-    minmax(0, 1fr) var(--fd-toc-width);
-}
-
-body {
-  font-family: var(--font-sans);
-}
-
-/* ---------- header ---------- */
-
-.docs-header {
-  grid-area: header;
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  height: var(--docs-header-height);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  padding-inline: 1.5rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--background);
-}
-
-.docs-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: var(--foreground);
-}
-.docs-brand-seal {
-  width: 1.75rem;
-  height: 1.75rem;
-}
-.docs-brand-word {
-  height: 0.8125rem;
-  width: auto;
-}
-.docs-brand-tag {
-  font-family: var(--font-mono);
-  font-size: var(--docs-eyebrow);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted-foreground);
-  padding-left: 0.75rem;
-  border-left: 1px solid var(--border);
-}
-
-.docs-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-}
-
-.docs-search {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  width: clamp(12rem, 26vw, 22rem);
-  height: 2.25rem;
-  padding-inline: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--card);
-  color: var(--muted-foreground);
-  font-size: 0.875rem;
-  text-align: left;
-  transition: border-color var(--duration-state) var(--ease-seal);
-}
-.docs-search:hover {
-  border-color: var(--primary);
-}
-.docs-search svg {
-  width: 1rem;
-  height: 1rem;
-}
-.docs-search kbd {
-  margin-left: auto;
-  font-family: var(--font-mono);
-  font-size: var(--docs-eyebrow);
-  padding: 0.0625rem 0.375rem;
-  border: 1px solid var(--border);
-  border-radius: calc(var(--radius) - 2px);
-}
-
-.docs-icon-button {
-  display: grid;
-  place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--muted-foreground);
-  transition: color var(--duration-state) var(--ease-seal), background var(--duration-state) var(--ease-seal);
-}
-.docs-icon-button:hover {
-  color: var(--foreground);
-  background: var(--accent);
-}
-.docs-icon-button svg {
-  width: 1rem;
-  height: 1rem;
-}
-.docs-icon-dark,
-.dark .docs-icon-light {
-  display: none;
-}
-.dark .docs-icon-dark {
-  display: block;
-}
-.docs-menu {
-  display: none;
-}
-
-.docs-open-app {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  height: 2.25rem;
-  padding-inline: 0.875rem;
-  border-radius: var(--radius);
-  background: var(--primary);
-  color: var(--primary-foreground);
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-.docs-open-app svg {
-  width: 0.875rem;
-  height: 0.875rem;
-}
-
-@media (max-width: 767px) {
-  .docs-header {
-    padding-inline: 1rem;
-  }
-  .docs-search span,
-  .docs-search kbd,
-  .docs-open-app {
-    display: none;
-  }
-  .docs-search {
-    width: 2.25rem;
-    padding: 0;
-    justify-content: center;
-  }
-  .docs-menu {
-    display: grid;
+/* Border beam (components/landing/border-beam.tsx). */
+@theme {
+  --animate-border-beam: border-beam calc(var(--duration) * 1s) infinite linear;
+  @keyframes border-beam {
+    100% {
+      offset-distance: 100%;
+    }
   }
 }
 
-/* ---------- sidebar: mono section labels, plain items, an indigo rule for the current page ---------- */
-
-#nd-sidebar {
-  background: var(--background);
-  border-right: 1px solid var(--border);
-}
-:is(#nd-sidebar, #nd-sidebar-mobile) p {
-  font-family: var(--font-mono);
-  font-size: var(--docs-eyebrow);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted-foreground);
-  margin-top: 1.75rem;
-}
-:is(#nd-sidebar, #nd-sidebar-mobile) a {
-  border-radius: 0;
-  padding-block: 0.4375rem;
-  font-size: 0.875rem;
-  color: var(--muted-foreground);
-}
-:is(#nd-sidebar, #nd-sidebar-mobile) a:hover {
-  background: transparent;
-  color: var(--foreground);
-}
-:is(#nd-sidebar, #nd-sidebar-mobile) a[data-active="true"] {
-  background: transparent;
-  color: var(--foreground);
-  font-weight: 500;
-  box-shadow: inset 2px 0 0 var(--primary);
-}
-
-/* ---------- page ---------- */
-
-#nd-page {
-  padding-top: 3rem;
-  padding-bottom: 6rem;
-}
-
-.page-head {
-  max-width: var(--docs-measure);
-  padding-bottom: 2rem;
-  margin-bottom: 2rem;
-  border-bottom: 1px solid var(--border);
-}
-.page-eyebrow {
-  font-family: var(--font-mono);
-  font-size: var(--docs-eyebrow);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted-foreground);
-  margin-bottom: 1rem;
-}
-.page-title {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(2.25rem, 4vw, 3rem);
-  line-height: 1.08;
-  letter-spacing: -0.01em;
-  text-wrap: balance;
-}
-.page-description {
-  margin-top: 1rem;
-  font-size: 1.125rem;
-  line-height: 1.6;
-  color: var(--muted-foreground);
-  text-wrap: pretty;
-}
-
-.prose {
-  --tw-prose-body: var(--foreground);
-  --tw-prose-headings: var(--foreground);
-  --tw-prose-links: var(--primary);
-  max-width: var(--docs-measure);
-  font-size: 1rem;
-  line-height: 1.7;
-}
-.prose > :first-child {
-  margin-top: 0;
-}
-.prose :where(h2) {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 1.75rem;
-  letter-spacing: -0.005em;
-  margin-top: 3rem;
-}
-.prose :where(h3) {
-  font-weight: 600;
-  font-size: 1.0625rem;
-}
-.prose :where(a) {
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
-}
-.prose :where(:not(pre) > code) {
-  font-family: var(--font-mono);
-  font-size: 0.875em;
-  padding: 0.0625rem 0.3125rem;
-  border: 1px solid var(--border);
-  border-radius: calc(var(--radius) - 2px);
-  background: var(--card);
-}
-
-/* tables: hairline rows, mono head, no box */
-.prose :where(table) {
-  border: 0;
-  border-radius: 0;
-  border-collapse: collapse;
-  background: transparent;
-  font-size: 0.9375rem;
-}
-.prose :where(thead th) {
-  font-family: var(--font-mono);
-  font-size: var(--docs-eyebrow);
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted-foreground);
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--foreground);
-}
-.prose :where(td, th) {
-  border: 0;
-  border-bottom: 1px solid var(--border);
-  padding: 0.625rem 0.75rem 0.625rem 0;
-  background: transparent;
-  vertical-align: top;
-}
-.prose :where(td:first-child code) {
-  white-space: nowrap;
-}
-
-/* code blocks: paper card, hairline, mono */
-.prose :where(figure.shiki, pre) {
-  border-radius: var(--radius);
-  box-shadow: none;
-}
-.prose :where(figure.shiki) {
-  border: 1px solid var(--border);
-  background: var(--card);
-}
-pre,
-code {
-  font-family: var(--font-mono);
-}
-
-/* table of contents */
-#nd-toc h3,
-#nd-toc-title {
-  font-family: var(--font-mono);
-  font-size: var(--docs-eyebrow);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted-foreground);
-}
-
-/* ---------- the service ledger (home) ---------- */
-
-.ledger {
-  list-style: none;
-  margin: 2.5rem 0;
-  padding: 0;
-  border-top: 1px solid var(--border);
-}
-.ledger-row {
-  display: grid;
-  grid-template-columns: 2.75rem 1fr;
-  gap: 1rem;
-  padding: 1.75rem 0;
-  border-bottom: 1px solid var(--border);
-}
-.ledger-kanji {
-  font-family: var(--font-mark);
-  font-size: 1.75rem;
-  line-height: 1;
-}
-.ledger-head {
-  display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
-}
-.ledger-name {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  line-height: 1.1;
-  color: var(--foreground);
-}
-.ledger-name:hover {
-  color: var(--primary);
-}
-.ledger-leader {
-  flex: 1;
-  align-self: flex-end;
-  margin-bottom: 0.375rem;
-  border-bottom: 1px dotted var(--border);
-}
-.prose .ledger-id {
-  border: 0;
-  padding: 0;
-  background: transparent;
-}
-.ledger-id,
-.ledger-endpoints {
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  color: var(--muted-foreground);
-}
-.ledger-summary {
-  margin-top: 0.625rem;
-  color: var(--muted-foreground);
-  text-wrap: pretty;
-}
-.ledger-endpoints {
-  margin-top: 0.75rem;
-  font-size: 0.75rem;
-}
-
-/* ---------- an exhibit: a real, captured response ---------- */
-
-.exhibit {
-  margin: 2rem 0;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--card);
-  overflow: hidden;
-}
-.exhibit-caption {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.625rem 1rem;
-  border-bottom: 1px solid var(--border);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--muted-foreground);
-}
-.exhibit-result[data-tone="verified"] { color: var(--verdict-verified); }
-.exhibit-result[data-tone="mismatch"] { color: var(--verdict-mismatch); }
-.exhibit-result[data-tone="not-found"] { color: var(--verdict-not-found); }
-.exhibit-result[data-tone="retracted"] { color: var(--verdict-retracted); }
-.exhibit-result[data-tone="ambiguous"] { color: var(--verdict-ambiguous); }
-.exhibit-result[data-tone="unknown"] { color: var(--verdict-unknown); }
-.exhibit-body :where(figure.shiki) {
-  margin: 0;
-  border: 0;
-  border-radius: 0;
-}
-
-@media (max-width: 640px) {
-  .ledger-row {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
+/* Landing entrance for the bento cells. */
+@keyframes ak-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.98);
   }
-  .ledger-head {
-    flex-wrap: wrap;
+  to {
+    opacity: 1;
+    transform: none;
   }
-  .ledger-leader {
-    display: none;
+}
+.ak-rise {
+  animation: ak-rise 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ak-rise {
+    animation: none;
   }
+}
+
+/* Shiki dual themes in the code showcase. */
+.ak-code .shiki span {
+  color: var(--shiki-light);
+}
+.dark .ak-code .shiki span {
+  color: var(--shiki-dark);
 }

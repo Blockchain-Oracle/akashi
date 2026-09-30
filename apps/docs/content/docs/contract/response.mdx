@@ -1,0 +1,52 @@
+---
+title: The response envelope
+description: The JSON object every successful Akashi call returns, field by field.
+---
+
+Every success from every service has the same outer shape, so one piece of code can read all of them. Only
+`results` differs: each service puts its own typed items there.
+
+<TypeTable
+  type={{
+    service: { type: "string", description: "The capability ID that answered: citation-verify, code-reality-check or live-facts." },
+    operation: { type: "string", description: "The endpoint, e.g. verify, check, fx." },
+    version: { type: "string", description: "Akashi's release." },
+    status: { type: '"complete" | "partial"', description: "partial when a source did not answer before the hard stop. The missing sources are named in unavailable." },
+    as_of: { type: "string", description: "When the answer was assembled (ISO 8601, UTC)." },
+    deadline_ms: { type: "number", description: "This service's hard stop: 8500, 7000 or 4000." },
+    elapsed_ms: { type: "number", description: "How long this answer took." },
+    unavailable: { type: "string[]", description: "Names of the sources that failed. Empty when status is complete." },
+    summary: { type: "Record<string, number>", description: "How many results carry each verdict or kind, e.g. {\"verified\": 3, \"not_found\": 1}." },
+    results: { type: "object[]", description: "One typed result per input, in input order. Each service page documents its result type." },
+    sources: { type: "SourceRef[]", description: "Every upstream consulted for this answer." },
+    notes: { type: "string[]", description: "Anything the answer should be read with." },
+  }}
+/>
+
+## Sources
+
+Each entry in `sources` says what happened when Akashi asked that upstream:
+
+<TypeTable
+  type={{
+    name: { type: "string", description: "The source, e.g. crossref, npm, met.no." },
+    status: { type: '"ok" | "not_found" | "unavailable" | "rate_limited" | "skipped_budget" | "not_applicable"', description: "skipped_budget: not asked, to stay inside the deadline. not_applicable: the source does not cover this input (the US weather service for Berlin)." },
+    licence: { type: "string | null", description: "The terms the data comes with." },
+    attribution: { type: "string | null", description: "How to credit the source." },
+    latency_ms: { type: "number | null", description: "How long the source took, when measured." },
+    cache: { type: '"hit" | "miss" | "stale" | null', description: "Whether the answer came from Akashi's cache." },
+  }}
+/>
+
+## Reading a partial answer
+
+A `partial` answer is still an answer. Items that could be settled are settled; items that depended on the missing
+source say so with `unverifiable` (citations) or `unknown` (code), and carry `retryable: true`. Ask again later
+for those items only.
+
+## Next steps
+
+<Cards>
+  <Card title="Errors" href="/docs/contract/errors" description="Every error code and what to do about it." />
+  <Card title="Limits" href="/docs/contract/limits" description="Sizes, counts and deadlines." />
+</Cards>

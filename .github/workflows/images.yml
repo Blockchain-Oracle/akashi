@@ -3,7 +3,7 @@ name: images
 on:
   push:
     branches: [main]
-    paths: ["apps/**", "packages/api-client/**", "packages/brand/**", "packages/model/**", "pnpm-lock.yaml", "pnpm-workspace.yaml", "deploy/next-app/**", ".github/workflows/images.yml"]
+    paths: ["apps/**", "cards/**", "packages/api-client/**", "packages/brand/**", "packages/model/**", "pnpm-lock.yaml", "pnpm-workspace.yaml", "deploy/next-app/**", ".github/workflows/images.yml"]
   workflow_dispatch:
 permissions: { contents: read, packages: write }
 concurrency: { group: images, cancel-in-progress: true }
@@ -37,4 +37,5 @@ jobs:
             APP=${{ matrix.app }}
             NEXT_PUBLIC_APP_URL=${{ vars.NEXT_PUBLIC_APP_URL }}
             NEXT_PUBLIC_DOCS_URL=${{ vars.NEXT_PUBLIC_DOCS_URL }}
+            NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
             NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=${{ vars.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID }}

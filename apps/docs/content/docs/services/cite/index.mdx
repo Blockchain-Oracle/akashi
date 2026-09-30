@@ -1,0 +1,100 @@
+---
+title: Citation Verifier
+description: How Akashi decides whether a citation is real, matches what it claims, and still stands. The service behind citation-verify.
+---
+
+Language models cite papers, cases and pages that do not exist, or real ones with the wrong year, authors or
+title. The Citation Verifier looks each citation up in the records that define it and answers with a verdict, the
+record it matched, and the fields that disagree.
+
+It serves two endpoints under the capability ID `citation-verify`:
+
+| Endpoint | What it answers |
+|---|---|
+| [`POST /v1/verify`](/docs/reference/cite/verify) | Up to 10 citations: does each exist, and does it match? |
+| [`POST /v1/claim`](/docs/reference/cite/claim) | Does a source support a claim attributed to it? |
+
+## How a check works
+
+A request runs all its citations in parallel under one deadline of **8.5 seconds**. Each citation goes through
+four stages.
+
+<Steps>
+<Step>
+
+### Read the citation
+
+The text is classified by the first thing it contains, in this order: a DOI, an arXiv ID, a PubMed ID, a US case
+citation, a statute, a URL, and otherwise free text. You can also send a structured object with fields such as
+`doi`, `title`, `authors` and `year` instead of a string.
+
+</Step>
+<Step>
+
+### Look it up where it is defined
+
+- **An identifier** (DOI, arXiv, PMID) is resolved directly: doi.org confirms the DOI is registered, and the record
+  comes from its registration agency (Crossref, or DataCite for arXiv). A PubMed ID is looked up in PubMed and, when
+  it carries a DOI, follows the DOI path.
+- **Free text** is searched in Crossref. When no candidate matches cleanly, three more searches run in parallel:
+  Crossref by title and first author, DataCite's arXiv records, and OpenAlex. Each candidate is scored on title,
+  authors, year and venue, and only work-level records count (not journals, issues or correction notices).
+- **A case citation** is checked against the Caselaw Access Project: does a case start on that page of that volume?
+  See [Check a court case citation](/docs/services/cite/legal).
+- **A URL** is fetched while the Wayback Machine is asked for an archived copy. A page that declares a
+  `citation_doi` is verified as that DOI.
+
+</Step>
+<Step>
+
+### Apply retractions
+
+Crossref's update records (which include Retraction Watch) and OpenAlex's retraction flag are checked for every
+matched work. A retraction overrides every other verdict. A correction or an expression of concern is reported in
+`retraction.status` without changing the verdict.
+
+</Step>
+<Step>
+
+### Answer, or say what could not be checked
+
+Each citation gets one verdict. A source that did not answer in time is named in the envelope's `unavailable`
+list, and the citations it affected come back `unverifiable` with `retryable: true`.
+
+</Step>
+</Steps>
+
+## The verdicts at a glance
+
+| Verdict | Meaning | What to do |
+|---|---|---|
+| `verified` | The work exists and the fields you gave match it | Use it |
+| `mismatch` | The work exists, but a field is wrong; `field_diffs` shows which | Correct the citation |
+| `not_found` | No record matches after a complete search | Treat the citation as invented |
+| `retracted` | The work exists and has been retracted | Do not rely on it |
+| `ambiguous` | Two records fit about equally well; `candidates` lists them | Add a DOI or more fields |
+| `unverifiable` | It could not be checked: a source was down, or the input is outside coverage | Check `retryable` and `reasons` |
+
+The full rules, with real answers, are in [Verify citations](/docs/services/cite/verdicts).
+
+## Absence is claimed only after a complete search
+
+A missing record proves something only if the search could have found it. For free-text citations, `not_found`
+requires both Crossref and OpenAlex to have answered, because OpenAlex is the only index covering venues without
+DOIs (JMLR, older NeurIPS). If either was missing, the answer is `unverifiable` with `retryable: true`. A search
+miss also never claims more than 0.9 confidence: it is absence of evidence, not proof.
+
+## What it does not check
+
+- **Statutes** such as `42 U.S.C. § 1983` come back `unverifiable` with a pointer to Pocket's `us-code-cfr` service.
+- **Case law past the Caselaw Access Project's coverage** is `unverifiable`: US Reports end in 2014 and F.3d in 2019.
+- **Claims** are judged against the abstract or text you provide, not the full paper.
+
+## Next steps
+
+<Cards>
+  <Card title="Verify citations" href="/docs/services/cite/verdicts" description="Send citations, read every verdict and field." />
+  <Card title="Check a court case citation" href="/docs/services/cite/legal" description="Reporter, volume and page against the Caselaw Access Project." />
+  <Card title="Check a claim against its source" href="/docs/services/cite/claims" description="Does the cited paper say what the claim says?" />
+  <Card title="API reference" href="/docs/reference/cite/verify" description="Every field of the request and the response." />
+</Cards>

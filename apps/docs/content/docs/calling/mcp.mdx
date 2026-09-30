@@ -1,0 +1,73 @@
+---
+title: Use Akashi from Claude or Cursor
+description: Give an AI assistant paid access to Akashi through Pocket's MCP server, with spending limits.
+---
+
+Pocket publishes an MCP server that lets an assistant find Pocket services, read their descriptions and call them,
+paying from a wallet you control. Akashi is one of those services, so no Akashi-specific setup is needed.
+
+<Steps>
+<Step>
+
+### Add the server
+
+<Tabs groupId="client" items={["Claude Code", "Claude Desktop / Cursor"]} persist>
+<Tab value="Claude Code">
+
+```bash title="Terminal"
+claude mcp add pocket-network \
+  --env POCKET_PRIVATE_KEY=0x... \
+  --env POCKET_MAX_PER_CALL_ATOMIC=10000 \
+  --env POCKET_MAX_TOTAL_ATOMIC=50000 \
+  -- npx -y @pocket-network/agentic-portal-mcp
+```
+
+</Tab>
+<Tab value="Claude Desktop / Cursor">
+
+```json title="MCP configuration"
+{
+  "mcpServers": {
+    "pocket-network": {
+      "command": "npx",
+      "args": ["-y", "@pocket-network/agentic-portal-mcp"],
+      "env": {
+        "POCKET_PRIVATE_KEY": "0x...",
+        "POCKET_MAX_PER_CALL_ATOMIC": "10000",
+        "POCKET_MAX_TOTAL_ATOMIC": "50000"
+      }
+    }
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+`POCKET_MAX_PER_CALL_ATOMIC` caps one call ($0.01 here) and `POCKET_MAX_TOTAL_ATOMIC` caps the session ($0.05).
+Set `POCKET_QUOTE_ONLY=true` to rehearse without paying.
+
+</Step>
+<Step>
+
+### Ask for a check
+
+> Use describe_service on citation-verify, then verify this citation: Varghese v. China Southern Airlines Co.,
+> 925 F.3d 1339 (11th Cir. 2019).
+
+The assistant uses `describe_service` (free) to read how to call Akashi, then `call_service` (paid) to send the
+request, and reports the verdict with its reason.
+
+</Step>
+</Steps>
+
+## The tools
+
+| Tool | Cost | Does |
+|---|---|---|
+| `search_services` | free | finds services by keyword |
+| `describe_service` | free | returns a service's description, paths and schemas |
+| `call_service` | the service's price | sends a request and pays for it |
+
+The same tools are available without installing anything from the portal's hosted MCP endpoint,
+`https://agent.pocket.network/mcp`, for clients that pay with x402 themselves.

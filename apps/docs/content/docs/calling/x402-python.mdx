@@ -1,0 +1,64 @@
+---
+title: Call Akashi with x402 in Python
+description: Pay per request from Python with the official x402 client, checking the price before you pay.
+---
+
+This guide uses the official `x402` package (v2) with `httpx`. It assumes a wallet key with USDC on the portal's
+network (the [quickstart](/docs/start/quickstart) shows how to get test USDC).
+
+## Install
+
+```bash title="Terminal"
+pip install "x402==2.24.0" httpx eth-account
+```
+
+## Check the price, then pay
+
+```python title="akashi.py"
+import asyncio
+import os
+
+import httpx
+from eth_account import Account
+from x402 import x402Client
+from x402.http import x402HTTPClient
+from x402.http.clients import x402HttpxClient
+from x402.mechanisms.evm import EthAccountSigner
+from x402.mechanisms.evm.exact.register import register_exact_evm_client
+
+PORTAL = "https://test.agent.pocket.network"
+NETWORK = "eip155:84532"  # Base Sepolia; the main portal uses eip155:8453
+CEILING = 10_000  # $0.01 in USDC units: never pay more than this for one call
+
+
+async def akashi(service_id: str, path: str, body: dict) -> dict:
+    url = f"{PORTAL}/v1/{service_id}{path}"
+
+    # 1. Unpaid request: the portal answers 402 with its terms. Refuse before signing if the price is too high.
+    async with httpx.AsyncClient() as plain:
+        quote = await plain.post(url, json=body)
+    terms = [o for o in quote.json()["accepts"] if o["scheme"] == "exact" and o["network"] == NETWORK]
+    if not terms or int(terms[0]["amount"]) > CEILING:
+        raise RuntimeError(f"no acceptable price: {quote.json()['accepts']}")
+
+    # 2. Paid request: the client signs the USDC authorization and retries.
+    client = x402Client()
+    register_exact_evm_client(client, EthAccountSigner(Account.from_key(os.environ["PRIVATE_KEY"])))
+    async with x402HttpxClient(client) as http:
+        response = await http.post(url, json=body)
+        await response.aread()
+    if response.is_error:
+        raise RuntimeError(f"{response.status_code} {response.text}")
+
+    receipt = x402HTTPClient(client).get_payment_settle_response(lambda name: response.headers.get(name))
+    return {"data": response.json()["data"], "transaction": receipt.transaction}
+
+
+result = asyncio.run(akashi("live-facts", "/v1/fx", {"base": "USD", "quotes": ["EUR"]}))
+print(result["data"]["results"][0]["rate"], result["transaction"])
+```
+
+<Callout title="Why quote first">
+Reading the 402 terms yourself before creating the paying client gives the same guarantee as the TypeScript
+selector: nothing is signed when the price is above your ceiling or on a network you did not choose.
+</Callout>

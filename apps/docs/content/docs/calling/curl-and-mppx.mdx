@@ -1,0 +1,50 @@
+---
+title: Call Akashi from a terminal
+description: Read the price with curl, then pay and call with the mppx CLI.
+---
+
+## See the price with curl (free)
+
+```bash title="Terminal"
+curl -si -X POST https://test.agent.pocket.network/v1/live-facts/v1/time \
+  -H 'content-type: application/json' \
+  -d '{"zone":"Africa/Casablanca","at":"2026-11-15T18:00:00Z"}'
+```
+
+The portal answers `402 Payment Required`. The body lists the x402 terms (`accepts`), and the
+`WWW-Authenticate: Payment …` header carries the MPP terms for paying on Tempo.
+
+## Pay and call with mppx
+
+`mppx` pays with either protocol. Give it a wallet key through `MPPX_PRIVATE_KEY`:
+
+<Tabs groupId="protocol" items={["x402 (Base USDC)", "MPP (Tempo USDC.e)"]} persist>
+<Tab value="x402 (Base USDC)">
+
+```bash title="Terminal"
+MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 \
+  https://test.agent.pocket.network/v1/live-facts/v1/time \
+  -J '{"zone":"Africa/Casablanca","at":"2026-11-15T18:00:00Z"}' \
+  --protocol x402 -i
+```
+
+</Tab>
+<Tab value="MPP (Tempo USDC.e)">
+
+```bash title="Terminal"
+MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 \
+  https://agent.pocket.network/v1/live-facts/v1/time \
+  -J '{"zone":"Africa/Casablanca","at":"2026-11-15T18:00:00Z"}' \
+  --protocol mpp -i
+```
+
+MPP is offered on the main portal only, paid in real USDC.e on Tempo (chain 4217): this call costs $0.005.
+
+</Tab>
+</Tabs>
+
+`-J` sends a JSON body as a POST, and `-i` prints the response headers, including the payment receipt.
+
+<Callout type="warn" title="Listing status">
+Until Akashi is listed on the portal these URLs answer `404`; the same commands work for any listed service.
+</Callout>

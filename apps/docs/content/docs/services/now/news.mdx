@@ -1,0 +1,218 @@
+---
+title: Find recent news
+description: Search headlines from the last 72 hours in a GDELT index Akashi keeps, merged with live Hacker News results, each with its URL, domain and the time it was first seen.
+---
+
+You will call `/v1/news` with a few words and read where each headline came from. You need a way to call Akashi (the
+[mppx CLI](/docs/calling/curl-and-mppx) is the quickest; see [Calling Akashi](/docs/calling)).
+
+## When to use it
+
+- **"What happened with X today?"** An agent can cite real, recent headlines instead of guessing from training data.
+- **Finding sources to read.** Every story is a headline, a URL and a domain: follow the URL for the article.
+
+The answer carries headlines only, never article text.
+
+## Request
+
+<TypeTable
+  type={{
+    query: { type: "string", description: "Words that must all appear in the headline; 1 to 200 characters.", required: true },
+    since_hours: { type: "integer", description: "How far back to look, 1 to 72 hours.", default: "24" },
+    country: { type: "string", description: "ISO 3166-1 alpha-2: only GDELT stories whose locations mention this country." },
+    limit: { type: "integer", description: "At most this many stories, 1 to 25.", default: "10" },
+  }}
+/>
+
+## Send it
+
+```json title="Request body"
+{ "query": "OpenAI", "since_hours": 48, "limit": 4 }
+```
+
+```bash title="Terminal"
+MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/live-facts/v1/news -J '{"query":"OpenAI","since_hours":48,"limit":4}' --protocol x402
+```
+
+<Callout type="warn" title="Not listed on the portal yet">
+  Akashi is registered on Pocket Network (Beta) but not yet listed on the agent portal, so this call works once
+  `live-facts` is listed. The answer on this page is real, captured from the running service.
+</Callout>
+
+## The answer
+
+```json title="POST /v1/news"
+{
+  "service": "live-facts",
+  "operation": "news",
+  "version": "1.0.0",
+  "status": "complete",
+  "as_of": "2026-09-30T09:23:12+00:00",
+  "deadline_ms": 4000,
+  "elapsed_ms": 317,
+  "unavailable": [],
+  "summary": {
+    "gdelt": 2,
+    "hn": 2
+  },
+  "results": [
+    {
+      "kind": "news_story",
+      "title": "OpenAI DevDay 2026: Dots, Codex updates, ChatGPT plugins and more announced",
+      "url": "https://www.moneycontrol.com/technology/openai-devday-2026-dots-codex-updates-chatgpt-plugins-and-more-announced-article-14041684.html",
+      "domain": "moneycontrol.com",
+      "seen_at": "2026-09-30T08:15:00+00:00",
+      "source": "gdelt",
+      "also_in": [],
+      "points": null,
+      "provenance": {
+        "sources": [
+          "gdelt"
+        ],
+        "as_of": "2026-09-30T08:15:00+00:00",
+        "age_seconds": 4092,
+        "freshness": "fresh",
+        "agreement": "single_source",
+        "spread_pct": null,
+        "licence": "GDELT: free, unlimited use with citation",
+        "attribution": "The GDELT Project"
+      }
+    },
+    {
+      "kind": "news_story",
+      "title": "OpenAI still doesn't seem to have a handle on all of its rogue AI activity",
+      "url": "https://techcrunch.com/2026/09/28/openai-still-doesnt-seem-to-have-a-handle-on-all-of-its-rogue-ai-activity/",
+      "domain": "techcrunch.com",
+      "seen_at": "2026-09-28T17:33:34+00:00",
+      "source": "hn",
+      "also_in": [],
+      "points": 108,
+      "provenance": {
+        "sources": [
+          "hn"
+        ],
+        "as_of": "2026-09-28T17:33:34+00:00",
+        "age_seconds": 143378,
+        "freshness": "fresh",
+        "agreement": "single_source",
+        "spread_pct": null,
+        "licence": null,
+        "attribution": "Hacker News via Algolia"
+      }
+    },
+    {
+      "kind": "news_story",
+      "title": "OpenAI launches dots, always-on agents",
+      "url": "https://www.thedailystar.net/news/technology/news/openai-launches-dots-always-agents-4286846",
+      "domain": "thedailystar.net",
+      "seen_at": "2026-09-30T08:15:00+00:00",
+      "source": "gdelt",
+      "also_in": [],
+      "points": null,
+      "provenance": {
+        "sources": [
+          "gdelt"
+        ],
+        "as_of": "2026-09-30T08:15:00+00:00",
+        "age_seconds": 4092,
+        "freshness": "fresh",
+        "agreement": "single_source",
+        "spread_pct": null,
+        "licence": "GDELT: free, unlimited use with citation",
+        "attribution": "The GDELT Project"
+      }
+    },
+    {
+      "kind": "news_story",
+      "title": "OpenAI: Tomorrow we are re-opening the Pro $200 subscription",
+      "url": "https://twitter.com/thsottiaux/status/2104823812042940713",
+      "domain": "twitter.com",
+      "seen_at": "2026-09-29T07:07:53+00:00",
+      "source": "hn",
+      "also_in": [],
+      "points": 76,
+      "provenance": {
+        "sources": [
+          "hn"
+        ],
+        "as_of": "2026-09-29T07:07:53+00:00",
+        "age_seconds": 94519,
+        "freshness": "fresh",
+        "agreement": "single_source",
+        "spread_pct": null,
+        "licence": null,
+        "attribution": "Hacker News via Algolia"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "name": "gdelt",
+      "status": "ok",
+      "url": null,
+      "licence": "GDELT: free, unlimited use with citation",
+      "attribution": "The GDELT Project",
+      "as_of": null,
+      "fetched_at": null,
+      "latency_ms": null,
+      "cache": null
+    },
+    {
+      "name": "hn",
+      "status": "ok",
+      "url": null,
+      "licence": null,
+      "attribution": null,
+      "as_of": null,
+      "fetched_at": null,
+      "latency_ms": null,
+      "cache": null
+    }
+  ],
+  "notes": [
+    "headlines only (English-language GDELT feed + Hacker News); follow the URL for the article"
+  ]
+}
+```
+
+## Reading the answer
+
+- **Two sources, interleaved.** `gdelt` stories come from Akashi's own index of the GDELT Global Knowledge Graph:
+  about 1,500 English-language headlines every 15 minutes, kept for 72 hours and ranked by relevance and recency.
+  `hn` stories come live from Hacker News (Algolia search), ranked by Hacker News. The two lists alternate so neither
+  source drowns the other.
+- **`summary`** counts stories per source: here two from each.
+- **`seen_at`** is when the source first saw the story (the GDELT crawl, or the Hacker News submission), and
+  `provenance.age_seconds` how long ago that was.
+- **`points`** is the Hacker News score; it is `null` for GDELT stories.
+- **`also_in`** names the other source when both carried the same story: the same URL, or headlines at least 88 %
+  alike, count as one story.
+- **`licence`** for GDELT stories is "free, unlimited use with citation": credit The GDELT Project.
+
+## Edge cases
+
+<Accordions>
+  <Accordion title="Every word must match">
+    GDELT matching requires every word of the query in the headline, and Hacker News search is run without typo
+    tolerance (otherwise "election" also matches "Evictions"). Use fewer, distinctive words.
+  </Accordion>
+  <Accordion title="The index is behind">
+    The index is refreshed every 15 minutes by a scheduled task. When the newest file is more than 30 minutes old, a
+    note says how many minutes old it is.
+  </Accordion>
+  <Accordion title="A source is down">
+    The other source still answers, the envelope is `partial`, and the missing source is named in `unavailable`.
+  </Accordion>
+  <Accordion title="Why not a live news API">
+    GDELT's live search API timed out after 20 seconds and allowed one request every 5 seconds in testing, far outside
+    the 4-second budget, so Akashi keeps its own index of GDELT's 15-minute files instead.
+  </Accordion>
+</Accordions>
+
+## Next steps
+
+<Cards>
+  <Card title="Search job postings" href="/docs/services/now/jobs" description="An index of public company job boards." />
+  <Card title="How Live Facts works" href="/docs/services/now" description="Freshness and agreement, explained." />
+  <Card title="API reference: /v1/news" href="/docs/reference/now/news" description="Every field of the request and response." />
+</Cards>

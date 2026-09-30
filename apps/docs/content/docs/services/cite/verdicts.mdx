@@ -1,0 +1,337 @@
+---
+title: Verify citations
+description: Send up to 10 citations to /v1/verify and read each verdict, the matched record and the fields that disagree.
+---
+
+You will send citations to the Citation Verifier and read the answer field by field. You need a way to call
+Akashi (see [Call Akashi](/docs/calling)).
+
+## When to use it
+
+Before you present, store or build on a reference that a model wrote: a bibliography, a literature summary, a
+"according to Smith et al." in generated text. One request checks up to 10 citations.
+
+## Request
+
+`POST /v1/verify` takes a list of citations. Each item is either a string (a DOI, an arXiv ID, a reference line, a
+case citation or a URL) or a structured object.
+
+<TypeTable
+  type={{
+    citations: {
+      description: "The citations to check, 1 to 10. Each is a string (up to 2,000 characters) or a structured citation.",
+      type: "(string | StructuredCitation)[]",
+      required: true,
+    },
+    "options.check_urls": {
+      description: "Fetch cited URLs. When false, URL citations come back unverifiable.",
+      type: "boolean",
+      default: "true",
+    },
+    "options.retraction": {
+      description: "Look up retractions and corrections for matched works.",
+      type: "boolean",
+      default: "true",
+    },
+  }}
+/>
+
+A structured citation needs at least one of `raw`, `doi`, `arxiv`, `pmid`, `title`, `url` or `legal_cite`. The
+other fields narrow the match and are compared against the record.
+
+<TypeTable
+  type={{
+    doi: { description: "A DOI, with or without https://doi.org/ or doi:.", type: "string" },
+    arxiv: { description: "An arXiv ID such as 1706.03762, optionally with a version.", type: "string" },
+    pmid: { description: "A PubMed ID (digits).", type: "string" },
+    title: { description: "The work's title.", type: "string" },
+    authors: { description: "Author names, up to 30. The first author is compared by family name.", type: "string[]" },
+    year: { description: "Publication year, 1500 to 2100.", type: "integer" },
+    venue: { description: "Journal or conference.", type: "string" },
+    volume: { description: "Volume.", type: "string" },
+    pages: { description: "Page range.", type: "string" },
+    url: { description: "An http(s) URL.", type: "string" },
+    legal_cite: { description: "A case citation such as 347 U.S. 483.", type: "string" },
+    raw: { description: "The reference as written.", type: "string" },
+  }}
+/>
+
+## Send it
+
+```bash title="Verify one structured citation"
+MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/citation-verify/v1/verify -J '{"citations": [{"doi": "10.1038/nature14539", "title": "Deep learning", "authors": ["Yann LeCun", "Yoshua Bengio", "Geoffrey Hinton"], "year": 2016, "venue": "Nature"}]}' --protocol x402
+```
+
+<Callout type="warn" title="Not on the portal yet">
+  Akashi's services are registered on Pocket Network (Beta) but not yet listed on the agent portal, so this call works
+  once they are listed. The answers on this page were captured from the running service.
+</Callout>
+
+The command pays with a Base Sepolia wallet through x402. To set up a client in code, see [Call Akashi](/docs/calling).
+
+## The answer
+
+This citation gives the right DOI, title and authors but the wrong year. The Nature paper was published in 2015.
+
+```json title="200 · 106 ms"
+{
+  "service": "citation-verify",
+  "operation": "verify",
+  "version": "1.0.0",
+  "status": "complete",
+  "as_of": "2026-09-30T09:17:58+00:00",
+  "deadline_ms": 8500,
+  "elapsed_ms": 106,
+  "unavailable": [],
+  "summary": {
+    "mismatch": 1
+  },
+  "results": [
+    {
+      "kind": "citation",
+      "index": 0,
+      "input_kind": "scholarly",
+      "verdict": "mismatch",
+      "confidence": 0.955,
+      "matched": {
+        "doi": "10.1038/nature14539",
+        "title": "Deep learning",
+        "authors": [
+          "LeCun",
+          "Bengio",
+          "Hinton"
+        ],
+        "year": 2015,
+        "venue": "Nature",
+        "volume": "521",
+        "pages": "436-444",
+        "type": "journal-article",
+        "url": "https://doi.org/10.1038/nature14539",
+        "record_source": "crossref"
+      },
+      "field_diffs": [
+        {
+          "field": "year",
+          "given": "2016",
+          "found": "2015",
+          "severity": "minor"
+        }
+      ],
+      "retraction": {
+        "status": "none",
+        "date": null,
+        "notice_doi": null,
+        "source": null
+      },
+      "candidates": [],
+      "legal": null,
+      "web": null,
+      "reasons": [],
+      "retryable": false
+    }
+  ],
+  "sources": [
+    {
+      "name": "crossref",
+      "status": "ok",
+      "url": null,
+      "licence": null,
+      "attribution": "Crossref REST API (metadata incl. Retraction Watch)",
+      "as_of": null,
+      "fetched_at": null,
+      "latency_ms": null,
+      "cache": null
+    },
+    {
+      "name": "openalex",
+      "status": "ok",
+      "url": null,
+      "licence": "CC0",
+      "attribution": "OpenAlex (CC0)",
+      "as_of": null,
+      "fetched_at": null,
+      "latency_ms": null,
+      "cache": null
+    },
+    {
+      "name": "doi.org",
+      "status": "ok",
+      "url": null,
+      "licence": null,
+      "attribution": "doi.org handle API",
+      "as_of": null,
+      "fetched_at": null,
+      "latency_ms": null,
+      "cache": null
+    }
+  ],
+  "notes": []
+}
+```
+
+## Reading the answer
+
+- **`verdict`** is `mismatch`: the work exists, but a field you gave is wrong.
+- **`field_diffs`** lists each disagreement with what you gave (`given`), what the record says (`found`) and a
+  `severity`. A year that is off by one is `minor` (online-first versus print dates), but any year difference
+  still prevents `verified`, as does any `major` difference.
+- **`matched`** is the record the citation was checked against, with `record_source` naming where it came from.
+  Use it to correct the citation.
+- **`confidence`** is 0.99 for an identifier that resolves and agrees with every field, and the match score
+  otherwise.
+- **`retraction.status`** is `none`, `corrected`, `expression_of_concern` or `retracted`.
+- **`candidates`** is filled only for `ambiguous` answers, with up to three records.
+- **`reasons`** explains any verdict that is not self-evident, and **`retryable`** says whether asking again could
+  change the answer.
+- **`sources`** lists every upstream consulted and its status. `openalex` with status `not_found` only means
+  OpenAlex has no copy of that record.
+
+## Other answers
+
+<Tabs items={["retracted", "verified"]}>
+<Tab value="retracted">
+
+The Wakefield MMR paper in *The Lancet* (1998), retracted in 2010. The retraction date, the notice's DOI and the
+source of the retraction record come back with it.
+
+```json title="10.1016/S0140-6736(97)11096-0 · results[0] (trimmed)"
+{
+  "kind": "citation",
+  "index": 0,
+  "input_kind": "scholarly",
+  "verdict": "retracted",
+  "confidence": 0.99,
+  "matched": {
+    "doi": "10.1016/s0140-6736(97)11096-0",
+    "title": "RETRACTED: Ileal-lymphoid-nodular hyperplasia, non-specific colitis, and pervasive developmental disorder in children",
+    "authors": [
+      "Wakefield",
+      "Murch",
+      "Anthony",
+      "Linnell",
+      "Casson",
+      "Malik",
+      "Berelowitz",
+      "Dhillon",
+      "Thomson",
+      "Harvey",
+      "Valentine",
+      "Davies",
+      "Walker-Smith"
+    ],
+    "year": 1998,
+    "venue": "The Lancet",
+    "volume": "351",
+    "pages": "637-641",
+    "type": "journal-article",
+    "url": "https://doi.org/10.1016/s0140-6736(97)11096-0",
+    "record_source": "crossref"
+  },
+  "field_diffs": [],
+  "retraction": {
+    "status": "retracted",
+    "date": "2010-02-06",
+    "notice_doi": "10.1016/s0140-6736(10)60175-4",
+    "source": "retraction-watch"
+  },
+  "candidates": [],
+  "legal": null,
+  "web": null,
+  "reasons": [
+    "retracted 2010-02-06"
+  ],
+  "retryable": false
+}
+```
+
+</Tab>
+<Tab value="verified">
+
+"Attention Is All You Need", given as an arXiv ID. arXiv DOIs are registered with DataCite, so the record comes
+from there.
+
+```json title="arXiv:1706.03762 · results[0] (trimmed)"
+{
+  "kind": "citation",
+  "index": 0,
+  "input_kind": "scholarly",
+  "verdict": "verified",
+  "confidence": 0.99,
+  "matched": {
+    "doi": "10.48550/arxiv.1706.03762",
+    "title": "Attention Is All You Need",
+    "authors": [
+      "Vaswani",
+      "Shazeer",
+      "Parmar",
+      "Uszkoreit",
+      "Jones",
+      "Gomez",
+      "Kaiser",
+      "Polosukhin"
+    ],
+    "year": 2017,
+    "venue": "arXiv",
+    "volume": null,
+    "pages": null,
+    "type": "preprint",
+    "url": "https://arxiv.org/abs/1706.03762",
+    "record_source": "datacite"
+  },
+  "field_diffs": [],
+  "retraction": {
+    "status": "none",
+    "date": null,
+    "notice_doi": null,
+    "source": null
+  },
+  "candidates": [],
+  "legal": null,
+  "web": null,
+  "reasons": [],
+  "retryable": false
+}
+```
+
+</Tab>
+</Tabs>
+
+## Edge cases
+
+<Accordions type="single">
+  <Accordion title="The DOI is not registered">
+    If doi.org does not know the DOI, the verdict is `not_found` with the reason "DOI ... is not registered at
+    doi.org". A DOI that is registered with an agency whose metadata Akashi does not read comes back `verified`,
+    with a reason saying so.
+  </Accordion>
+  <Accordion title="Two records fit about equally well">
+    When the two best candidates both score well and within a small margin of each other, the verdict is
+    `ambiguous` and `candidates` lists up to three records. Add a DOI, the first author or the year and ask again.
+  </Accordion>
+  <Accordion title="A title that does not match is a different work">
+    If the best record's title clearly differs from the one you gave, the citation is not a mis-typed version of
+    that work: a real author with an invented title comes back `not_found`, not `mismatch`.
+  </Accordion>
+  <Accordion title="Free text came back unverifiable">
+    A free-text citation is only declared `not_found` after Crossref and OpenAlex both answered. If one of them did
+    not, the answer is `unverifiable` with `retryable: true`. Retry, or send the DOI.
+  </Accordion>
+  <Accordion title="URL citations">
+    A live page whose title clearly differs from the cited title is a `mismatch`. A dead link (404 or 410) with an
+    archived copy is `verified` with lower confidence; without one it is `not_found`. A site that refuses automated
+    access (401, 403 or 429) is never called dead: it is `unverifiable`. URLs that resolve to private or local
+    addresses are rejected with a 422.
+  </Accordion>
+  <Accordion title="Statutes">
+    `42 U.S.C. § 1983` and other statutes come back `unverifiable` with `retryable: false`; Pocket's `us-code-cfr`
+    service covers the U.S. Code and CFR.
+  </Accordion>
+</Accordions>
+
+## Next steps
+
+<Cards>
+  <Card title="Check a court case citation" href="/docs/services/cite/legal" description="How case citations are checked, and why a fake one is caught." />
+  <Card title="Check a claim against its source" href="/docs/services/cite/claims" description="From 'this paper exists' to 'this paper says that'." />
+  <Card title="API reference: /v1/verify" href="/docs/reference/cite/verify" description="Every field, with a playground." />
+</Cards>

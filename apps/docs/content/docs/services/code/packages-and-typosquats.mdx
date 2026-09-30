@@ -1,0 +1,324 @@
+---
+title: Check packages before you install them
+description: Ask whether a package is real, a typosquat, a placeholder or brand new, and which versions exist, before running npm install or pip install.
+---
+
+You will check packages the way an installer should: is the name published, is it the package you think it is,
+and does the version exist? You need a way to call Akashi (see [Call Akashi](/docs/calling)).
+
+## When to use it
+
+Before installing a dependency that a model suggested, or when reviewing a requirements file or `package.json`.
+`/v1/package` checks one, `/v1/packages` up to 100, and `/v1/versions` lists versions and resolves a range.
+
+## Request
+
+<Tabs items={["/v1/package", "/v1/packages", "/v1/versions"]}>
+<Tab value="/v1/package">
+
+<TypeTable
+  type={{
+    ecosystem: { description: "The registry.", type: "\"npm\" | \"pypi\" | \"cargo\" | \"go\" | \"maven\" | \"rubygems\" | \"packagist\" | \"nuget\"", required: true },
+    name: { description: "The package name, up to 214 printable characters with no spaces (npm scopes, Maven group:artifact and Go module paths included).", type: "string", required: true },
+    version: { description: "A version to check, up to 128 characters. Without it the latest is used.", type: "string" },
+  }}
+/>
+
+</Tab>
+<Tab value="/v1/packages">
+
+<TypeTable
+  type={{
+    items: { description: "1 to 100 packages, each shaped like the /v1/package request.", type: "{ ecosystem, name, version? }[]", required: true },
+  }}
+/>
+
+</Tab>
+<Tab value="/v1/versions">
+
+<TypeTable
+  type={{
+    ecosystem: { description: "The registry.", type: "string", required: true },
+    name: { description: "The package name.", type: "string", required: true },
+    range: { description: "A version range to resolve, up to 256 characters, in the ecosystem's syntax (npm, cargo, PEP 440, or an exact version).", type: "string" },
+  }}
+/>
+
+</Tab>
+</Tabs>
+
+## Send it
+
+```bash title="Check one npm package"
+MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/code-reality-check/v1/package -J '{"ecosystem": "npm", "name": "left-padx"}' --protocol x402
+```
+
+<Callout type="warn" title="Not on the portal yet">
+  Akashi's services are registered on Pocket Network (Beta) but not yet listed on the agent portal, so this call works
+  once they are listed. The answers on this page were captured from the running service.
+</Callout>
+
+The command pays with a Base Sepolia wallet through x402. To set up a client in code, see [Call Akashi](/docs/calling).
+
+## The answer
+
+`left-padx` is one character away from the popular `left-pad`, and nobody has published it.
+
+```json title="200 · 672 ms"
+{
+  "service": "code-reality-check",
+  "operation": "package",
+  "version": "1.0.0",
+  "status": "complete",
+  "as_of": "2026-09-30T09:19:16+00:00",
+  "deadline_ms": 7000,
+  "elapsed_ms": 672,
+  "unavailable": [],
+  "summary": {
+    "does_not_exist": 1
+  },
+  "results": [
+    {
+      "kind": "package",
+      "ecosystem": "npm",
+      "name": "left-padx",
+      "version": null,
+      "verdict": "does_not_exist",
+      "exists": "no",
+      "risk_signals": [
+        "not_on_registry"
+      ],
+      "typo_of": {
+        "name": "left-pad",
+        "distance": 1,
+        "method": "damerau_levenshtein",
+        "target_rank": 5550
+      },
+      "did_you_mean": [
+        "left-pad"
+      ],
+      "latest": null,
+      "version_exists": "unknown",
+      "deprecated": false,
+      "deprecated_reason": null,
+      "yanked": false,
+      "yanked_reason": null,
+      "description": null,
+      "first_published": null,
+      "latest_published": null,
+      "versions_count": null,
+      "downloads_last_week": null,
+      "popularity_rank": null,
+      "versions_tail": [],
+      "evidence": [
+        "'left-padx' is not published on npm",
+        "closest popular name: 'left-pad' (distance 1)"
+      ],
+      "see_also": [
+        "For known vulnerabilities use the Pocket services package-advisories or taint-check."
+      ],
+      "retryable": false
+    }
+  ],
+  "sources": [
+    {
+      "name": "npm",
+      "status": "not_found",
+      "url": null,
+      "licence": "npm registry metadata",
+      "attribution": "registry.npmjs.org",
+      "as_of": null,
+      "fetched_at": null,
+      "latency_ms": null,
+      "cache": null
+    }
+  ],
+  "notes": []
+}
+```
+
+## Reading the answer
+
+- **`verdict`** and **`exists`** (`yes`, `no` or `unknown`) answer the main question.
+- **`typo_of`** names the popular package the name is close to, with the edit `distance`, the `method` that found
+  it and the target's popularity rank. **`did_you_mean`** lists real names to use instead.
+- **`evidence`** says, in words, what the verdict rests on. **`risk_signals`** gives the same as codes, such as
+  `not_on_registry`, `typo_of_popular`, `placeholder`, `new_low_signal` or `version_not_found`.
+- For a package that exists: **`latest`**, **`version_exists`**, **`first_published`**, **`latest_published`**,
+  **`versions_count`**, **`downloads_last_week`**, **`popularity_rank`** and the last ten versions in
+  **`versions_tail`**.
+- **`see_also`** points to Pocket's `package-advisories` and `taint-check` services for known vulnerabilities, which
+  this service does not check.
+
+### How each verdict is decided
+
+| Verdict | Rule |
+|---|---|
+| `does_not_exist` | The registry has no such package |
+| `placeholder` | npm's `0.0.1-security` holding version, a description saying "placeholder", "security holding package", "reserved", "do not use" and similar, or an npm package under 1 KB with at most two files and no entry point |
+| `likely_typo` | Within two edits (one for names of five characters or fewer) of a package at least 100× more popular, and, on npm, with fewer than 1,000 downloads last week; elsewhere, also suspiciously new |
+| `suspicious_new` | First published less than 90 days ago, with fewer than 1,000 downloads last week or at most two versions |
+| `yanked` · `deprecated` | The version is yanked, or the package is deprecated, with the maintainer's reason |
+| `ok` | None of the above |
+| `unknown` | The registry did not answer in time; `retryable: true` |
+
+## Other answers
+
+<Tabs items={["placeholder", "a batch", "versions"]}>
+<Tab value="placeholder">
+
+`react-codeshift`, a package name models have been seen to invent (reported in Aikido Security's research), is
+registered on npm as a placeholder.
+
+```json title="npm react-codeshift · results[0] (trimmed)"
+{
+  "kind": "package",
+  "ecosystem": "npm",
+  "name": "react-codeshift",
+  "version": null,
+  "verdict": "placeholder",
+  "exists": "yes",
+  "risk_signals": [
+    "placeholder"
+  ],
+  "typo_of": null,
+  "did_you_mean": [],
+  "latest": "1.0.0",
+  "version_exists": "unknown",
+  "deprecated": false,
+  "deprecated_reason": null,
+  "yanked": false,
+  "yanked_reason": null,
+  "description": "🚫 Placeholder to prevent dependency confusion.",
+  "first_published": "2026-01-14T21:02:51Z",
+  "latest_published": "2026-01-14T21:02:51Z",
+  "versions_count": 1,
+  "downloads_last_week": 3,
+  "popularity_rank": null,
+  "evidence": [
+    "description says 'placeholder'"
+  ],
+  "retryable": false
+}
+```
+
+</Tab>
+<Tab value="a batch">
+
+Three packages in one `/v1/packages` call: a pinned real version, an unpublished PyPI name and npm's security
+holding package for `huggingface-cli`.
+
+```json title="/v1/packages · results (trimmed)"
+[
+  {
+    "ecosystem": "npm",
+    "name": "axios",
+    "version": "1.7.9",
+    "verdict": "ok",
+    "exists": "yes",
+    "risk_signals": [],
+    "latest": "1.20.0",
+    "version_exists": "yes",
+    "evidence": []
+  },
+  {
+    "ecosystem": "pypi",
+    "name": "requestz-ultra",
+    "version": null,
+    "verdict": "does_not_exist",
+    "exists": "no",
+    "risk_signals": [
+      "not_on_registry"
+    ],
+    "latest": null,
+    "version_exists": "unknown",
+    "evidence": [
+      "'requestz-ultra' is not published on pypi"
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "huggingface-cli",
+    "version": null,
+    "verdict": "placeholder",
+    "exists": "yes",
+    "risk_signals": [
+      "placeholder"
+    ],
+    "latest": "0.0.1-security",
+    "version_exists": "unknown",
+    "evidence": [
+      "version 0.0.1-security is npm's security holding version",
+      "description says 'security holding package'",
+      "package is 436 bytes with no entry point"
+    ]
+  }
+]
+```
+
+</Tab>
+<Tab value="versions">
+
+`/v1/versions` for axios with the range `^1.7.0`: the highest matching version, the dist-tags and every version,
+newest first (up to 200).
+
+```json title="npm axios ^1.7.0 · results[0] (trimmed: versions cut)"
+{
+  "kind": "versions",
+  "ecosystem": "npm",
+  "name": "axios",
+  "exists": "yes",
+  "range": "^1.7.0",
+  "resolved": "1.20.0",
+  "range_syntax": "npm",
+  "dist_tags": {
+    "next": "1.7.0-beta.2",
+    "old-version": "0.30.0",
+    "latest": "1.20.0",
+    "v0x": "0.34.0"
+  },
+  "versions": [
+    "1.20.0",
+    "1.19.0",
+    "1.18.1",
+    "1.18.0",
+    "1.17.0",
+    "1.16.1",
+    "…"
+  ],
+  "truncated": false,
+  "evidence": [],
+  "retryable": false
+}
+```
+
+</Tab>
+</Tabs>
+
+## Edge cases
+
+<Accordions type="single">
+  <Accordion title="The version does not exist">
+    A package that exists but lacks the version you asked for keeps its verdict; `version_exists` is `no`,
+    `risk_signals` gains `version_not_found`, and `evidence` names the latest version.
+  </Accordion>
+  <Accordion title="A missing name can appear any minute">
+    Answers for packages that do not exist are cached for only five minutes, because a squatter may register the
+    name at any time. Check again right before installing.
+  </Accordion>
+  <Accordion title="The registry did not answer">
+    The verdict is `unknown` with `retryable: true`, and the registry is named in the envelope's `unavailable` list.
+  </Accordion>
+  <Accordion title="Vulnerabilities">
+    A package can be real, popular and vulnerable. This service does not check advisories; `see_also` points to the
+    Pocket services that do.
+  </Accordion>
+</Accordions>
+
+## Next steps
+
+<Cards>
+  <Card title="Check a code snippet" href="/docs/services/code/snippet-check" description="Every import and call at once." />
+  <Card title="Check that a function exists" href="/docs/services/code/symbols" description="The package is real; is the method?" />
+  <Card title="API reference: /v1/packages" href="/docs/reference/code/packages" description="Every field, with a playground." />
+</Cards>

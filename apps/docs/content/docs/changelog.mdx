@@ -1,0 +1,23 @@
+---
+title: Changelog
+description: What changed in Akashi, newest first.
+---
+
+## 2026-09-30
+
+- **Live Facts:** `/v1/stocks` (US quotes, demo-grade). Tickers are checked against the last session's listings
+  before they are quoted; the last official close is compared across two feeds.
+- **Pocket Network:** citation-verify, code-reality-check and live-facts registered on Pocket Network Beta.
+- **Citation Verifier:** a real paper is no longer lost among later re-uploads of the same work; `not_found` now
+  requires OpenAlex to have answered, otherwise the answer is `unverifiable`.
+- **Code Reality Check:** a non-existent package stays non-existent on repeat lookups (a cached answer had read as
+  `ok`).
+- **All services:** malformed input (empty strings, control characters) returns `422` naming the field instead of a
+  server error; the published OpenAPI describes the real error format.
+
+## 2026-09-29
+
+- **Live Facts:** time, holidays, business days, exchange rates, weather, Wikidata facts, news and jobs.
+- **Citation Verifier:** `/v1/verify` for scholarly, legal and web citations, and `/v1/claim` for whether a source
+  supports a claim.
+- **Code Reality Check:** packages, versions, symbols and whole-snippet checks across eight registries.

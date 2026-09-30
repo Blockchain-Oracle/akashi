@@ -1,25 +1,30 @@
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 import { Callout } from "fumadocs-ui/components/callout";
 import { Card, Cards } from "fumadocs-ui/components/card";
+import { File, Files, Folder } from "fumadocs-ui/components/files";
 import { Step, Steps } from "fumadocs-ui/components/steps";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { TypeTable } from "fumadocs-ui/components/type-table";
 import defaultComponents from "fumadocs-ui/mdx";
 import type { MDXComponents } from "mdx/types";
 
-import { Exhibit } from "@/components/exhibit";
-import { ServiceLedger } from "@/components/service-ledger";
-
+/** Stock Fumadocs components, available in every page without an import. */
 export function getMDXComponents(components?: MDXComponents) {
   return {
     ...defaultComponents,
+    Accordion,
+    Accordions,
     Callout,
     Card,
     Cards,
-    Exhibit,
-    ServiceLedger,
+    File,
+    Files,
+    Folder,
     Step,
     Steps,
     Tab,
     Tabs,
+    TypeTable,
     ...components,
   } satisfies MDXComponents;
 }
