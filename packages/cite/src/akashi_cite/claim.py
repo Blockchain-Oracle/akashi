@@ -40,11 +40,14 @@ from akashi_cite.service import verify_one
 from akashi_cite.sources import clients, datacite, europepmc, openalex
 from akashi_cite.trail import Trail
 from akashi_core.errors import UpstreamFailure
+from akashi_core.fanout import DEADLINE_EXCEEDED
 from akashi_core.singleflight import spawn_background
 
 EvidenceScope = Literal["abstract", "provided_text"]
 USABLE_CITATIONS = frozenset({CitationVerdict.verified, CitationVerdict.mismatch, CitationVerdict.retracted})
 ARXIV_DOI_PREFIX = "10.48550/"
+NLI_LOADING_REASON = "the NLI model was still loading when the deadline ran out; retry"
+NLI_UNAVAILABLE_REASON = "the NLI model is unavailable"
 _ABBREVIATIONS = ("et al.", "e.g.", "i.e.", "vs.", "Fig.", "fig.", "approx.", "Dr.", "Prof.", "No.", "ca.", "cf.")
 _PROTECT = "․"  # one-dot leader stands in for an abbreviation's period while splitting
 _STOPWORDS = frozenset(
@@ -178,9 +181,9 @@ async def check_claim(req: ClaimRequest, trail: Trail) -> ClaimResult:
         trail.ok(NLI)
     except UpstreamFailure as failure:
         trail.failure(NLI, failure)
-        return ClaimResult(
-            verdict=ClaimVerdict.unverifiable, citation=cited, reasons=["the NLI model is unavailable"], retryable=True
-        )
+        # Out of time means the model was still loading (the load carries on; a retry finds it warm).
+        reason = NLI_LOADING_REASON if failure.kind == DEADLINE_EXCEEDED else NLI_UNAVAILABLE_REASON
+        return ClaimResult(verdict=ClaimVerdict.unverifiable, citation=cited, reasons=[reason], retryable=True)
     verdict, at = _decide(premise_list, req.claim, scores)
     return ClaimResult(
         verdict=verdict,

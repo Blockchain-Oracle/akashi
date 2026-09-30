@@ -12,12 +12,17 @@ from akashi_core.contract.sources import SourceRef
 from akashi_core.errors import InvalidInput, UpstreamFailure
 from akashi_now import clients
 from akashi_now.constants import (
+    HEAD_ALIAS,
+    HEAD_OFFICES,
+    HEAD_PROPERTIES,
     LABEL_LANGUAGES,
     MAX_FACT_VALUES,
+    OFFICE_FOR,
     TTL_FACT_ENTITY,
     TTL_LABELS,
     WIKIDATA_API,
     WIKIDATA_END_TIME,
+    WIKIDATA_OFFICEHOLDER,
     WIKIDATA_POINT_IN_TIME,
     WIKIDATA_START_TIME,
 )
@@ -164,6 +169,32 @@ def _render(statement: dict[str, Any], names: dict[str, str]) -> FactValue:
     )
 
 
+async def _resolve(entity: dict[str, Any], pid: str) -> tuple[str, list[dict[str, Any]], int, str | None]:
+    """(the property that answered, its current statements, how many ended, the office followed or None).
+
+    The subject's own statements first. When it has none that are current, follow the office it names to that
+    office's current officeholder (United Nations → P2388 → Secretary-General → P1308).
+    """
+    claims = entity.get("claims", {})
+    direct = HEAD_PROPERTIES if pid == HEAD_ALIAS else (pid,)
+    for prop in direct:
+        chosen, ended = current_statements(claims.get(prop, []))
+        if chosen:
+            return prop, chosen, ended, None
+    offices = HEAD_OFFICES if pid == HEAD_ALIAS else tuple(o for o in (OFFICE_FOR.get(pid),) if o)
+    for office_pid in offices:
+        for statement in current_statements(claims.get(office_pid, []))[0]:
+            value = statement["mainsnak"]["datavalue"]["value"]
+            if not (isinstance(value, dict) and "id" in value):
+                continue
+            office = await _entity(value["id"])
+            holders, ended = current_statements(office.get("claims", {}).get(WIKIDATA_OFFICEHOLDER, []))
+            if holders:
+                return office_pid, holders, ended, value["id"]
+    chosen, ended = current_statements(claims.get(direct[0], []))
+    return direct[0], chosen, ended, None
+
+
 async def get_fact(req: FactRequest) -> tuple[FactResult, list[SourceRef]]:
     try:
         return await _get_fact(req), [SourceRef(name=WIKIDATA_API.name, status=SourceStatus.ok, licence="CC0")]
@@ -185,8 +216,8 @@ async def _get_fact(req: FactRequest) -> FactResult:
     entity = await _entity(qid)
     if not entity or "missing" in entity:
         raise InvalidInput(f"{qid} does not exist on Wikidata.")
-    chosen, ended = current_statements(entity.get("claims", {}).get(pid, []))
-    refs = {pid}
+    pid, chosen, ended, office = await _resolve(entity, pid)
+    refs = {pid} | ({office} if office else set())
     for s in chosen:
         value = s["mainsnak"]["datavalue"]["value"]
         if isinstance(value, dict) and "id" in value:
@@ -203,6 +234,7 @@ async def _get_fact(req: FactRequest) -> FactResult:
         property_label=names.get(pid),
         values=[_render(s, names) for s in chosen],
         ended_values=ended,
+        via_office=f"{names.get(office, office)} ({office})" if office else None,
         wikipedia_url=WIKIPEDIA_URL.format(title=quote(title.replace(" ", "_"))) if title else None,
         provenance=Provenance(
             sources=[WIKIDATA_API.name],

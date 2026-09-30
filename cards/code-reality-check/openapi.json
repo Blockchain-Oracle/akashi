@@ -572,6 +572,13 @@
             "type": "array",
             "title": "Did You Mean"
           },
+          "suggestions": {
+            "items": {
+              "$ref": "#/components/schemas/SymbolSuggestion"
+            },
+            "type": "array",
+            "title": "Suggestions"
+          },
           "reason": {
             "anyOf": [
               {
@@ -1527,6 +1534,13 @@
             "type": "array",
             "title": "Did You Mean"
           },
+          "suggestions": {
+            "items": {
+              "$ref": "#/components/schemas/SymbolSuggestion"
+            },
+            "type": "array",
+            "title": "Suggestions"
+          },
           "evidence_source": {
             "anyOf": [
               {
@@ -1575,6 +1589,31 @@
           "exists"
         ],
         "title": "SymbolResult"
+      },
+      "SymbolSuggestion": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "signature": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signature"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "SymbolSuggestion",
+        "description": "A real name close to the missing one, with its signature when it could be read."
       },
       "SymbolsQuery": {
         "properties": {

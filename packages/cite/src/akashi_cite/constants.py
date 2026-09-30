@@ -3,6 +3,7 @@
 from datetime import timedelta
 from typing import Final
 
+from akashi_core.constants.deadlines import CITE_DEADLINE_S
 from akashi_core.http.registry import UpstreamSpec
 
 # --- upstreams ---
@@ -55,9 +56,12 @@ EUROPEPMC = UpstreamSpec(
     licence="abstracts: publisher terms (quoted as evidence, not redistributed)",
     attribution="Europe PMC",
 )
-NLI = UpstreamSpec(
-    "nli", "http://nli.internal:8100", max_concurrency=4, total_s=5.0, retry_attempts=1
-)  # the sidecar queues; warm scoring is ~0.35 s
+# A /score sent while the sidecar is still loading its model (unloaded after 15 idle minutes, D-016) blocks until
+# the load finishes: 3.4 s with the file cached, 4.3 s locally from cold, longer from a cold disk. A fixed 5 s cap
+# cut that wait short and answered `unverifiable` with most of the deadline unused, so the per-call cap is the whole
+# hard stop and the request's remaining deadline (minus the safety margin) is the real bound. Warm scoring ~0.35 s.
+NLI_COLD_LOAD_WAIT_S: Final = CITE_DEADLINE_S
+NLI = UpstreamSpec("nli", "http://nli.internal:8100", max_concurrency=4, total_s=NLI_COLD_LOAD_WAIT_S, retry_attempts=1)
 WEB = UpstreamSpec("web", "https://example.invalid", max_concurrency=4, total_s=3.0, retry_attempts=1)
 
 # --- request limits ---

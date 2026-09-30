@@ -37,5 +37,6 @@ class FactResult(BaseModel):
     property_label: UntrustedStr | None = None
     values: list[FactValue]  # current values: preferred rank if any, no end time, latest point in time
     ended_values: int = 0  # statements left out because they have ended
+    via_office: UntrustedStr | None = None  # the office whose current holder answered (e.g. UN Secretary-General)
     wikipedia_url: str | None = None
     provenance: Provenance

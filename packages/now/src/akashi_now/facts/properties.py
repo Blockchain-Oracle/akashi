@@ -2,6 +2,8 @@
 
 from typing import Final
 
+from akashi_now.constants import HEAD_ALIAS
+
 PROPERTY_ALIASES: Final = {
     "head of state": "P35",
     "president": "P35",
@@ -36,4 +38,14 @@ PROPERTY_ALIASES: Final = {
     "position held": "P39",
     "member of": "P463",
     "time zone": "P421",
+    # resolved by facts.service: the first of HEAD_PROPERTIES with a value, else the office's current holder
+    "head": HEAD_ALIAS,
+    "leader": HEAD_ALIAS,
+    "head of organization": HEAD_ALIAS,
+    "head of the organization": HEAD_ALIAS,
+    "secretary-general": HEAD_ALIAS,
+    "secretary general": HEAD_ALIAS,
+    "director-general": HEAD_ALIAS,
+    "director general": HEAD_ALIAS,
+    "director": "P1037",
 }

@@ -22,10 +22,10 @@ SECONDS_PER_MINUTE: Final = 60
 MINUTES_PER_HOUR: Final = 60
 
 # --- geocoding (Wikidata: CC0; place → coordinates + country) ---
-GEOCODE_CANDIDATES: Final = 5
+GEOCODE_CANDIDATES: Final = 8  # "Washington, D.C." is the 5th hit for "Washington"
 TTL_GEOCODE: Final = timedelta(days=30)
-GEOCODE_CACHE_KIND: Final = "geocode-r2"  # bump when the choice logic changes: old answers live 30 days
-WIKIDATA_COORDINATES: Final = "P625"
+GEOCODE_CACHE_KIND: Final = "geocode-r3"  # bump when the choice logic changes: old answers live 30 days
+PLACE_NAME_SEPARATORS: Final = (" ", ",", "-", "(")  # "New York City", "Washington, D.C." name the query + more
 WIKIDATA_COUNTRY: Final = "P17"
 
 # --- /holidays, /business-days ---
@@ -110,6 +110,16 @@ WIKIDATA_END_TIME: Final = "P582"
 WIKIDATA_START_TIME: Final = "P580"
 WIKIDATA_POINT_IN_TIME: Final = "P585"
 LABEL_LANGUAGES: Final = ("en", "mul")  # "mul": Wikidata's default label for all languages (2025+)
+WIKIDATA_OFFICEHOLDER: Final = "P1308"
+# The "head" alias: whichever of these the subject has a current statement for, in this order (company → CEO,
+# organisation → director or chair, country → head of state), then the office it names (below).
+HEAD_ALIAS: Final = "head"
+HEAD_PROPERTIES: Final = ("P169", "P1037", "P488", "P35")
+# Some subjects name an office instead of a person: the United Nations has no chairperson statement, only
+# P2388 (office held by head of the organization) → Q81066, whose P1308 lists the Secretaries-General. The office's
+# current officeholder answers. Direct property → the office property to follow when it has no current value.
+HEAD_OFFICES: Final = ("P2388", "P1906", "P1313")
+OFFICE_FOR: Final = {"P35": "P1906", "P6": "P1313", "P488": "P2388", "P1037": "P2388", "P169": "P2388"}
 
 # --- /news (local GDELT GKG index, filled every 15 min by a scheduled task; live HN Algolia) ---
 GDELT = UpstreamSpec(

@@ -1034,6 +1034,16 @@
               "ended_values": {
                 "type": "integer"
               },
+              "via_office": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "wikipedia_url": {
                 "anyOf": [
                   {

@@ -253,7 +253,8 @@ def _diagnostic(
     sym = by_sym.get((t.lookup_package, t.symbol or ""))
     if sym is None:
         verdict = DiagnosticVerdict.ok if kind == "import" else DiagnosticVerdict.unknown
-        return Diagnostic(**base, version=pkg.latest if pkg else None, verdict=verdict)
+        # the pinned version when the request pins one (PackageResult.version), else the registry's latest
+        return Diagnostic(**base, version=(pkg.version or pkg.latest) if pkg else None, verdict=verdict)
     if sym.exists is Tristate.no:
         hint = f"did you mean '{sym.did_you_mean[0]}'?" if sym.did_you_mean else None
         return Diagnostic(
@@ -262,6 +263,7 @@ def _diagnostic(
             verdict=DiagnosticVerdict.nonexistent_symbol,
             fix_hint=hint,
             did_you_mean=sym.did_you_mean,
+            suggestions=sym.suggestions,
             reason=sym.reason,
         )
     verdict = DiagnosticVerdict.ok if sym.exists is Tristate.yes else DiagnosticVerdict.unknown

@@ -230,6 +230,8 @@ export interface components {
             fix_hint?: string | null;
             /** Did You Mean */
             did_you_mean?: string[];
+            /** Suggestions */
+            suggestions?: components["schemas"]["SymbolSuggestion"][];
             /** Reason */
             reason?: string | null;
         };
@@ -553,6 +555,8 @@ export interface components {
             defined_in?: string | null;
             /** Did You Mean */
             did_you_mean?: string[];
+            /** Suggestions */
+            suggestions?: components["schemas"]["SymbolSuggestion"][];
             /** Evidence Source */
             evidence_source?: string | null;
             /**
@@ -564,6 +568,16 @@ export interface components {
             retry_after_ms?: number | null;
             /** Reason */
             reason?: string | null;
+        };
+        /**
+         * SymbolSuggestion
+         * @description A real name close to the missing one, with its signature when it could be read.
+         */
+        SymbolSuggestion: {
+            /** Name */
+            name: string;
+            /** Signature */
+            signature?: string | null;
         };
         /**
          * SymbolsQuery

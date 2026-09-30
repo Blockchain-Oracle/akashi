@@ -1614,6 +1614,17 @@
             "title": "Ended Values",
             "default": 0
           },
+          "via_office": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Via Office"
+          },
           "wikipedia_url": {
             "anyOf": [
               {

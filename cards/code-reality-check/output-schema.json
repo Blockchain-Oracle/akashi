@@ -462,6 +462,31 @@
                 },
                 "type": "array"
               },
+              "suggestions": {
+                "items": {
+                  "description": "A real name close to the missing one, with its signature when it could be read.",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "signature": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
               "evidence_source": {
                 "anyOf": [
                   {
@@ -600,6 +625,31 @@
               "did_you_mean": {
                 "items": {
                   "type": "string"
+                },
+                "type": "array"
+              },
+              "suggestions": {
+                "items": {
+                  "description": "A real name close to the missing one, with its signature when it could be read.",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "signature": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "type": "object"
                 },
                 "type": "array"
               },

@@ -1,4 +1,14 @@
-"""Place name → coordinates and ISO country via Wikidata (search, then the first item that has P625)."""
+"""Place name → coordinates and ISO country via Wikidata.
+
+Search ranks "New York" the state above New York City, and "Washington" the state above Washington, D.C. So among
+the hits that have coordinates and whose label is the query, or the query followed by more ("New York City"),
+the most notable one wins: the one with the most Wikipedia sitelinks. New York → New York City, Washington →
+Washington, D.C., Paris → Paris (France), Georgia → the country (348 sitelinks against the US state's 231),
+Mexico → the country. With no such label, the first hit with coordinates in search order.
+
+Three small calls: the search, one `action=query` for every candidate's primary coordinates and sitelink count
+(about 1 KB for eight candidates; whole entities were 1.6 MB and 4 s), and the chosen place's country claim.
+"""
 
 import json
 from dataclasses import asdict, dataclass
@@ -13,10 +23,12 @@ from akashi_now import clients
 from akashi_now.constants import (
     GEOCODE_CACHE_KIND,
     GEOCODE_CANDIDATES,
+    PLACE_NAME_SEPARATORS,
     TTL_GEOCODE,
-    WIKIDATA_COORDINATES,
     WIKIDATA_COUNTRY,
 )
+
+EARTH = "earth"
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,11 +57,50 @@ def _value(claims: dict[str, Any], prop: str) -> Any:
     return None
 
 
-async def _entities(ids: list[str]) -> dict[str, Any]:
+@dataclass(frozen=True, slots=True)
+class _Candidate:
+    lat: float
+    lon: float
+    sitelinks: int
+
+
+async def _candidates(ids: list[str]) -> dict[str, _Candidate]:
+    """Primary coordinates (from P625) and the sitelink count of every candidate that has coordinates on Earth."""
     data, _ = await clients.wikidata().get_json(
-        f"/w/api.php?action=wbgetentities&ids={'|'.join(ids)}&props=claims&format=json"
+        f"/w/api.php?action=query&titles={'|'.join(ids)}&prop=coordinates|pageprops&ppprop=wb-sitelinks"
+        "&format=json&formatversion=2"
     )
-    return data.get("entities", {})
+    out: dict[str, _Candidate] = {}
+    for page in data.get("query", {}).get("pages", []):
+        coords = page.get("coordinates") or []
+        primary = next((c for c in coords if c.get("primary")), coords[0] if coords else None)
+        if primary and primary.get("globe", EARTH) == EARTH:
+            links = int((page.get("pageprops") or {}).get("wb-sitelinks", 0))
+            out[page["title"]] = _Candidate(primary["lat"], primary["lon"], links)
+    return out
+
+
+async def _country(qid: str) -> str | None:
+    data, _ = await clients.wikidata().get_json(
+        f"/w/api.php?action=wbgetclaims&entity={qid}&property={WIKIDATA_COUNTRY}&format=json"
+    )
+    ref = _value(data.get("claims", {}), WIKIDATA_COUNTRY)
+    return _country_iso().get(ref["id"]) if ref else None
+
+
+def _names_the_place(label: str, wanted: str) -> bool:
+    """The label is the query, or the query followed by more words ("New York City", "Washington, D.C.")."""
+    name = label.casefold()
+    return name == wanted or (name.startswith(wanted) and name[len(wanted) : len(wanted) + 1] in PLACE_NAME_SEPARATORS)
+
+
+def _pick(hits: list[dict[str, Any]], located: dict[str, _Candidate], wanted: str) -> dict[str, Any] | None:
+    placed = [h for h in hits if h["id"] in located]
+    named = [h for h in placed if _names_the_place(h.get("label") or "", wanted)]
+    if not named:
+        return placed[0] if placed else None
+    # max() keeps the first of equals, so search order breaks ties
+    return max(named, key=lambda h: located[h["id"]].sitelinks)
 
 
 async def geocode(place: str) -> Place | None:
@@ -63,19 +114,9 @@ async def geocode(place: str) -> Place | None:
     hits = found.get("search", [])
     result: Place | None = None
     if hits:
-        entities = await _entities([h["id"] for h in hits])
-        wanted = place.strip().casefold()
-        # Exact label matches first (search ranks "University of Chicago" above Chicago), then search order.
-        hits.sort(key=lambda h: (h.get("label") or "").casefold() != wanted)
-        for h in hits:
-            claims = entities.get(h["id"], {}).get("claims", {})
-            if (coord := _value(claims, WIKIDATA_COORDINATES)) is None:
-                continue
-            country_ref = _value(claims, WIKIDATA_COUNTRY)
-            country = _country_iso().get(country_ref["id"]) if country_ref else None
-            result = Place(
-                h["id"], h.get("label", place), h.get("description"), coord["latitude"], coord["longitude"], country
-            )
-            break
+        located = await _candidates([h["id"] for h in hits])
+        if (h := _pick(hits, located, place.strip().casefold())) is not None:
+            at, country = located[h["id"]], await _country(h["id"])
+            result = Place(h["id"], h.get("label", place), h.get("description"), at.lat, at.lon, country)
     await cache.set(key, asdict(result) if result else {}, TTL_GEOCODE)
     return result

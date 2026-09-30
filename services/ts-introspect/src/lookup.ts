@@ -142,11 +142,10 @@ export function lookup(built: Built, pkg: string, symbol: string, aliasRetry = t
     const name = tokens[i];
     const { members, opaque } = walker.children(current);
     let next = members.get(name);
-    if (!next && i === 0) {
-      // Also try the default export's members (e.g. "get" on axios' default instance).
-      const def = checker.getExportsOfModule(mod).find((e) => e.name === "default");
-      if (def) next = walker.children(def).members.get(name);
-    }
+    // The default export's members are in scope for the first token too (e.g. "get" on axios' default instance).
+    const defaultMembers =
+      i === 0 ? walker.children(checker.getExportsOfModule(mod).find((e) => e.name === "default") ?? current).members : undefined;
+    if (!next && defaultMembers) next = defaultMembers.get(name);
     if (!next && i === 0 && aliasRetry && tokens.length > 1) {
       // `import _ from "lodash"; _.chunk` / `import * as z from "zod"`: treat an unknown first token as the
       // import alias and resolve the rest from the package root.
@@ -154,7 +153,9 @@ export function lookup(built: Built, pkg: string, symbol: string, aliasRetry = t
       if (rest.exists !== "no") return { ...rest, symbol, reason: rest.reason ?? `treated '${name}' as the import alias` };
     }
     if (!next) {
-      const siblings = [...members.keys()].filter((k) => !k.startsWith("__")).slice(0, MAX_SIBLINGS);
+      // Everything the lookup could have matched: the default export's members first (what callers usually mean).
+      const visible = new Set([...(defaultMembers?.keys() ?? []), ...members.keys()]);
+      const siblings = [...visible].filter((k) => !k.startsWith("__")).slice(0, MAX_SIBLINGS);
       if (opaque) return { ...base, reason: "resolves_to_any", defined_in: path, siblings };
       // Never claim "does not exist" from a partial view of the package's types.
       if (!built.complete) return { ...base, reason: "type_files_incomplete", defined_in: path, siblings };

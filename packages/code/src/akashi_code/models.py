@@ -165,6 +165,13 @@ class SymbolsQuery(BaseModel):
     symbols: list[SymbolName] = Field(min_length=1, max_length=MAX_SYMBOLS_PER_REQUEST)
 
 
+class SymbolSuggestion(BaseModel):
+    """A real name close to the missing one, with its signature when it could be read."""
+
+    name: str
+    signature: UntrustedStr | None = None
+
+
 class SymbolResult(BaseModel):
     kind: Literal["symbol"] = "symbol"
     ecosystem: Ecosystem
@@ -178,6 +185,7 @@ class SymbolResult(BaseModel):
     overloads: list[UntrustedStr] = Field(default_factory=list)
     defined_in: str | None = None
     did_you_mean: list[str] = Field(default_factory=list)
+    suggestions: list[SymbolSuggestion] = Field(default_factory=list)  # did_you_mean with signatures
     evidence_source: str | None = None  # pyi | py-ast | d.ts | rustdoc | pkgsite | typeshed
     pending: bool = False
     retry_after_ms: int | None = None
@@ -236,4 +244,5 @@ class Diagnostic(BaseModel):
     signature: UntrustedStr | None = None
     fix_hint: UntrustedStr | None = None
     did_you_mean: list[str] = Field(default_factory=list)
+    suggestions: list[SymbolSuggestion] = Field(default_factory=list)  # for a missing symbol: real names + signatures
     reason: str | None = None

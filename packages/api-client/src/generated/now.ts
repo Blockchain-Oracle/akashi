@@ -624,6 +624,8 @@ export interface components {
              * @default 0
              */
             ended_values: number;
+            /** Via Office */
+            via_office?: string | null;
             /** Wikipedia Url */
             wikipedia_url?: string | null;
             provenance: components["schemas"]["Provenance"];
