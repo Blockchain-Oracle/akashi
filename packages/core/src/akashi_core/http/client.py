@@ -78,27 +78,28 @@ class UpstreamClient:
         finally:
             self._gate.release()
 
-    async def _admit(self, deadline: Deadline) -> None:
-        """Take a rate-limit slot, waiting for the window to free up while the deadline allows it.
+    async def _admit(self, deadline: Deadline, cost: int) -> None:
+        """Take `cost` rate-limit slots, waiting for the window to free up while the deadline allows it.
 
         Failing fast here would turn a burst (ten citations at once) into false "unavailable" answers.
+        `cost` > 1 is for upstreams that bill per item in a batch (Twelve Data: one credit per symbol).
         """
         if time.monotonic() < self._cooldown_until:
             raise UpstreamFailure(self.spec.name, SourceStatus.rate_limited, "cooldown")
         if not (self._limiter and self._rate):
             return
-        while not await self._limiter.hit(self._rate, self.spec.name):
+        while not await self._limiter.hit(self._rate, self.spec.name, cost=cost):
             stats = await self._limiter.get_window_stats(self._rate, self.spec.name)
             wait = max(stats.reset_time - time.time(), RATE_WAIT_MIN_S)
             if wait >= deadline.remaining() - DEADLINE_SAFETY_MARGIN_S:
                 raise UpstreamFailure(self.spec.name, SourceStatus.rate_limited)
             await asyncio.sleep(wait)
 
-    async def request(self, method: str, url: str, **kwargs: Any) -> httpx2.Response:
+    async def request(self, method: str, url: str, *, cost: int = 1, **kwargs: Any) -> httpx2.Response:
         """One request under the current deadline; retries transient failures on idempotent verbs only."""
         deadline = current_deadline(NOW_DEADLINE_S)
         attempts = self.spec.retry_attempts if method in {"GET", "HEAD"} else 1
-        await self._admit(deadline)
+        await self._admit(deadline, cost)
         try:
             async for attempt in stamina.retry_context(
                 on=(httpx2.TransportError, RetryableStatus), attempts=attempts, timeout=deadline.remaining()
@@ -123,10 +124,10 @@ class UpstreamClient:
             raise UpstreamFailure(self.spec.name, SourceStatus.unavailable) from exc
         raise UpstreamFailure(self.spec.name, SourceStatus.unavailable)
 
-    async def get_json(self, url: str, **kwargs: Any) -> tuple[Any, SourceRef]:
+    async def get_json(self, url: str, *, cost: int = 1, **kwargs: Any) -> tuple[Any, SourceRef]:
         """GET a JSON document. 404 → UpstreamFailure(not_found); other non-2xx or non-JSON → unavailable."""
         started = time.monotonic()
-        resp = await self.request("GET", url, **kwargs)
+        resp = await self.request("GET", url, cost=cost, **kwargs)
         latency = round((time.monotonic() - started) * _MS_PER_S)
         if resp.status_code == HTTP_NOT_FOUND:
             raise UpstreamFailure(self.spec.name, SourceStatus.not_found)

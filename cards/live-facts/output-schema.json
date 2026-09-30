@@ -1264,6 +1264,386 @@
           {
             "properties": {
               "kind": {
+                "const": "quote",
+                "type": "string"
+              },
+              "symbol": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "ok",
+                  "not_found",
+                  "unavailable"
+                ],
+                "type": "string"
+              },
+              "name": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "exchange": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "mic_code": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "currency": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "price": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "price_is_close": {
+                "type": "boolean"
+              },
+              "price_as_of": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "session_date": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "previous_close": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "change": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "change_pct": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "open": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "high": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "low": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "volume": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "close_check": {
+                "anyOf": [
+                  {
+                    "description": "The one number both feeds publish independently: the official close of the same session.",
+                    "properties": {
+                      "session_date": {
+                        "type": "string"
+                      },
+                      "twelvedata": {
+                        "type": "number"
+                      },
+                      "massive": {
+                        "type": "number"
+                      },
+                      "agreement": {
+                        "enum": [
+                          "agree",
+                          "minor_diff",
+                          "conflict",
+                          "single_source"
+                        ],
+                        "type": "string"
+                      },
+                      "spread_pct": {
+                        "anyOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "session_date",
+                      "twelvedata",
+                      "massive",
+                      "agreement",
+                      "spread_pct"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "suggestions": {
+                "items": {
+                  "properties": {
+                    "symbol": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "symbol"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "market": {
+                "properties": {
+                  "calendar": {
+                    "const": "NYSE",
+                    "type": "string"
+                  },
+                  "state": {
+                    "enum": [
+                      "open",
+                      "pre_market",
+                      "after_hours",
+                      "closed"
+                    ],
+                    "type": "string"
+                  },
+                  "session_date": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "closes_at": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "early_close": {
+                    "type": "boolean"
+                  },
+                  "last_close_at": {
+                    "type": "string"
+                  },
+                  "next_open_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "state",
+                  "session_date",
+                  "closes_at",
+                  "last_close_at",
+                  "next_open_at"
+                ],
+                "type": "object"
+              },
+              "provenance": {
+                "properties": {
+                  "sources": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "as_of": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "age_seconds": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "freshness": {
+                    "enum": [
+                      "fresh",
+                      "lagging",
+                      "stale",
+                      "unknown"
+                    ],
+                    "type": "string"
+                  },
+                  "agreement": {
+                    "enum": [
+                      "agree",
+                      "minor_diff",
+                      "conflict",
+                      "single_source"
+                    ],
+                    "type": "string"
+                  },
+                  "spread_pct": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "licence": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "attribution": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "type": "object"
+              },
+              "notes": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "symbol",
+              "status",
+              "market",
+              "provenance"
+            ],
+            "type": "object"
+          },
+          {
+            "properties": {
+              "kind": {
                 "const": "job",
                 "type": "string"
               },

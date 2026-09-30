@@ -455,6 +455,64 @@
         }
       }
     },
+    "/v1/stocks": {
+      "post": {
+        "summary": "Stocks",
+        "operationId": "stocks_v1_stocks_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StocksRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_StockQuote_"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Body is not valid JSON.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Body over the size limit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valid JSON that fails validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/jobs": {
       "post": {
         "summary": "Jobs",
@@ -676,6 +734,46 @@
           "stale"
         ],
         "title": "CacheState"
+      },
+      "CloseCheck": {
+        "properties": {
+          "session_date": {
+            "type": "string",
+            "title": "Session Date"
+          },
+          "twelvedata": {
+            "type": "number",
+            "title": "Twelvedata"
+          },
+          "massive": {
+            "type": "number",
+            "title": "Massive"
+          },
+          "agreement": {
+            "$ref": "#/components/schemas/Agreement"
+          },
+          "spread_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spread Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_date",
+          "twelvedata",
+          "massive",
+          "agreement",
+          "spread_pct"
+        ],
+        "title": "CloseCheck",
+        "description": "The one number both feeds publish independently: the official close of the same session."
       },
       "Envelope_BusinessDaysResult_": {
         "properties": {
@@ -1138,6 +1236,83 @@
           "elapsed_ms"
         ],
         "title": "Envelope[NewsStory]"
+      },
+      "Envelope_StockQuote_": {
+        "properties": {
+          "service": {
+            "type": "string",
+            "title": "Service"
+          },
+          "operation": {
+            "type": "string",
+            "title": "Operation"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResponseStatus"
+          },
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "deadline_ms": {
+            "type": "integer",
+            "title": "Deadline Ms"
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "title": "Elapsed Ms"
+          },
+          "unavailable": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unavailable"
+          },
+          "summary": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Summary"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/StockQuote"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceRef"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "service",
+          "operation",
+          "version",
+          "status",
+          "as_of",
+          "deadline_ms",
+          "elapsed_ms"
+        ],
+        "title": "Envelope[StockQuote]"
       },
       "Envelope_TimeResult_": {
         "properties": {
@@ -1951,6 +2126,73 @@
         "type": "object",
         "title": "JobsRequest"
       },
+      "MarketClock": {
+        "properties": {
+          "calendar": {
+            "type": "string",
+            "const": "NYSE",
+            "title": "Calendar",
+            "default": "NYSE"
+          },
+          "state": {
+            "$ref": "#/components/schemas/MarketState"
+          },
+          "session_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Date"
+          },
+          "closes_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closes At"
+          },
+          "early_close": {
+            "type": "boolean",
+            "title": "Early Close",
+            "default": false
+          },
+          "last_close_at": {
+            "type": "string",
+            "title": "Last Close At"
+          },
+          "next_open_at": {
+            "type": "string",
+            "title": "Next Open At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "state",
+          "session_date",
+          "closes_at",
+          "last_close_at",
+          "next_open_at"
+        ],
+        "title": "MarketClock"
+      },
+      "MarketState": {
+        "type": "string",
+        "enum": [
+          "open",
+          "pre_market",
+          "after_hours",
+          "closed"
+        ],
+        "title": "MarketState"
+      },
       "NewsRequest": {
         "properties": {
           "query": {
@@ -2199,6 +2441,15 @@
         ],
         "title": "ProviderRate"
       },
+      "QuoteStatus": {
+        "type": "string",
+        "enum": [
+          "ok",
+          "not_found",
+          "unavailable"
+        ],
+        "title": "QuoteStatus"
+      },
       "ResponseStatus": {
         "type": "string",
         "enum": [
@@ -2384,6 +2635,266 @@
           "not_applicable"
         ],
         "title": "SourceStatus"
+      },
+      "StockQuote": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "quote",
+            "title": "Kind",
+            "default": "quote"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "status": {
+            "$ref": "#/components/schemas/QuoteStatus"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "exchange": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange"
+          },
+          "mic_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mic Code"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price"
+          },
+          "price_is_close": {
+            "type": "boolean",
+            "title": "Price Is Close",
+            "default": false
+          },
+          "price_as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price As Of"
+          },
+          "session_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Date"
+          },
+          "previous_close": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Close"
+          },
+          "change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change"
+          },
+          "change_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Pct"
+          },
+          "open": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Open"
+          },
+          "high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "High"
+          },
+          "low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Low"
+          },
+          "volume": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume"
+          },
+          "close_check": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CloseCheck"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "suggestions": {
+            "items": {
+              "$ref": "#/components/schemas/Suggestion"
+            },
+            "type": "array",
+            "title": "Suggestions"
+          },
+          "market": {
+            "$ref": "#/components/schemas/MarketClock"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbol",
+          "status",
+          "market",
+          "provenance"
+        ],
+        "title": "StockQuote"
+      },
+      "StocksRequest": {
+        "properties": {
+          "symbols": {
+            "items": {
+              "type": "string",
+              "maxLength": 8,
+              "minLength": 1,
+              "pattern": "^[A-Za-z]{1,5}(?:[.\\-/ ][A-Za-z]{1,2})?$",
+              "description": "US-listed ticker, e.g. AAPL, SPY or BRK.B (BRK-B and BRK/B are read as BRK.B)"
+            },
+            "type": "array",
+            "maxItems": 5,
+            "minItems": 1,
+            "title": "Symbols"
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbols"
+        ],
+        "title": "StocksRequest"
+      },
+      "Suggestion": {
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbol"
+        ],
+        "title": "Suggestion"
       },
       "TimeRequest": {
         "anyOf": [

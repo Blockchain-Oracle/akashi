@@ -378,6 +378,26 @@
     },
     {
       "properties": {
+        "symbols": {
+          "items": {
+            "description": "US-listed ticker, e.g. AAPL, SPY or BRK.B (BRK-B and BRK/B are read as BRK.B)",
+            "maxLength": 8,
+            "minLength": 1,
+            "pattern": "^[A-Za-z]{1,5}(?:[.\\-/ ][A-Za-z]{1,2})?$",
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "symbols"
+      ],
+      "type": "object"
+    },
+    {
+      "properties": {
         "query": {
           "anyOf": [
             {

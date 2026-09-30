@@ -18,6 +18,8 @@ from akashi_now.jobs.models import Job, JobsRequest
 from akashi_now.jobs.service import get_jobs
 from akashi_now.news.models import NewsRequest, NewsStory
 from akashi_now.news.service import get_news
+from akashi_now.stocks.models import StockQuote, StocksRequest
+from akashi_now.stocks.service import get_stocks
 from akashi_now.time.models import TimeRequest, TimeResult
 from akashi_now.time.service import get_time
 from akashi_now.weather.models import WeatherRequest, WeatherResult
@@ -128,6 +130,22 @@ async def news(body: NewsRequest) -> Envelope[NewsStory]:
         sources=sources,
         unavailable=unavailable,
         summary_field="source",
+        notes=notes,
+    )
+
+
+@router.post("/stocks")
+async def stocks(body: StocksRequest) -> Envelope[StockQuote]:
+    deadline = current_deadline(NOW_DEADLINE_S)
+    results, sources, unavailable, notes = await get_stocks(body)
+    return build_envelope(
+        service=SERVICE_NOW,
+        operation="stocks",
+        deadline=deadline,
+        results=results,
+        sources=sources,
+        unavailable=unavailable,
+        summary_field="status",
         notes=notes,
     )
 

@@ -22,6 +22,9 @@ class AkashiSettings(BaseSettings):
     nli_model_dir: str = "./data/models/nli"
     demo_secret: str | None = None
     openalex_api_key: SecretStr | None = None  # free key: 10x the shared keyless budget
+    stocks_enabled: bool = False  # /now/v1/stocks is a labelled demo (free keys forbid redistribution)
+    twelvedata_api_key: SecretStr | None = None  # quotes (required for /stocks)
+    massive_api_key: SecretStr | None = None  # all-market daily closes: ticker check + cross-check
     data_dir: str = "./data"
     metrics_port: int = METRICS_PORT
 
