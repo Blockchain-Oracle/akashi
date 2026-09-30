@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from akashi_core.contract.fields import UntrustedStr
 from akashi_now.constants import (
@@ -17,6 +17,8 @@ from akashi_now.provenance import Provenance
 
 
 class JobsRequest(BaseModel):
+    model_config = ConfigDict(json_schema_extra={"examples": [{"query": "engineer", "remote": True, "limit": 5}]})
+
     query: str | None = Field(default=None, max_length=JOBS_MAX_QUERY_CHARS, description="Words in the title/team")
     companies: list[str] = Field(default_factory=list, max_length=JOBS_MAX_COMPANIES)
     location: str | None = Field(default=None, max_length=MAX_PLACE_CHARS)

@@ -12,11 +12,24 @@ def probe_router(service_id: str) -> APIRouter:
     async def root() -> dict[str, str]:
         return {"service": service_id, "status": HEALTH_OK}
 
-    @router.get("/v1/version")
+    @router.get(
+        "/v1/version",
+        operation_id="version",
+        summary="Service identity and version",
+        description=(
+            f"Returns the capability ID ({service_id}) and the release. Card health checks use it to confirm the "
+            "backend behind a relayer is this service; it touches no upstream."
+        ),
+    )
     async def version() -> dict[str, str]:
         return {"service": service_id, "version": APP_VERSION}
 
-    @router.get("/v1/health")
+    @router.get(
+        "/v1/health",
+        operation_id="health",
+        summary="Readiness",
+        description='Returns `{"status": "ok"}` when the process is serving. It touches no upstream.',
+    )
     async def health() -> dict[str, str]:
         return {"status": HEALTH_OK}
 

@@ -8,6 +8,7 @@ from akashi_core.constants.deadlines import NOW_DEADLINE_S
 from akashi_core.contract.build import build_envelope
 from akashi_core.contract.envelope import Envelope
 from akashi_core.deadline import current_deadline
+from akashi_now.descriptions import route_docs
 from akashi_now.facts.models import FactRequest, FactResult
 from akashi_now.facts.service import get_fact
 from akashi_now.fx.models import FxRequest, FxResult
@@ -28,7 +29,7 @@ from akashi_now.weather.service import get_weather
 router = APIRouter(prefix="/v1")
 
 
-@router.post("/time")
+@router.post("/time", **route_docs("time"))
 async def time(body: TimeRequest) -> Envelope[TimeResult]:
     deadline = current_deadline(NOW_DEADLINE_S)
     result, sources = await get_time(body)
@@ -43,7 +44,7 @@ async def time(body: TimeRequest) -> Envelope[TimeResult]:
     )
 
 
-@router.post("/holidays")
+@router.post("/holidays", **route_docs("holidays"))
 async def holidays(body: HolidaysRequest) -> Envelope[HolidayResult]:
     deadline = current_deadline(NOW_DEADLINE_S)
     results, sources, unavailable = await get_holidays(body)
@@ -58,7 +59,7 @@ async def holidays(body: HolidaysRequest) -> Envelope[HolidayResult]:
     )
 
 
-@router.post("/business-days")
+@router.post("/business-days", **route_docs("business-days"))
 async def business_days_route(body: BusinessDaysRequest) -> Envelope[BusinessDaysResult]:
     deadline = current_deadline(NOW_DEADLINE_S)
     result = await to_thread.run_sync(business_days, body)  # calendars are computed in Python: keep the loop free
@@ -73,7 +74,7 @@ async def business_days_route(body: BusinessDaysRequest) -> Envelope[BusinessDay
     )
 
 
-@router.post("/fx")
+@router.post("/fx", **route_docs("fx"))
 async def fx(body: FxRequest) -> Envelope[FxResult]:
     deadline = current_deadline(NOW_DEADLINE_S)
     results, sources, unavailable = await get_fx(body)
@@ -88,7 +89,7 @@ async def fx(body: FxRequest) -> Envelope[FxResult]:
     )
 
 
-@router.post("/weather")
+@router.post("/weather", **route_docs("weather"))
 async def weather(body: WeatherRequest) -> Envelope[WeatherResult]:
     deadline = current_deadline(NOW_DEADLINE_S)
     result, sources, unavailable = await get_weather(body)
@@ -103,7 +104,7 @@ async def weather(body: WeatherRequest) -> Envelope[WeatherResult]:
     )
 
 
-@router.post("/fact")
+@router.post("/fact", **route_docs("fact"))
 async def fact(body: FactRequest) -> Envelope[FactResult]:
     deadline = current_deadline(NOW_DEADLINE_S)
     result, sources = await get_fact(body)
@@ -118,7 +119,7 @@ async def fact(body: FactRequest) -> Envelope[FactResult]:
     )
 
 
-@router.post("/news")
+@router.post("/news", **route_docs("news"))
 async def news(body: NewsRequest) -> Envelope[NewsStory]:
     deadline = current_deadline(NOW_DEADLINE_S)
     results, sources, unavailable, notes = await get_news(body)
@@ -134,7 +135,7 @@ async def news(body: NewsRequest) -> Envelope[NewsStory]:
     )
 
 
-@router.post("/stocks")
+@router.post("/stocks", **route_docs("stocks"))
 async def stocks(body: StocksRequest) -> Envelope[StockQuote]:
     deadline = current_deadline(NOW_DEADLINE_S)
     results, sources, unavailable, notes = await get_stocks(body)
@@ -150,7 +151,7 @@ async def stocks(body: StocksRequest) -> Envelope[StockQuote]:
     )
 
 
-@router.post("/jobs")
+@router.post("/jobs", **route_docs("jobs"))
 async def jobs(body: JobsRequest) -> Envelope[Job]:
     deadline = current_deadline(NOW_DEADLINE_S)
     results, sources, unavailable, notes = await to_thread.run_sync(get_jobs, body)

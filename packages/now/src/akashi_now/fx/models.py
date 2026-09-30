@@ -3,7 +3,7 @@
 import datetime as dt
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from akashi_now.constants import CURRENCY_CODE_LEN, FX_MAX_QUOTES
 from akashi_now.provenance import Freshness, Provenance
@@ -21,6 +21,10 @@ CurrencyCode = Annotated[
 
 
 class FxRequest(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={"examples": [{"base": "USD", "quotes": ["EUR", "JPY"], "amount": 1000}]}
+    )
+
     base: CurrencyCode
     quotes: list[CurrencyCode] = Field(min_length=1, max_length=FX_MAX_QUOTES)
     amount: float | None = Field(default=None, gt=0)

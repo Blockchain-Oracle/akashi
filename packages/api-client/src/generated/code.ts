@@ -11,8 +11,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Version */
-        get: operations["version_v1_version_get"];
+        /**
+         * Service identity and version
+         * @description Returns the capability ID (code-reality-check) and the release. Card health checks use it to confirm the backend behind a relayer is this service; it touches no upstream.
+         */
+        get: operations["version"];
         put?: never;
         post?: never;
         delete?: never;
@@ -28,8 +31,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Health */
-        get: operations["health_v1_health_get"];
+        /**
+         * Readiness
+         * @description Returns `{"status": "ok"}` when the process is serving. It touches no upstream.
+         */
+        get: operations["health"];
         put?: never;
         post?: never;
         delete?: never;
@@ -47,8 +53,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Package */
-        post: operations["package_v1_package_post"];
+        /**
+         * Check a package
+         * @description Checks one package in one registry (npm, pypi, cargo, go, maven, rubygems, packagist, nuget) and, optionally, one version. The verdict is the first that applies of does_not_exist, placeholder, likely_typo, suspicious_new, yanked or deprecated, else ok; unknown when the registry did not answer in time. Evidence strings say why. Hard stop 7 s.
+         */
+        post: operations["package"];
         delete?: never;
         options?: never;
         head?: never;
@@ -64,8 +73,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Packages */
-        post: operations["packages_v1_packages_post"];
+        /**
+         * Check several packages
+         * @description The same check as /v1/package for up to 100 packages, in any mix of registries, with one result each in request order. Hard stop 7 s.
+         */
+        post: operations["packages"];
         delete?: never;
         options?: never;
         head?: never;
@@ -81,8 +93,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Versions */
-        post: operations["versions_v1_versions_post"];
+        /**
+         * List and resolve versions
+         * @description Lists a package's published versions, newest first, and resolves a version range with the registry's own rules (npm semver, cargo, PEP 440; exact elsewhere). Hard stop 7 s.
+         */
+        post: operations["versions"];
         delete?: never;
         options?: never;
         head?: never;
@@ -98,8 +113,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Symbol */
-        post: operations["symbol_v1_symbol_post"];
+        /**
+         * Check a symbol
+         * @description Checks that a function, class, method or attribute exists in a package version (npm, pypi, cargo and go), read from the package's own type definitions or source. When it exists, the signature is returned; when it does not, similar real names where the index offers them. Hard stop 7 s.
+         */
+        post: operations["symbol"];
         delete?: never;
         options?: never;
         head?: never;
@@ -115,8 +133,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Symbols */
-        post: operations["symbols_v1_symbols_post"];
+        /**
+         * Check several symbols
+         * @description The same check as /v1/symbol for up to 50 symbols of one package version. Hard stop 7 s.
+         */
+        post: operations["symbols"];
         delete?: never;
         options?: never;
         head?: never;
@@ -132,8 +153,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Check */
-        post: operations["check_v1_check_post"];
+        /**
+         * Check a code snippet
+         * @description Parses a snippet (python, typescript, javascript, go, rust, up to 49,152 bytes) and checks every import and call it makes: that each package exists and each symbol exists in it, up to 60 distinct references. Returns one diagnostic per reference with its line and column, and optional version pins via `versions`. Hard stop 7 s.
+         */
+        post: operations["check"];
         delete?: never;
         options?: never;
         head?: never;
@@ -154,7 +178,13 @@ export interface components {
          * @enum {string}
          */
         CheckLanguage: "python" | "typescript" | "javascript" | "go" | "rust";
-        /** CheckRequest */
+        /**
+         * CheckRequest
+         * @example {
+         *       "code": "import reqeusts\n\nresponse = reqeusts.get(\"https://example.com\", timeout=5)\n",
+         *       "language": "python"
+         *     }
+         */
         CheckRequest: {
             language: components["schemas"]["CheckLanguage"];
             /** Code */
@@ -344,7 +374,13 @@ export interface components {
         ErrorEnvelope: {
             error: components["schemas"]["ErrorBody"];
         };
-        /** PackageQuery */
+        /**
+         * PackageQuery
+         * @example {
+         *       "ecosystem": "npm",
+         *       "name": "react-codeshift"
+         *     }
+         */
         PackageQuery: {
             ecosystem: components["schemas"]["Ecosystem"];
             /** Name */
@@ -419,7 +455,26 @@ export interface components {
          * @enum {string}
          */
         PackageVerdict: "ok" | "does_not_exist" | "placeholder" | "likely_typo" | "suspicious_new" | "deprecated" | "yanked" | "unknown";
-        /** PackagesRequest */
+        /**
+         * PackagesRequest
+         * @example {
+         *       "items": [
+         *         {
+         *           "ecosystem": "npm",
+         *           "name": "left-padx"
+         *         },
+         *         {
+         *           "ecosystem": "pypi",
+         *           "name": "reqeusts"
+         *         },
+         *         {
+         *           "ecosystem": "npm",
+         *           "name": "axios",
+         *           "version": "1.7.9"
+         *         }
+         *       ]
+         *     }
+         */
         PackagesRequest: {
             /** Items */
             items: components["schemas"]["PackageQuery"][];
@@ -453,7 +508,15 @@ export interface components {
          * @enum {string}
          */
         SourceStatus: "ok" | "not_found" | "unavailable" | "rate_limited" | "skipped_budget" | "not_applicable";
-        /** SymbolQuery */
+        /**
+         * SymbolQuery
+         * @example {
+         *       "ecosystem": "npm",
+         *       "package": "axios",
+         *       "symbol": "fetchJson",
+         *       "version": "1.7.9"
+         *     }
+         */
         SymbolQuery: {
             ecosystem: components["schemas"]["Ecosystem"];
             /** Package */
@@ -502,7 +565,18 @@ export interface components {
             /** Reason */
             reason?: string | null;
         };
-        /** SymbolsQuery */
+        /**
+         * SymbolsQuery
+         * @example {
+         *       "ecosystem": "pypi",
+         *       "package": "requests",
+         *       "symbols": [
+         *         "get",
+         *         "Session.mount",
+         *         "fetch_json"
+         *       ]
+         *     }
+         */
         SymbolsQuery: {
             ecosystem: components["schemas"]["Ecosystem"];
             /** Package */
@@ -528,7 +602,14 @@ export interface components {
             /** Target Rank */
             target_rank?: number | null;
         };
-        /** VersionsQuery */
+        /**
+         * VersionsQuery
+         * @example {
+         *       "ecosystem": "npm",
+         *       "name": "axios",
+         *       "range": "^1.7.0"
+         *     }
+         */
         VersionsQuery: {
             ecosystem: components["schemas"]["Ecosystem"];
             /** Name */
@@ -582,7 +663,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    version_v1_version_get: {
+    version: {
         parameters: {
             query?: never;
             header?: never;
@@ -604,7 +685,7 @@ export interface operations {
             };
         };
     };
-    health_v1_health_get: {
+    health: {
         parameters: {
             query?: never;
             header?: never;
@@ -626,7 +707,7 @@ export interface operations {
             };
         };
     };
-    package_v1_package_post: {
+    package: {
         parameters: {
             query?: never;
             header?: never;
@@ -677,7 +758,7 @@ export interface operations {
             };
         };
     };
-    packages_v1_packages_post: {
+    packages: {
         parameters: {
             query?: never;
             header?: never;
@@ -728,7 +809,7 @@ export interface operations {
             };
         };
     };
-    versions_v1_versions_post: {
+    versions: {
         parameters: {
             query?: never;
             header?: never;
@@ -779,7 +860,7 @@ export interface operations {
             };
         };
     };
-    symbol_v1_symbol_post: {
+    symbol: {
         parameters: {
             query?: never;
             header?: never;
@@ -830,7 +911,7 @@ export interface operations {
             };
         };
     };
-    symbols_v1_symbols_post: {
+    symbols: {
         parameters: {
             query?: never;
             header?: never;
@@ -881,7 +962,7 @@ export interface operations {
             };
         };
     };
-    check_v1_check_post: {
+    check: {
         parameters: {
             query?: never;
             header?: never;

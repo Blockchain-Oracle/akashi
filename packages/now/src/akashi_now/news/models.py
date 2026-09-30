@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from akashi_core.contract.fields import UntrustedStr
 from akashi_now.constants import (
@@ -16,6 +16,10 @@ from akashi_now.provenance import Provenance
 
 
 class NewsRequest(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={"examples": [{"query": "central bank interest rates", "since_hours": 24, "limit": 5}]}
+    )
+
     query: str = Field(min_length=1, max_length=NEWS_MAX_QUERY_CHARS)
     since_hours: int = Field(default=NEWS_DEFAULT_SINCE_HOURS, ge=1, le=NEWS_MAX_SINCE_HOURS)
     country: str | None = Field(default=None, min_length=2, max_length=2, description="ISO 3166-1 alpha-2 mentioned")

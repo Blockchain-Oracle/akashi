@@ -7,8 +7,9 @@
   "paths": {
     "/v1/version": {
       "get": {
-        "summary": "Version",
-        "operationId": "version_v1_version_get",
+        "summary": "Service identity and version",
+        "description": "Returns the capability ID (citation-verify) and the release. Card health checks use it to confirm the backend behind a relayer is this service; it touches no upstream.",
+        "operationId": "version",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -19,7 +20,7 @@
                     "type": "string"
                   },
                   "type": "object",
-                  "title": "Response Version V1 Version Get"
+                  "title": "Response Version"
                 }
               }
             }
@@ -29,8 +30,9 @@
     },
     "/v1/health": {
       "get": {
-        "summary": "Health",
-        "operationId": "health_v1_health_get",
+        "summary": "Readiness",
+        "description": "Returns `{\"status\": \"ok\"}` when the process is serving. It touches no upstream.",
+        "operationId": "health",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -41,7 +43,7 @@
                     "type": "string"
                   },
                   "type": "object",
-                  "title": "Response Health V1 Health Get"
+                  "title": "Response Health"
                 }
               }
             }
@@ -51,8 +53,9 @@
     },
     "/v1/verify": {
       "post": {
-        "summary": "Verify",
-        "operationId": "verify_v1_verify_post",
+        "summary": "Verify citations",
+        "description": "Checks up to 10 citations, given as strings or structured fields. DOIs, arXiv, PubMed and bibliographic references are matched against Crossref, DataCite, OpenAlex and PubMed; US case citations against the Caselaw Access Project; URLs are fetched, with the Wayback Machine alongside. Each result carries one verdict (verified, mismatch, not_found, retracted, ambiguous, unverifiable), the matched record, field-level differences and retraction notices. Hard stop 8.5 s.",
+        "operationId": "verify",
         "requestBody": {
           "content": {
             "application/json": {
@@ -109,8 +112,9 @@
     },
     "/v1/claim": {
       "post": {
-        "summary": "Claim",
-        "operationId": "claim_v1_claim_post",
+        "summary": "Check a claim against its source",
+        "description": "Checks whether a source supports a claim of up to 1000 characters. The source is a citation (its abstract is fetched) or evidence text you provide (up to 20000 characters), or both. A natural-language-inference model reads the most relevant sentences and answers supported, contradicted, insufficient_evidence or unverifiable, quoting the deciding sentence. Hard stop 8.5 s.",
+        "operationId": "claim",
         "requestBody": {
           "content": {
             "application/json": {
@@ -351,7 +355,13 @@
         "required": [
           "claim"
         ],
-        "title": "ClaimRequest"
+        "title": "ClaimRequest",
+        "examples": [
+          {
+            "citation": "10.1016/S0140-6736(97)11096-0",
+            "claim": "The Lancet paper showed that the MMR vaccine causes autism."
+          }
+        ]
       },
       "ClaimResult": {
         "properties": {
@@ -1369,7 +1379,16 @@
         "required": [
           "citations"
         ],
-        "title": "VerifyRequest"
+        "title": "VerifyRequest",
+        "examples": [
+          {
+            "citations": [
+              "Varghese v. China Southern Airlines Co., 925 F.3d 1339 (11th Cir. 2019)",
+              "10.1016/S0140-6736(97)11096-0",
+              "arXiv:1706.03762"
+            ]
+          }
+        ]
       },
       "WebCheck": {
         "properties": {

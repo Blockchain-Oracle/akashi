@@ -3,7 +3,7 @@
 from enum import StrEnum
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from akashi_code.constants import (
     MAX_CHECK_CODE_BYTES,
@@ -49,12 +49,28 @@ class PackageVerdict(StrEnum):
 
 
 class PackageQuery(BaseModel):
+    model_config = ConfigDict(json_schema_extra={"examples": [{"ecosystem": "npm", "name": "react-codeshift"}]})
+
     ecosystem: Ecosystem
     name: PackageName
     version: VersionText | None = None
 
 
 class PackagesRequest(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "items": [
+                        {"ecosystem": "npm", "name": "left-padx"},
+                        {"ecosystem": "pypi", "name": "reqeusts"},
+                        {"ecosystem": "npm", "name": "axios", "version": "1.7.9"},
+                    ]
+                }
+            ]
+        }
+    )
+
     items: list[PackageQuery] = Field(min_length=1, max_length=MAX_PACKAGES_PER_REQUEST)
 
 
@@ -94,6 +110,10 @@ class PackageResult(BaseModel):
 
 
 class VersionsQuery(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={"examples": [{"ecosystem": "npm", "name": "axios", "range": "^1.7.0"}]}
+    )
+
     ecosystem: Ecosystem
     name: PackageName
     range: str | None = Field(default=None, min_length=1, max_length=MAX_RANGE_CHARS, pattern=PRINTABLE_TEXT)
@@ -118,6 +138,12 @@ SymbolName = Annotated[str, Field(min_length=1, max_length=MAX_SYMBOL_CHARS)]
 
 
 class SymbolQuery(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [{"ecosystem": "npm", "package": "axios", "version": "1.7.9", "symbol": "fetchJson"}]
+        }
+    )
+
     ecosystem: Ecosystem
     package: PackageName
     version: VersionText | None = None
@@ -125,6 +151,14 @@ class SymbolQuery(BaseModel):
 
 
 class SymbolsQuery(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {"ecosystem": "pypi", "package": "requests", "symbols": ["get", "Session.mount", "fetch_json"]}
+            ]
+        }
+    )
+
     ecosystem: Ecosystem
     package: PackageName
     version: VersionText | None = None
@@ -159,6 +193,17 @@ class CheckLanguage(StrEnum):
 
 
 class CheckRequest(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "language": "python",
+                    "code": 'import reqeusts\n\nresponse = reqeusts.get("https://example.com", timeout=5)\n',
+                }
+            ]
+        }
+    )
+
     language: CheckLanguage
     code: str = Field(min_length=1, max_length=MAX_CHECK_CODE_BYTES)
     # package → pinned version

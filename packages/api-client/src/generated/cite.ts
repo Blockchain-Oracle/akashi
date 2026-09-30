@@ -11,8 +11,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Version */
-        get: operations["version_v1_version_get"];
+        /**
+         * Service identity and version
+         * @description Returns the capability ID (citation-verify) and the release. Card health checks use it to confirm the backend behind a relayer is this service; it touches no upstream.
+         */
+        get: operations["version"];
         put?: never;
         post?: never;
         delete?: never;
@@ -28,8 +31,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Health */
-        get: operations["health_v1_health_get"];
+        /**
+         * Readiness
+         * @description Returns `{"status": "ok"}` when the process is serving. It touches no upstream.
+         */
+        get: operations["health"];
         put?: never;
         post?: never;
         delete?: never;
@@ -47,8 +53,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Verify */
-        post: operations["verify_v1_verify_post"];
+        /**
+         * Verify citations
+         * @description Checks up to 10 citations, given as strings or structured fields. DOIs, arXiv, PubMed and bibliographic references are matched against Crossref, DataCite, OpenAlex and PubMed; US case citations against the Caselaw Access Project; URLs are fetched, with the Wayback Machine alongside. Each result carries one verdict (verified, mismatch, not_found, retracted, ambiguous, unverifiable), the matched record, field-level differences and retraction notices. Hard stop 8.5 s.
+         */
+        post: operations["verify"];
         delete?: never;
         options?: never;
         head?: never;
@@ -64,8 +73,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Claim */
-        post: operations["claim_v1_claim_post"];
+        /**
+         * Check a claim against its source
+         * @description Checks whether a source supports a claim of up to 1000 characters. The source is a citation (its abstract is fetched) or evidence text you provide (up to 20000 characters), or both. A natural-language-inference model reads the most relevant sentences and answers supported, contradicted, insufficient_evidence or unverifiable, quoting the deciding sentence. Hard stop 8.5 s.
+         */
+        post: operations["claim"];
         delete?: never;
         options?: never;
         head?: never;
@@ -116,7 +128,13 @@ export interface components {
          * @enum {string}
          */
         CitationVerdict: "verified" | "mismatch" | "not_found" | "retracted" | "ambiguous" | "unverifiable";
-        /** ClaimRequest */
+        /**
+         * ClaimRequest
+         * @example {
+         *       "citation": "10.1016/S0140-6736(97)11096-0",
+         *       "claim": "The Lancet paper showed that the MMR vaccine causes autism."
+         *     }
+         */
         ClaimRequest: {
             /** Claim */
             claim: string;
@@ -403,7 +421,16 @@ export interface components {
              */
             retraction: boolean;
         };
-        /** VerifyRequest */
+        /**
+         * VerifyRequest
+         * @example {
+         *       "citations": [
+         *         "Varghese v. China Southern Airlines Co., 925 F.3d 1339 (11th Cir. 2019)",
+         *         "10.1016/S0140-6736(97)11096-0",
+         *         "arXiv:1706.03762"
+         *       ]
+         *     }
+         */
         VerifyRequest: {
             /** Citations */
             citations: (string | components["schemas"]["StructuredCitation"])[];
@@ -436,7 +463,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    version_v1_version_get: {
+    version: {
         parameters: {
             query?: never;
             header?: never;
@@ -458,7 +485,7 @@ export interface operations {
             };
         };
     };
-    health_v1_health_get: {
+    health: {
         parameters: {
             query?: never;
             header?: never;
@@ -480,7 +507,7 @@ export interface operations {
             };
         };
     };
-    verify_v1_verify_post: {
+    verify: {
         parameters: {
             query?: never;
             header?: never;
@@ -531,7 +558,7 @@ export interface operations {
             };
         };
     };
-    claim_v1_claim_post: {
+    claim: {
         parameters: {
             query?: never;
             header?: never;

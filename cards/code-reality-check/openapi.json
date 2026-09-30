@@ -7,8 +7,9 @@
   "paths": {
     "/v1/version": {
       "get": {
-        "summary": "Version",
-        "operationId": "version_v1_version_get",
+        "summary": "Service identity and version",
+        "description": "Returns the capability ID (code-reality-check) and the release. Card health checks use it to confirm the backend behind a relayer is this service; it touches no upstream.",
+        "operationId": "version",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -19,7 +20,7 @@
                     "type": "string"
                   },
                   "type": "object",
-                  "title": "Response Version V1 Version Get"
+                  "title": "Response Version"
                 }
               }
             }
@@ -29,8 +30,9 @@
     },
     "/v1/health": {
       "get": {
-        "summary": "Health",
-        "operationId": "health_v1_health_get",
+        "summary": "Readiness",
+        "description": "Returns `{\"status\": \"ok\"}` when the process is serving. It touches no upstream.",
+        "operationId": "health",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -41,7 +43,7 @@
                     "type": "string"
                   },
                   "type": "object",
-                  "title": "Response Health V1 Health Get"
+                  "title": "Response Health"
                 }
               }
             }
@@ -51,8 +53,9 @@
     },
     "/v1/package": {
       "post": {
-        "summary": "Package",
-        "operationId": "package_v1_package_post",
+        "summary": "Check a package",
+        "description": "Checks one package in one registry (npm, pypi, cargo, go, maven, rubygems, packagist, nuget) and, optionally, one version. The verdict is the first that applies of does_not_exist, placeholder, likely_typo, suspicious_new, yanked or deprecated, else ok; unknown when the registry did not answer in time. Evidence strings say why. Hard stop 7 s.",
+        "operationId": "package",
         "requestBody": {
           "content": {
             "application/json": {
@@ -109,8 +112,9 @@
     },
     "/v1/packages": {
       "post": {
-        "summary": "Packages",
-        "operationId": "packages_v1_packages_post",
+        "summary": "Check several packages",
+        "description": "The same check as /v1/package for up to 100 packages, in any mix of registries, with one result each in request order. Hard stop 7 s.",
+        "operationId": "packages",
         "requestBody": {
           "content": {
             "application/json": {
@@ -167,8 +171,9 @@
     },
     "/v1/versions": {
       "post": {
-        "summary": "Versions",
-        "operationId": "versions_v1_versions_post",
+        "summary": "List and resolve versions",
+        "description": "Lists a package's published versions, newest first, and resolves a version range with the registry's own rules (npm semver, cargo, PEP 440; exact elsewhere). Hard stop 7 s.",
+        "operationId": "versions",
         "requestBody": {
           "content": {
             "application/json": {
@@ -225,8 +230,9 @@
     },
     "/v1/symbol": {
       "post": {
-        "summary": "Symbol",
-        "operationId": "symbol_v1_symbol_post",
+        "summary": "Check a symbol",
+        "description": "Checks that a function, class, method or attribute exists in a package version (npm, pypi, cargo and go), read from the package's own type definitions or source. When it exists, the signature is returned; when it does not, similar real names where the index offers them. Hard stop 7 s.",
+        "operationId": "symbol",
         "requestBody": {
           "content": {
             "application/json": {
@@ -283,8 +289,9 @@
     },
     "/v1/symbols": {
       "post": {
-        "summary": "Symbols",
-        "operationId": "symbols_v1_symbols_post",
+        "summary": "Check several symbols",
+        "description": "The same check as /v1/symbol for up to 50 symbols of one package version. Hard stop 7 s.",
+        "operationId": "symbols",
         "requestBody": {
           "content": {
             "application/json": {
@@ -341,8 +348,9 @@
     },
     "/v1/check": {
       "post": {
-        "summary": "Check",
-        "operationId": "check_v1_check_post",
+        "summary": "Check a code snippet",
+        "description": "Parses a snippet (python, typescript, javascript, go, rust, up to 49,152 bytes) and checks every import and call it makes: that each package exists and each symbol exists in it, up to 60 distinct references. Returns one diagnostic per reference with its line and column, and optional version pins via `versions`. Hard stop 7 s.",
+        "operationId": "check",
         "requestBody": {
           "content": {
             "application/json": {
@@ -454,7 +462,13 @@
           "language",
           "code"
         ],
-        "title": "CheckRequest"
+        "title": "CheckRequest",
+        "examples": [
+          {
+            "code": "import reqeusts\n\nresponse = reqeusts.get(\"https://example.com\", timeout=5)\n",
+            "language": "python"
+          }
+        ]
       },
       "Diagnostic": {
         "properties": {
@@ -1004,7 +1018,13 @@
           "ecosystem",
           "name"
         ],
-        "title": "PackageQuery"
+        "title": "PackageQuery",
+        "examples": [
+          {
+            "ecosystem": "npm",
+            "name": "react-codeshift"
+          }
+        ]
       },
       "PackageResult": {
         "properties": {
@@ -1241,7 +1261,26 @@
         "required": [
           "items"
         ],
-        "title": "PackagesRequest"
+        "title": "PackagesRequest",
+        "examples": [
+          {
+            "items": [
+              {
+                "ecosystem": "npm",
+                "name": "left-padx"
+              },
+              {
+                "ecosystem": "pypi",
+                "name": "reqeusts"
+              },
+              {
+                "ecosystem": "npm",
+                "name": "axios",
+                "version": "1.7.9"
+              }
+            ]
+          }
+        ]
       },
       "ResponseStatus": {
         "type": "string",
@@ -1395,7 +1434,15 @@
           "package",
           "symbol"
         ],
-        "title": "SymbolQuery"
+        "title": "SymbolQuery",
+        "examples": [
+          {
+            "ecosystem": "npm",
+            "package": "axios",
+            "symbol": "fetchJson",
+            "version": "1.7.9"
+          }
+        ]
       },
       "SymbolResult": {
         "properties": {
@@ -1573,7 +1620,18 @@
           "package",
           "symbols"
         ],
-        "title": "SymbolsQuery"
+        "title": "SymbolsQuery",
+        "examples": [
+          {
+            "ecosystem": "pypi",
+            "package": "requests",
+            "symbols": [
+              "get",
+              "Session.mount",
+              "fetch_json"
+            ]
+          }
+        ]
       },
       "Tristate": {
         "type": "string",
@@ -1650,7 +1708,14 @@
           "ecosystem",
           "name"
         ],
-        "title": "VersionsQuery"
+        "title": "VersionsQuery",
+        "examples": [
+          {
+            "ecosystem": "npm",
+            "name": "axios",
+            "range": "^1.7.0"
+          }
+        ]
       },
       "VersionsResult": {
         "properties": {

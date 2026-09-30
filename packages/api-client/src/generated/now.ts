@@ -11,8 +11,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Version */
-        get: operations["version_v1_version_get"];
+        /**
+         * Service identity and version
+         * @description Returns the capability ID (live-facts) and the release. Card health checks use it to confirm the backend behind a relayer is this service; it touches no upstream.
+         */
+        get: operations["version"];
         put?: never;
         post?: never;
         delete?: never;
@@ -28,8 +31,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Health */
-        get: operations["health_v1_health_get"];
+        /**
+         * Readiness
+         * @description Returns `{"status": "ok"}` when the process is serving. It touches no upstream.
+         */
+        get: operations["health"];
         put?: never;
         post?: never;
         delete?: never;
@@ -47,8 +53,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Time */
-        post: operations["time_v1_time_post"];
+        /**
+         * Current time in a zone
+         * @description The time in an IANA zone, city or country (now, or at a given instant), its UTC offset and abbreviation, the next daylight-saving change, and conversions to up to 10 other zones. Computed from the pinned tz database, which the answer names alongside the latest published release. Hard stop 4 s.
+         */
+        post: operations["time"];
         delete?: never;
         options?: never;
         head?: never;
@@ -64,8 +73,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Holidays */
-        post: operations["holidays_v1_holidays_post"];
+        /**
+         * Public and market holidays
+         * @description Holidays for a country (optionally a subdivision) or a market calendar such as NYSE, for a year from 1900 to 2100. python-holidays, Nager.Date and OpenHolidays are merged by date; each holiday lists the sources that carry it, and the answer says whether they agree. Hard stop 4 s.
+         */
+        post: operations["holidays"];
         delete?: never;
         options?: never;
         head?: never;
@@ -81,8 +93,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Business Days Route */
-        post: operations["business_days_route_v1_business_days_post"];
+        /**
+         * Count or add business days
+         * @description Business days between two dates, or the date a number of business days away (up to 3650 either way), on a country's public calendar or a market calendar. The answer lists the holidays it skipped and the weekend it assumed. Hard stop 4 s.
+         */
+        post: operations["business-days"];
         delete?: never;
         options?: never;
         head?: never;
@@ -98,8 +113,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Fx */
-        post: operations["fx_v1_fx_post"];
+        /**
+         * Exchange rates from central banks
+         * @description Rates from one currency to up to 10 others, taken from the issuing central banks and other independent publishers (via Frankfurter, with the ECB file as a fallback). Each fixing carries its date and age by its publisher's own schedule; the answer gives the spread between them and whether they agree. Hard stop 4 s.
+         */
+        post: operations["fx"];
         delete?: never;
         options?: never;
         head?: never;
@@ -115,8 +133,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Weather */
-        post: operations["weather_v1_weather_post"];
+        /**
+         * Current weather
+         * @description The forecast for the current hour at coordinates or a named place, from MET Norway, cross-checked against the US National Weather Service (and its alerts) inside the US. Temperatures from both are compared in °C. Hard stop 4 s.
+         */
+        post: operations["weather"];
         delete?: never;
         options?: never;
         head?: never;
@@ -132,8 +153,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Fact */
-        post: operations["fact_v1_fact_post"];
+        /**
+         * A current Wikidata statement
+         * @description The current value of a property of an entity (QIDs and PIDs, or names and aliases), taken from Wikidata: the preferred, still-valid statement with its start date, plus the Wikipedia summary link. Hard stop 4 s.
+         */
+        post: operations["fact"];
         delete?: never;
         options?: never;
         head?: never;
@@ -149,8 +173,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** News */
-        post: operations["news_v1_news_post"];
+        /**
+         * Recent headlines
+         * @description Headlines from the last 72 hours at most, matching a query: a local index of GDELT's 15-minute updates merged with Hacker News, duplicates removed, up to 25 stories. Headline, link and domain only. Hard stop 4 s.
+         */
+        post: operations["news"];
         delete?: never;
         options?: never;
         head?: never;
@@ -166,8 +193,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Stocks */
-        post: operations["stocks_v1_stocks_post"];
+        /**
+         * US stock quotes (demo-grade)
+         * @description Quotes for up to 5 US tickers. Each ticker is first checked against the symbols that traded in the last session (a typo gets suggestions, not another instrument's price); the price comes from Twelve Data and the last official close is compared with Massive's. Labelled 'demo-only; not for redistribution'; may be switched off on a deployment. Hard stop 4 s.
+         */
+        post: operations["stocks"];
         delete?: never;
         options?: never;
         head?: never;
@@ -183,8 +213,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Jobs */
-        post: operations["jobs_v1_jobs_post"];
+        /**
+         * Job postings
+         * @description Postings from the public job boards of listed companies (Greenhouse, Lever, Ashby), refreshed every few hours: filter by words, up to 20 companies, location, remote, salary and age (up to 90 days); up to 50 results. Hard stop 4 s.
+         */
+        post: operations["jobs"];
         delete?: never;
         options?: never;
         head?: never;
@@ -200,7 +233,15 @@ export interface components {
          * @enum {string}
          */
         Agreement: "agree" | "minor_diff" | "conflict" | "single_source";
-        /** BusinessDaysRequest */
+        /**
+         * BusinessDaysRequest
+         * @example {
+         *       "add_days": 5,
+         *       "calendar": "NYSE",
+         *       "country": "US",
+         *       "start": "2026-12-21"
+         *     }
+         */
         BusinessDaysRequest: {
             /**
              * Country
@@ -541,7 +582,13 @@ export interface components {
         ErrorEnvelope: {
             error: components["schemas"]["ErrorBody"];
         };
-        /** FactRequest */
+        /**
+         * FactRequest
+         * @example {
+         *       "property": "head of government",
+         *       "subject": "Japan"
+         *     }
+         */
         FactRequest: {
             /**
              * Subject
@@ -604,7 +651,17 @@ export interface components {
          * @enum {string}
          */
         Freshness: "fresh" | "lagging" | "stale" | "unknown";
-        /** FxRequest */
+        /**
+         * FxRequest
+         * @example {
+         *       "amount": 1000,
+         *       "base": "USD",
+         *       "quotes": [
+         *         "EUR",
+         *         "JPY"
+         *       ]
+         *     }
+         */
         FxRequest: {
             /**
              * Base
@@ -675,7 +732,13 @@ export interface components {
             listed_by: string[];
             provenance: components["schemas"]["Provenance"];
         };
-        /** HolidaysRequest */
+        /**
+         * HolidaysRequest
+         * @example {
+         *       "country": "JP",
+         *       "year": 2026
+         *     }
+         */
         HolidaysRequest: {
             /**
              * Country
@@ -731,7 +794,14 @@ export interface components {
             ats: "greenhouse" | "lever" | "ashby";
             provenance: components["schemas"]["Provenance"];
         };
-        /** JobsRequest */
+        /**
+         * JobsRequest
+         * @example {
+         *       "limit": 5,
+         *       "query": "engineer",
+         *       "remote": true
+         *     }
+         */
         JobsRequest: {
             /**
              * Query
@@ -790,7 +860,14 @@ export interface components {
          * @enum {string}
          */
         MarketState: "open" | "pre_market" | "after_hours" | "closed";
-        /** NewsRequest */
+        /**
+         * NewsRequest
+         * @example {
+         *       "limit": 5,
+         *       "query": "central bank interest rates",
+         *       "since_hours": 24
+         *     }
+         */
         NewsRequest: {
             /** Query */
             query: string;
@@ -982,7 +1059,16 @@ export interface components {
             /** Notes */
             notes?: string[];
         };
-        /** StocksRequest */
+        /**
+         * StocksRequest
+         * @example {
+         *       "symbols": [
+         *         "AAPL",
+         *         "BRK.B",
+         *         "APPL"
+         *       ]
+         *     }
+         */
         StocksRequest: {
             /** Symbols */
             symbols: string[];
@@ -994,7 +1080,16 @@ export interface components {
             /** Name */
             name?: string | null;
         };
-        /** TimeRequest */
+        /**
+         * TimeRequest
+         * @example {
+         *       "at": "2026-11-15T18:00:00Z",
+         *       "convert_to": [
+         *         "America/New_York"
+         *       ],
+         *       "zone": "Africa/Casablanca"
+         *     }
+         */
         TimeRequest: {
             /**
              * Zone
@@ -1065,7 +1160,12 @@ export interface components {
             /** Offset After */
             offset_after: string;
         };
-        /** WeatherRequest */
+        /**
+         * WeatherRequest
+         * @example {
+         *       "place": "Oslo"
+         *     }
+         */
         WeatherRequest: {
             /** Lat */
             lat?: number | null;
@@ -1137,7 +1237,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    version_v1_version_get: {
+    version: {
         parameters: {
             query?: never;
             header?: never;
@@ -1159,7 +1259,7 @@ export interface operations {
             };
         };
     };
-    health_v1_health_get: {
+    health: {
         parameters: {
             query?: never;
             header?: never;
@@ -1181,7 +1281,7 @@ export interface operations {
             };
         };
     };
-    time_v1_time_post: {
+    time: {
         parameters: {
             query?: never;
             header?: never;
@@ -1232,7 +1332,7 @@ export interface operations {
             };
         };
     };
-    holidays_v1_holidays_post: {
+    holidays: {
         parameters: {
             query?: never;
             header?: never;
@@ -1283,7 +1383,7 @@ export interface operations {
             };
         };
     };
-    business_days_route_v1_business_days_post: {
+    "business-days": {
         parameters: {
             query?: never;
             header?: never;
@@ -1334,7 +1434,7 @@ export interface operations {
             };
         };
     };
-    fx_v1_fx_post: {
+    fx: {
         parameters: {
             query?: never;
             header?: never;
@@ -1385,7 +1485,7 @@ export interface operations {
             };
         };
     };
-    weather_v1_weather_post: {
+    weather: {
         parameters: {
             query?: never;
             header?: never;
@@ -1436,7 +1536,7 @@ export interface operations {
             };
         };
     };
-    fact_v1_fact_post: {
+    fact: {
         parameters: {
             query?: never;
             header?: never;
@@ -1487,7 +1587,7 @@ export interface operations {
             };
         };
     };
-    news_v1_news_post: {
+    news: {
         parameters: {
             query?: never;
             header?: never;
@@ -1538,7 +1638,7 @@ export interface operations {
             };
         };
     };
-    stocks_v1_stocks_post: {
+    stocks: {
         parameters: {
             query?: never;
             header?: never;
@@ -1589,7 +1689,7 @@ export interface operations {
             };
         };
     };
-    jobs_v1_jobs_post: {
+    jobs: {
         parameters: {
             query?: never;
             header?: never;

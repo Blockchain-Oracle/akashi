@@ -7,8 +7,9 @@
   "paths": {
     "/v1/version": {
       "get": {
-        "summary": "Version",
-        "operationId": "version_v1_version_get",
+        "summary": "Service identity and version",
+        "description": "Returns the capability ID (live-facts) and the release. Card health checks use it to confirm the backend behind a relayer is this service; it touches no upstream.",
+        "operationId": "version",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -19,7 +20,7 @@
                     "type": "string"
                   },
                   "type": "object",
-                  "title": "Response Version V1 Version Get"
+                  "title": "Response Version"
                 }
               }
             }
@@ -29,8 +30,9 @@
     },
     "/v1/health": {
       "get": {
-        "summary": "Health",
-        "operationId": "health_v1_health_get",
+        "summary": "Readiness",
+        "description": "Returns `{\"status\": \"ok\"}` when the process is serving. It touches no upstream.",
+        "operationId": "health",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -41,7 +43,7 @@
                     "type": "string"
                   },
                   "type": "object",
-                  "title": "Response Health V1 Health Get"
+                  "title": "Response Health"
                 }
               }
             }
@@ -51,8 +53,9 @@
     },
     "/v1/time": {
       "post": {
-        "summary": "Time",
-        "operationId": "time_v1_time_post",
+        "summary": "Current time in a zone",
+        "description": "The time in an IANA zone, city or country (now, or at a given instant), its UTC offset and abbreviation, the next daylight-saving change, and conversions to up to 10 other zones. Computed from the pinned tz database, which the answer names alongside the latest published release. Hard stop 4 s.",
+        "operationId": "time",
         "requestBody": {
           "content": {
             "application/json": {
@@ -109,8 +112,9 @@
     },
     "/v1/holidays": {
       "post": {
-        "summary": "Holidays",
-        "operationId": "holidays_v1_holidays_post",
+        "summary": "Public and market holidays",
+        "description": "Holidays for a country (optionally a subdivision) or a market calendar such as NYSE, for a year from 1900 to 2100. python-holidays, Nager.Date and OpenHolidays are merged by date; each holiday lists the sources that carry it, and the answer says whether they agree. Hard stop 4 s.",
+        "operationId": "holidays",
         "requestBody": {
           "content": {
             "application/json": {
@@ -167,8 +171,9 @@
     },
     "/v1/business-days": {
       "post": {
-        "summary": "Business Days Route",
-        "operationId": "business_days_route_v1_business_days_post",
+        "summary": "Count or add business days",
+        "description": "Business days between two dates, or the date a number of business days away (up to 3650 either way), on a country's public calendar or a market calendar. The answer lists the holidays it skipped and the weekend it assumed. Hard stop 4 s.",
+        "operationId": "business-days",
         "requestBody": {
           "content": {
             "application/json": {
@@ -225,8 +230,9 @@
     },
     "/v1/fx": {
       "post": {
-        "summary": "Fx",
-        "operationId": "fx_v1_fx_post",
+        "summary": "Exchange rates from central banks",
+        "description": "Rates from one currency to up to 10 others, taken from the issuing central banks and other independent publishers (via Frankfurter, with the ECB file as a fallback). Each fixing carries its date and age by its publisher's own schedule; the answer gives the spread between them and whether they agree. Hard stop 4 s.",
+        "operationId": "fx",
         "requestBody": {
           "content": {
             "application/json": {
@@ -283,8 +289,9 @@
     },
     "/v1/weather": {
       "post": {
-        "summary": "Weather",
-        "operationId": "weather_v1_weather_post",
+        "summary": "Current weather",
+        "description": "The forecast for the current hour at coordinates or a named place, from MET Norway, cross-checked against the US National Weather Service (and its alerts) inside the US. Temperatures from both are compared in \u00b0C. Hard stop 4 s.",
+        "operationId": "weather",
         "requestBody": {
           "content": {
             "application/json": {
@@ -341,8 +348,9 @@
     },
     "/v1/fact": {
       "post": {
-        "summary": "Fact",
-        "operationId": "fact_v1_fact_post",
+        "summary": "A current Wikidata statement",
+        "description": "The current value of a property of an entity (QIDs and PIDs, or names and aliases), taken from Wikidata: the preferred, still-valid statement with its start date, plus the Wikipedia summary link. Hard stop 4 s.",
+        "operationId": "fact",
         "requestBody": {
           "content": {
             "application/json": {
@@ -399,8 +407,9 @@
     },
     "/v1/news": {
       "post": {
-        "summary": "News",
-        "operationId": "news_v1_news_post",
+        "summary": "Recent headlines",
+        "description": "Headlines from the last 72 hours at most, matching a query: a local index of GDELT's 15-minute updates merged with Hacker News, duplicates removed, up to 25 stories. Headline, link and domain only. Hard stop 4 s.",
+        "operationId": "news",
         "requestBody": {
           "content": {
             "application/json": {
@@ -457,8 +466,9 @@
     },
     "/v1/stocks": {
       "post": {
-        "summary": "Stocks",
-        "operationId": "stocks_v1_stocks_post",
+        "summary": "US stock quotes (demo-grade)",
+        "description": "Quotes for up to 5 US tickers. Each ticker is first checked against the symbols that traded in the last session (a typo gets suggestions, not another instrument's price); the price comes from Twelve Data and the last official close is compared with Massive's. Labelled 'demo-only; not for redistribution'; may be switched off on a deployment. Hard stop 4 s.",
+        "operationId": "stocks",
         "requestBody": {
           "content": {
             "application/json": {
@@ -515,8 +525,9 @@
     },
     "/v1/jobs": {
       "post": {
-        "summary": "Jobs",
-        "operationId": "jobs_v1_jobs_post",
+        "summary": "Job postings",
+        "description": "Postings from the public job boards of listed companies (Greenhouse, Lever, Ashby), refreshed every few hours: filter by words, up to 20 companies, location, remote, salary and age (up to 90 days); up to 50 results. Hard stop 4 s.",
+        "operationId": "jobs",
         "requestBody": {
           "content": {
             "application/json": {
@@ -670,7 +681,15 @@
           "country",
           "start"
         ],
-        "title": "BusinessDaysRequest"
+        "title": "BusinessDaysRequest",
+        "examples": [
+          {
+            "add_days": 5,
+            "calendar": "NYSE",
+            "country": "US",
+            "start": "2026-12-21"
+          }
+        ]
       },
       "BusinessDaysResult": {
         "properties": {
@@ -1544,7 +1563,13 @@
           "subject",
           "property"
         ],
-        "title": "FactRequest"
+        "title": "FactRequest",
+        "examples": [
+          {
+            "property": "head of government",
+            "subject": "Japan"
+          }
+        ]
       },
       "FactResult": {
         "properties": {
@@ -1744,7 +1769,17 @@
           "base",
           "quotes"
         ],
-        "title": "FxRequest"
+        "title": "FxRequest",
+        "examples": [
+          {
+            "amount": 1000,
+            "base": "USD",
+            "quotes": [
+              "EUR",
+              "JPY"
+            ]
+          }
+        ]
       },
       "FxResult": {
         "properties": {
@@ -1914,7 +1949,13 @@
           "country",
           "year"
         ],
-        "title": "HolidaysRequest"
+        "title": "HolidaysRequest",
+        "examples": [
+          {
+            "country": "JP",
+            "year": 2026
+          }
+        ]
       },
       "Job": {
         "properties": {
@@ -2124,7 +2165,14 @@
           }
         },
         "type": "object",
-        "title": "JobsRequest"
+        "title": "JobsRequest",
+        "examples": [
+          {
+            "limit": 5,
+            "query": "engineer",
+            "remote": true
+          }
+        ]
       },
       "MarketClock": {
         "properties": {
@@ -2234,7 +2282,14 @@
         "required": [
           "query"
         ],
-        "title": "NewsRequest"
+        "title": "NewsRequest",
+        "examples": [
+          {
+            "limit": 5,
+            "query": "central bank interest rates",
+            "since_hours": 24
+          }
+        ]
       },
       "NewsStory": {
         "properties": {
@@ -2870,7 +2925,16 @@
         "required": [
           "symbols"
         ],
-        "title": "StocksRequest"
+        "title": "StocksRequest",
+        "examples": [
+          {
+            "symbols": [
+              "AAPL",
+              "BRK.B",
+              "APPL"
+            ]
+          }
+        ]
       },
       "Suggestion": {
         "properties": {
@@ -2985,7 +3049,16 @@
           }
         },
         "type": "object",
-        "title": "TimeRequest"
+        "title": "TimeRequest",
+        "examples": [
+          {
+            "at": "2026-11-15T18:00:00Z",
+            "convert_to": [
+              "America/New_York"
+            ],
+            "zone": "Africa/Casablanca"
+          }
+        ]
       },
       "TimeResult": {
         "properties": {
@@ -3185,7 +3258,12 @@
           }
         },
         "type": "object",
-        "title": "WeatherRequest"
+        "title": "WeatherRequest",
+        "examples": [
+          {
+            "place": "Oslo"
+          }
+        ]
       },
       "WeatherResult": {
         "properties": {

@@ -142,8 +142,29 @@ def _is_work(rec: Record) -> bool:
     return not any(norm(rec.title) == norm(v) for v in (rec.venue, rec.short_venue) if v)
 
 
+def _identity(rec: Record) -> str:
+    """One key per work: its DOI, or for DOI-less records (OpenAlex search) title + year + first author."""
+    if rec.doi:
+        return f"doi:{rec.doi.lower()}"
+    first_author = norm(rec.authors[0]) if rec.authors else ""
+    return f"work:{norm(rec.title)}|{rec.year}|{first_author}"
+
+
+def _distinct(ranked: list[Scored]) -> list[Scored]:
+    """Keep the best-scored copy of each work (input is best-first). Crossref, its title+author search and
+    OpenAlex often return the same DOI; counted separately, one work looks like two rivals within
+    AMBIGUOUS_DELTA and a wrong-year citation came back `ambiguous` instead of `mismatch`."""
+    seen: set[str] = set()
+    distinct: list[Scored] = []
+    for scored in ranked:
+        if (key := _identity(scored.record)) not in seen:
+            seen.add(key)
+            distinct.append(scored)
+    return distinct
+
+
 def _rank(p: Parsed, records: list[Record]) -> list[Scored]:
-    return sorted((score(p, r) for r in records if _is_work(r)), key=lambda s: s.score, reverse=True)
+    return _distinct(sorted((score(p, r) for r in records if _is_work(r)), key=lambda s: s.score, reverse=True))
 
 
 async def _ranked(p: Parsed, trail: Trail) -> tuple[list[Scored] | None, bool]:
@@ -182,8 +203,8 @@ async def _ranked(p: Parsed, trail: Trail) -> tuple[list[Scored] | None, bool]:
     if ranked is None and not got.ok:
         return None, False
     merged: list[Scored] = [*(ranked or []), *fallback]
-    merged.sort(key=lambda s: s.score, reverse=True)
-    return merged, ranked is not None and "openalex" in got.ok
+    merged.sort(key=lambda s: s.score, reverse=True)  # stable: on a tie the Crossref bibliographic copy is kept
+    return _distinct(merged), ranked is not None and "openalex" in got.ok
 
 
 async def by_search(index: int, p: Parsed, options: VerifyOptions, trail: Trail) -> CitationResult:

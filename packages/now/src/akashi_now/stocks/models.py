@@ -4,7 +4,7 @@ import re
 from enum import StrEnum
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from akashi_core.contract.enums import Agreement
 from akashi_core.contract.fields import UntrustedStr
@@ -29,6 +29,8 @@ def normalize_ticker(raw: str) -> str:
 
 
 class StocksRequest(BaseModel):
+    model_config = ConfigDict(json_schema_extra={"examples": [{"symbols": ["AAPL", "BRK.B", "APPL"]}]})
+
     symbols: list[Ticker] = Field(min_length=1, max_length=STOCKS_MAX_SYMBOLS)
 
     @field_validator("symbols")

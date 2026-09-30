@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from akashi_core.contract.fields import UntrustedStr
 from akashi_now.constants import MAX_SUBJECT_CHARS
@@ -10,6 +10,8 @@ from akashi_now.provenance import Provenance
 
 
 class FactRequest(BaseModel):
+    model_config = ConfigDict(json_schema_extra={"examples": [{"subject": "Japan", "property": "head of government"}]})
+
     subject: str = Field(
         min_length=1, max_length=MAX_SUBJECT_CHARS, description="Wikidata QID or a name, e.g. Q30 / United States"
     )

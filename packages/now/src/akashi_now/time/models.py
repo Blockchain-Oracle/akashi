@@ -13,10 +13,13 @@ from akashi_now.provenance import Provenance
 class TimeRequest(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
+            "examples": [
+                {"zone": "Africa/Casablanca", "at": "2026-11-15T18:00:00Z", "convert_to": ["America/New_York"]}
+            ],
             "anyOf": [
                 {"required": ["zone"], "properties": {"zone": {"type": "string", "minLength": 1}}},
                 {"required": ["place"], "properties": {"place": {"type": "string", "minLength": 1}}},
-            ]
+            ],
         }
     )
 

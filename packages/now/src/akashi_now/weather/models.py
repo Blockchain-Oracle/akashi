@@ -12,10 +12,11 @@ from akashi_now.provenance import Provenance
 class WeatherRequest(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
+            "examples": [{"place": "Oslo"}],
             "anyOf": [
                 {"required": ["lat", "lon"], "properties": {"lat": {"type": "number"}, "lon": {"type": "number"}}},
                 {"required": ["place"], "properties": {"place": {"type": "string", "minLength": 1}}},
-            ]
+            ],
         }
     )
 

@@ -13,6 +13,8 @@ CountryCode = Field(min_length=2, max_length=2, pattern="^[A-Za-z]{2}$", descrip
 
 
 class HolidaysRequest(BaseModel):
+    model_config = ConfigDict(json_schema_extra={"examples": [{"country": "JP", "year": 2026}]})
+
     country: str = CountryCode
     year: int = Field(ge=MIN_HOLIDAY_YEAR, le=MAX_HOLIDAY_YEAR)
     subdivision: str | None = Field(default=None, max_length=10, description="e.g. BY (Bavaria), CA (California)")
@@ -34,10 +36,11 @@ class HolidayResult(BaseModel):
 class BusinessDaysRequest(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
+            "examples": [{"country": "US", "calendar": "NYSE", "start": "2026-12-21", "add_days": 5}],
             "oneOf": [
                 {"required": ["end"], "properties": {"end": {"type": "string"}}},
                 {"required": ["add_days"], "properties": {"add_days": {"type": "integer"}}},
-            ]
+            ],
         }
     )
 

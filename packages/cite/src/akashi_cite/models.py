@@ -87,6 +87,20 @@ class VerifyOptions(BaseModel):
 
 
 class VerifyRequest(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "citations": [
+                        "Varghese v. China Southern Airlines Co., 925 F.3d 1339 (11th Cir. 2019)",
+                        "10.1016/S0140-6736(97)11096-0",
+                        "arXiv:1706.03762",
+                    ]
+                }
+            ]
+        }
+    )
+
     citations: list[CitationInput] = Field(min_length=1, max_length=MAX_CITATIONS_PER_REQUEST)
     options: VerifyOptions = Field(default_factory=VerifyOptions)
 
@@ -165,10 +179,16 @@ class ClaimRequest(BaseModel):
     # The cross-field rule below, stated in the schema so generated clients never send a request we reject.
     model_config = ConfigDict(
         json_schema_extra={
+            "examples": [
+                {
+                    "claim": "The Lancet paper showed that the MMR vaccine causes autism.",
+                    "citation": "10.1016/S0140-6736(97)11096-0",
+                }
+            ],
             "anyOf": [
                 {"required": ["citation"], "properties": {"citation": {"type": "object"}}},
                 {"required": ["evidence_text"], "properties": {"evidence_text": {"type": "string", "minLength": 1}}},
-            ]
+            ],
         }
     )
 

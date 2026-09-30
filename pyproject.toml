@@ -33,3 +33,6 @@ known-first-party = ["akashi_core", "akashi_cite", "akashi_code", "akashi_now", 
 [tool.pyright]
 pythonVersion = "3.13"
 typeCheckingMode = "standard"
+# packages/brand/scripts runs standalone with `uv run --with fonttools` (not a workspace member); the JS
+# workspace is not Python either.
+exclude = ["**/node_modules", "**/.venv", "**/__pycache__", "packages/brand/scripts", "apps"]
