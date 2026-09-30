@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { PICKABLE_KINDS } from "@/features/desk/now-intent";
 import { planDesk } from "@/features/desk/plan";
 import { DEMO_LIMIT_PER_IP, DEMO_WINDOW_S, MAX_REQUEST_BYTES } from "@/lib/constants/desk";
 import { callBackend } from "@/lib/server/backend.server";
@@ -19,6 +20,7 @@ const HTTP_TOO_MANY = 429;
 const Body = z.object({
   input: z.string().max(MAX_REQUEST_BYTES),
   mode: z.enum(["auto", "cite", "code", "now"]).default("auto"),
+  kind: z.enum(PICKABLE_KINDS).optional(),
 });
 
 const error = (status: number, code: string, message: string, extra: Record<string, unknown> = {}) =>
@@ -36,7 +38,7 @@ export async function POST(req: Request) {
     return error(HTTP_BAD_REQUEST, "invalid_input", "Send {input, mode}.");
   }
 
-  const planned = planDesk(parsed.input, parsed.mode);
+  const planned = planDesk(parsed.input, parsed.mode, parsed.kind);
   if (!planned.ok) return error(HTTP_UNPROCESSABLE, planned.code, planned.message);
 
   const slot = takeDemoSlot(clientIp(req.headers), DEMO_LIMIT_PER_IP, DEMO_WINDOW_S);

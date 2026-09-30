@@ -5,7 +5,7 @@
 ## Steps
 - [ ] 21st add shortlist picks in batches → re-tokenize → components/evidence kit
 - [x] Desk input + detector + override tabs + example chips
-- [ ] route.ts ✅ (deterministic + plain-question intents, no model needed) · Now LLM router (needs a model key) · ambiguity picker
+- [ ] route.ts ✅ (deterministic + plain-question intents, no model needed) · ambiguity picker ✅ · Now LLM router (needs a model key)
 - [x] /api/desk NDJSON fan-out (per-IP demo limit 20/h in memory)
 - [ ] Task-Steps trace, evidence cards, source rail, verdict stack, all states
 - [x] Story sections below the fold
@@ -28,7 +28,11 @@ Every chip routes and lands its verdict; 21st review clean; Lighthouse mobile �
 - Not in the story yet: the logo cloud (§3 row 6) and the MCP-config CTA (§3 row 7). The CTA waits for the portal
   listing (needs the domain, Q-001); it links to the docs instead.
 - `/docs/*` on the web host now redirects to `<docs>/docs/*` (it dropped the `/docs` segment before).
-- Still to do: the kind picker for unmatched questions, Lighthouse, design.json decisions, 375/768/1280 screenshots
+- Kind picker (2026-09-30): a question the router cannot place gets chips (Time, Weather, Holidays, Stock, News,
+  Jobs); the pick is sent as `kind` and the question's subject (after its last preposition, else its trailing proper
+  name) becomes the input: "how hot is Lagos" + Weather → Lagos 28 °C; "what days off does France have" + Holidays
+  → FR. Rates and facts need two parts, so the prompt shows their form (USD to EUR, capital of Japan) instead.
+- Still to do: Lighthouse, design.json decisions, 375/768/1280 screenshots
   with the user.
 
 ## Handoff

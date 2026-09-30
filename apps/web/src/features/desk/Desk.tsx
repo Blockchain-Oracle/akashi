@@ -7,6 +7,7 @@ import { SECONDS_PER_MINUTE } from "@/lib/constants/ui";
 
 import { DeskInput } from "./DeskInput";
 import { ExampleChips } from "./ExampleChips";
+import { KindPicker } from "./KindPicker";
 import { Results } from "./Results";
 import { Trace } from "./Trace";
 import { useDesk } from "./useDesk";
@@ -37,8 +38,11 @@ export function Desk() {
 
       {state.phase === "error" && state.error && (
         <div role="alert" className="mx-auto max-w-3xl rounded-lg border border-border bg-card p-4 text-sm">
-          <span className="font-mono text-muted-foreground text-xs">{state.error.code}</span>
-          <p className="mt-1">{state.error.message}</p>
+          {state.error.code !== "needs_kind" && <span className="font-mono text-muted-foreground text-xs">{state.error.code}</span>}
+          <p className={state.error.code === "needs_kind" ? undefined : "mt-1"}>{state.error.message}</p>
+          {state.error.code === "needs_kind" && (
+            <KindPicker disabled={running} onPick={(kind) => void run(state.input, "now", kind)} />
+          )}
           {state.error.retry_after_s !== undefined && (
             <p className="mt-1 text-muted-foreground text-xs">Try again in {Math.ceil(state.error.retry_after_s / SECONDS_PER_MINUTE)} min.</p>
           )}

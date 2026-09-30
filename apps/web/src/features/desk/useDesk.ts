@@ -4,6 +4,8 @@ import { useCallback, useRef, useState } from "react";
 
 import type { DeskMode, DeskService } from "@/lib/constants/desk";
 
+import type { PickableKind } from "./now-intent";
+
 export interface DeskItem {
   index: number;
   label: string;
@@ -39,7 +41,7 @@ export function useDesk() {
   const [state, setState] = useState<DeskState>(IDLE);
   const abort = useRef<AbortController | null>(null);
 
-  const run = useCallback(async (input: string, mode: DeskMode) => {
+  const run = useCallback(async (input: string, mode: DeskMode, kind?: PickableKind) => {
     abort.current?.abort();
     const controller = new AbortController();
     abort.current = controller;
@@ -49,7 +51,7 @@ export function useDesk() {
       const res = await fetch("/api/desk", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ input, mode }),
+        body: JSON.stringify({ input, mode, kind }),
         signal: controller.signal,
       });
       if (!res.ok || !res.body) {

@@ -2,7 +2,7 @@
 import { type DeskMode, type DeskService, MAX_CITATIONS_PER_RUN, MAX_PACKAGES_PER_RUN } from "@/lib/constants/desk";
 
 import { detect, detectLanguage, parseInstall, splitCitations } from "./detect";
-import { nowIntent } from "./now-intent";
+import { nowForKind, nowIntent, type PickableKind } from "./now-intent";
 
 export interface DeskItem {
   label: string;
@@ -19,9 +19,17 @@ export type PlanResult =
   | { ok: true; plan: DeskPlan }
   | { ok: false; code: "empty" | "too_many" | "needs_kind"; message: string };
 
-export function planDesk(input: string, mode: DeskMode): PlanResult {
+const NEEDS_KIND = "Pick what it is about. Rates: USD to EUR. Facts: capital of Japan.";
+
+export function planDesk(input: string, mode: DeskMode, kind?: PickableKind): PlanResult {
   const text = input.trim();
   if (!text) return { ok: false, code: "empty", message: "Paste a citation, code, or ask a question." };
+  if (kind) {
+    const picked = nowForKind(kind, text);
+    if ("reason" in picked) return { ok: false, code: "needs_kind", message: picked.reason };
+    const { call } = picked;
+    return { ok: true, plan: { service: "now", items: [{ label: call.label, path: `/v1/${call.endpoint}`, body: call.body }] } };
+  }
   const service = mode === "auto" ? detect(text) : mode;
 
   if (service === "cite") {
@@ -58,11 +66,7 @@ export function planDesk(input: string, mode: DeskMode): PlanResult {
 
   const call = nowIntent(text);
   if (!call) {
-    return {
-      ok: false,
-      code: "needs_kind",
-      message: "Ask about the time, weather, an exchange rate, holidays, a stock, news, jobs or a fact.",
-    };
+    return { ok: false, code: "needs_kind", message: NEEDS_KIND };
   }
   return { ok: true, plan: { service, items: [{ label: call.label, path: `/v1/${call.endpoint}`, body: call.body }] } };
 }

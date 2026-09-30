@@ -1,6 +1,7 @@
 /**
  * Plain questions about now → a Live Facts call, without a model: the common shapes (time in X, weather in X,
- * USD to EUR, AAPL price, holidays in Japan, news about X, capital of X). Anything else asks the user to pick.
+ * USD to EUR, AAPL price, holidays in Japan, news about X, capital of X). Anything else asks the user to pick a kind,
+ * and the question's subject becomes that kind's input (nowForKind).
  */
 export type NowEndpoint = "time" | "fx" | "weather" | "holidays" | "stocks" | "news" | "fact" | "jobs";
 export interface NowCall {
@@ -42,6 +43,7 @@ function countryCode(text: string): string | null {
 }
 
 const clean = (s: string) => s.trim().replace(/\s+/g, " ");
+const TICKER_ONLY = /^\$?([A-Z]{1,5}(?:\.[A-Z]{1,2})?)$/;
 
 // Real ISO 4217 codes only, so "fly to Rio" is not FLY → RIO.
 const CURRENCIES = new Set(Intl.supportedValuesOf("currency"));
@@ -76,4 +78,53 @@ export function nowIntent(question: string): NowCall | null {
   const jobs = JOBS.exec(q);
   if (jobs?.[1]) return { endpoint: "jobs", body: { query: clean(jobs[1]) }, label: `Jobs: ${clean(jobs[1])}` };
   return null;
+}
+
+/** Kinds a user can pick for a question the router could not place: each takes one free-text subject. */
+export const PICKABLE_KINDS = ["time", "weather", "holidays", "stocks", "news", "jobs"] as const;
+export type PickableKind = (typeof PICKABLE_KINDS)[number];
+export const KIND_LABELS: Record<PickableKind, string> = {
+  time: "Time",
+  weather: "Weather",
+  holidays: "Holidays",
+  stocks: "Stock",
+  news: "News",
+  jobs: "Jobs",
+};
+
+const AFTER_PREPOSITION = /\b(?:in|at|for|about|on|with)\s+([^?.!]+?)\s*[?.!]*$/i;
+const TRAILING_NAME = /((?:\p{Lu}[\p{L}'’-]*\s*)+)[?.!]*$/u;
+const PROPER_NAMES = /\p{Lu}[\p{L}'’-]*(?:\s+\p{Lu}[\p{L}'’-]*)*/gu;
+const TRAILING_WHEN = /\s+(?:right\s+now|now|today|currently|at\s+the\s+moment|this\s+(?:week|year))$/i;
+const QUESTION_LEAD = /^(?:what(?:'s|\s+is|\s+are)?|how(?:'s|\s+is|\s+are)?|is\s+it|are\s+there|tell\s+me|show\s+me|any)\s+/i;
+
+/** The thing a question is about: after its last preposition, else its trailing proper name, else the question. */
+function subjectOf(question: string, preferName: boolean): string | null {
+  const q = question.trim();
+  const after = AFTER_PREPOSITION.exec(q)?.[1];
+  const name = preferName ? TRAILING_NAME.exec(q)?.[1] : undefined;
+  const subject = clean((after ?? name ?? q.replace(QUESTION_LEAD, "")).replace(/[?.!]+$/, "")).replace(TRAILING_WHEN, "");
+  return subject || null;
+}
+
+/** The call for a question the user tagged with a kind, or null (with the reason) when it has no usable subject. */
+export function nowForKind(kind: PickableKind, question: string): { call: NowCall } | { reason: string } {
+  const direct = nowIntent(question);
+  if (direct?.endpoint === kind) return { call: direct };
+  const place = kind === "time" || kind === "weather";
+  const subject = subjectOf(question, place);
+  if (!subject) return { reason: "Add what you are asking about." };
+  if (place) return { call: { endpoint: kind, body: { place: subject }, label: `${KIND_LABELS[kind]} in ${subject}` } };
+  if (kind === "holidays") {
+    const names = question.match(PROPER_NAMES) ?? [];
+    const country = [subject, ...names].map(countryCode).find(Boolean);
+    if (!country) return { reason: "Holidays need a country, e.g. Japan or JP." };
+    return { call: { endpoint: kind, body: { country, year: new Date().getUTCFullYear() }, label: `Holidays in ${country}` } };
+  }
+  if (kind === "stocks") {
+    const symbol = TICKER_ONLY.exec(subject.toUpperCase())?.[1];
+    if (!symbol) return { reason: "Stocks need a US ticker, e.g. AAPL or BRK.B." };
+    return { call: { endpoint: kind, body: { symbols: [symbol] }, label: `${symbol} quote` } };
+  }
+  return { call: { endpoint: kind, body: { query: subject }, label: `${KIND_LABELS[kind]}: ${subject}` } };
 }
