@@ -1,0 +1,22 @@
+---
+title: How a call reaches Akashi
+description: From an agent's request to a verdict, through Pocket Network and back.
+---
+
+<RequestPath />
+
+| Hop | Who | What happens |
+|---|---|---|
+| 1 | Agent → Agentic Portal | Asks; gets a `402` with the price, pays, asks again |
+| 2 | Portal → gateway | The gateway signs the call as a relay for the service ID |
+| 3 | Gateway → RelayMiner | Sent to a supplier staked for that service in the current session |
+| 4 | RelayMiner → Akashi | Forwarded as plain HTTP; Akashi checks its sources |
+| 5 | Back through the relay | The RelayMiner signs the answer and counts the relay for its claim |
+| 6 | Portal → agent | The answer is checked against Akashi's output schema and returned as `{ portal, data }` |
+
+Akashi never sees a wallet or an API key: payment ends at the portal, and Akashi only answers relays.
+
+<Callout title="Live today">
+The three service IDs are registered on Pocket Network Beta and the Akashi API is running. The supplier stake,
+RelayMiner and portal listing follow once the domain is in place.
+</Callout>

@@ -1,227 +1,65 @@
 ---
-title: Check a code snippet
-description: Send a snippet to /v1/check and get one diagnostic, with its line and column, for every import and call it makes.
+title: Does the code call real things?
+description: POST /v1/check returns one diagnostic, with its position, for every import and call in a snippet.
 ---
 
-You will check a snippet the way a linter would, except that every reference is checked against the real
-registries. You need a way to call Akashi (see [Call Akashi](/docs/calling)).
-
-## When to use it
-
-Before running or suggesting code a model wrote. One call covers every import and every call on an imported
-module, so it is the quickest way to catch an invented package or method.
-
-## What gets checked
-
-The snippet is parsed (tree-sitter), and each reference is mapped to a package:
-
-- **Imports**, including aliases (`import numpy as np`, `from x import y`, `import x from "x"`, `require("x")`).
-- **Calls and attribute access** on an imported name (`requests.get`, `axios.fetchJson`), with one level of
-  instance inference: after `s = requests.Session()`, `s.mount` is checked as `requests.Session.mount`.
-- **Standard libraries are skipped**: Python's standard library, Node built-ins and `node:` imports, Go paths
-  without a dot, and Rust's `std`, `core` and `alloc`.
-- **Python import names are mapped to packages**: `PIL` to `pillow`, `cv2` to `opencv-python`, `sklearn` to
-  `scikit-learn`, `yaml` to `PyYAML`, `bs4` to `beautifulsoup4`, and others.
-
-At most 60 references are checked per snippet.
+The snippet is parsed and each reference is checked against the real registry and the version you pin. Standard
+libraries are skipped. At most 60 references are checked per snippet.
 
 ## Request
 
 <TypeTable
   type={{
-    language: { description: "The snippet's language.", type: "\"python\" | \"typescript\" | \"javascript\" | \"go\" | \"rust\"", required: true },
+    language: { description: "python, typescript, javascript, go or rust.", type: "string", required: true },
     code: { description: "The snippet, up to 49,152 characters.", type: "string", required: true },
-    versions: {
-      description: "Pinned versions, package name to version (up to 50). Unpinned packages are checked at their latest version.",
-      type: "Record<string, string>",
-      default: "{}",
-    },
+    versions: { description: "Pinned versions, package → version, up to 50. Unpinned packages are checked at their latest.", type: "Record<string, string>", default: "{}" },
   }}
 />
 
-## Send it
+## Response: `results[i]`, one per reference
 
-```bash title="Check a TypeScript snippet with axios pinned to 1.7.9"
-MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/code-reality-check/v1/check -J '{"language": "typescript", "code": "import axios from \"axios\";\n\nconst data = await axios.fetchJson(\"/api\");\n", "versions": {"axios": "1.7.9"}}' --protocol x402
+<TypeTable
+  type={{
+    verdict: { description: "ok, nonexistent_package, placeholder, likely_typo, suspicious_new, nonexistent_symbol, deprecated or unknown.", type: "string" },
+    line: { description: "Line (from 1), with column, end_line and end_column (columns from 0).", type: "number" },
+    text: { description: "What was checked, e.g. axios.fetchJson.", type: "string" },
+    ref_kind: { description: "import, call or attribute.", type: "string" },
+    package: { description: "The package it belongs to.", type: "string | null" },
+    version: { description: "The version checked.", type: "string | null" },
+    target: { description: "The symbol looked up.", type: "string | null" },
+    fix_hint: { description: "The likely fix, e.g. \"did you mean 'requests'?\".", type: "string | null" },
+    did_you_mean: { description: "Close real names.", type: "string[]" },
+    signature: { description: "The real signature, when the symbol exists.", type: "string | null" },
+    reason: { description: "The evidence behind a package verdict.", type: "string | null" },
+  }}
+/>
+
+## Example
+
+```python title="snippet"
+import reqeusts
+
+r = reqeusts.get("https://example.com")
 ```
 
-<Callout type="warn" title="Not on the portal yet">
-  Akashi's services are registered on Pocket Network (Beta) but not yet listed on the agent portal, so this call works
-  once they are listed. The answers on this page were captured from the running service.
-</Callout>
-
-The command pays with a Base Sepolia wallet through x402. To set up a client in code, see [Call Akashi](/docs/calling).
-
-## The answer
-
-```json title="200 · 41 ms"
+```json title="results[0] (trimmed)"
 {
-  "service": "code-reality-check",
-  "operation": "check",
-  "version": "1.0.0",
-  "status": "complete",
-  "as_of": "2026-09-30T09:19:22+00:00",
-  "deadline_ms": 7000,
-  "elapsed_ms": 41,
-  "unavailable": [],
-  "summary": {
-    "ok": 1,
-    "nonexistent_symbol": 1
-  },
-  "results": [
-    {
-      "kind": "diagnostic",
-      "line": 1,
-      "column": 0,
-      "end_line": 1,
-      "end_column": 26,
-      "text": "axios.default",
-      "ref_kind": "import",
-      "package": "axios",
-      "version": "1.20.0",
-      "target": null,
-      "verdict": "ok",
-      "signature": null,
-      "fix_hint": null,
-      "did_you_mean": [],
-      "reason": null
-    },
-    {
-      "kind": "diagnostic",
-      "line": 3,
-      "column": 19,
-      "end_line": 3,
-      "end_column": 34,
-      "text": "axios.fetchJson",
-      "ref_kind": "call",
-      "package": "axios",
-      "version": "1.7.9",
-      "target": "axios.fetchJson",
-      "verdict": "nonexistent_symbol",
-      "signature": null,
-      "fix_hint": null,
-      "did_you_mean": [],
-      "reason": null
-    }
-  ],
-  "sources": [
-    {
-      "name": "npm",
-      "status": "ok",
-      "url": null,
-      "licence": "npm registry metadata",
-      "attribution": "registry.npmjs.org",
-      "as_of": null,
-      "fetched_at": null,
-      "latency_ms": null,
-      "cache": null
-    },
-    {
-      "name": "ts-introspect",
-      "status": "ok",
-      "url": null,
-      "licence": null,
-      "attribution": null,
-      "as_of": null,
-      "fetched_at": null,
-      "latency_ms": null,
-      "cache": null
-    }
-  ],
-  "notes": []
+  "kind": "diagnostic",
+  "line": 1,
+  "column": 0,
+  "text": "reqeusts",
+  "ref_kind": "import",
+  "package": "reqeusts",
+  "verdict": "nonexistent_package",
+  "fix_hint": "did you mean 'requests'?",
+  "did_you_mean": ["requests", "grequests"],
+  "reason": "'reqeusts' is not published on pypi; closest popular name: 'requests' (distance 1)"
 }
 ```
 
-## Reading the answer
+## Reading it
 
-Each result is a diagnostic for one reference, in source order:
-
-- **`line`, `column`, `end_line`, `end_column`** locate it (lines from 1, columns from 0), and **`text`** is what
-  was checked, such as `axios.fetchJson`.
-- **`ref_kind`** is `import`, `call` or `attribute`.
-- **`package`**, **`version`** and **`target`** name the package, the version checked and the symbol looked up.
-- **`verdict`** is one of `ok`, `nonexistent_package`, `placeholder`, `likely_typo`, `suspicious_new`,
-  `nonexistent_symbol`, `deprecated` (also used for yanked versions) or `unknown`.
-- **`fix_hint`**, **`did_you_mean`**, **`signature`** and **`reason`** help you fix it: the likely intended package,
-  close real names, the real signature, and the evidence behind a package verdict.
-
-Here the import is fine, but `axios.fetchJson` does not exist in axios 1.7.9's type declarations.
-
-## Another answer
-
-A Python snippet importing `reqeusts`. Both the import and the call report the package problem, with the
-intended name.
-
-```json title="import reqeusts · results (trimmed)"
-[
-  {
-    "kind": "diagnostic",
-    "line": 1,
-    "column": 0,
-    "end_line": 1,
-    "end_column": 15,
-    "text": "reqeusts",
-    "ref_kind": "import",
-    "package": "reqeusts",
-    "version": null,
-    "target": null,
-    "verdict": "nonexistent_package",
-    "signature": null,
-    "fix_hint": "did you mean 'requests'?",
-    "did_you_mean": [
-      "requests",
-      "grequests"
-    ],
-    "reason": "'reqeusts' is not published on pypi; closest popular name: 'requests' (distance 1)"
-  },
-  {
-    "kind": "diagnostic",
-    "line": 3,
-    "column": 4,
-    "end_line": 3,
-    "end_column": 16,
-    "text": "reqeusts.get",
-    "ref_kind": "call",
-    "package": "reqeusts",
-    "version": null,
-    "target": "reqeusts.get",
-    "verdict": "nonexistent_package",
-    "signature": null,
-    "fix_hint": "did you mean 'requests'?",
-    "did_you_mean": [
-      "requests",
-      "grequests"
-    ],
-    "reason": "'reqeusts' is not published on pypi; closest popular name: 'requests' (distance 1)"
-  }
-]
-```
-
-## Edge cases
-
-<Accordions type="single">
-  <Accordion title="A missing package marks every line that uses it">
-    Package problems win: if a package does not exist, is a placeholder or is a likely typo, every reference to it
-    gets that verdict, because it is the root cause. Symbols are only looked up in packages that exist.
-  </Accordion>
-  <Accordion title="unknown is not 'does not exist'">
-    `unknown` means the registry or the type information could not be read in time. Retry before concluding
-    anything.
-  </Accordion>
-  <Accordion title="Pin the versions you will install">
-    Methods come and go between versions. Without a pin the latest version is checked, which may differ from the
-    one in a lockfile. Pass `versions` to check the ones you use.
-  </Accordion>
-  <Accordion title="Long snippets">
-    Only the first 60 references are checked. Split large files, or check the packages with
-    [`/v1/packages`](/docs/services/code/packages-and-typosquats).
-  </Accordion>
-</Accordions>
-
-## Next steps
-
-<Cards>
-  <Card title="Check packages before you install them" href="/docs/services/code/packages-and-typosquats" description="The package verdicts in full." />
-  <Card title="Check that a function exists" href="/docs/services/code/symbols" description="Signatures and did-you-mean for one symbol." />
-  <Card title="API reference: /v1/check" href="/docs/reference/code/check" description="Every field, with a playground." />
-</Cards>
+- A missing package marks every line that uses it: it is the root cause.
+- Symbols are only looked up in packages that exist (`axios.fetchJson` → `nonexistent_symbol`).
+- `unknown` means "could not check in time", never "does not exist".
+- Pin `versions` to check what you will actually install.

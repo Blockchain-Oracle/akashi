@@ -8,12 +8,29 @@ import { TypeTable } from "fumadocs-ui/components/type-table";
 import defaultComponents from "fumadocs-ui/mdx";
 import type { MDXComponents } from "mdx/types";
 
+import { EnvelopeAnatomy } from "@/components/diagrams/envelope-anatomy";
+import { McpFlow } from "@/components/diagrams/mcp-flow";
+import { PaymentHandshake } from "@/components/diagrams/payment-handshake";
+import { Registration } from "@/components/diagrams/registration";
+import { RequestPath } from "@/components/diagrams/request-path";
+import { ServicePipeline } from "@/components/diagrams/service-pipeline";
+import { SessionTimeline } from "@/components/diagrams/session-timeline";
+import { VerdictGrid } from "@/components/diagrams/verdict-grid";
+
 /** Stock Fumadocs components, available in every page without an import. */
 export function getMDXComponents(components?: MDXComponents) {
   return {
     ...defaultComponents,
     Accordion,
     Accordions,
+    EnvelopeAnatomy,
+    McpFlow,
+    PaymentHandshake,
+    Registration,
+    RequestPath,
+    ServicePipeline,
+    SessionTimeline,
+    VerdictGrid,
     Callout,
     Card,
     Cards,

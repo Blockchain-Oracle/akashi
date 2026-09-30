@@ -6,11 +6,11 @@ import { site } from "@/lib/site";
 
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
-    title: "Start",
+    title: "On Pocket",
     links: [
-      { label: "Quickstart", href: "/docs/start/quickstart" },
-      { label: "How Akashi works", href: "/docs/start/how-it-works" },
-      { label: "For judges", href: "/docs/start/judges" },
+      { label: "How a call flows", href: "/docs/pocket/how-a-call-flows" },
+      { label: "Registration", href: "/docs/pocket/registration" },
+      { label: "For judges", href: "/docs/judges" },
     ],
   },
   {
@@ -18,9 +18,9 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     links: SERVICE_ORDER.map((key) => ({ label: `${SERVICES[key].kanji} ${SERVICES[key].name}`, href: `/docs/services/${key}` })),
   },
   {
-    title: "Build",
+    title: "Types",
     links: [
-      { label: "Call Akashi", href: "/docs/calling" },
+      { label: "The response", href: "/docs/contract/response" },
       { label: "API reference", href: "/docs/reference" },
       { label: "llms.txt", href: "/llms.txt" },
     ],

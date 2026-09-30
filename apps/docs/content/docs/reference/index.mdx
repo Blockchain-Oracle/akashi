@@ -1,24 +1,18 @@
 ---
 title: API reference
-description: Every Akashi endpoint, generated from the OpenAPI each service publishes, with a playground that calls the API directly.
+description: Every endpoint's request and response types, generated from the OpenAPI each service publishes.
 ---
 
-Each page shows the request body, every response field and a code sample, and has a **playground**: fill in the
-body and press **Send**. Playground requests go straight to the Akashi API (free, unmetered); paid calls go through
-the Pocket portal as described in [Call Akashi](/docs/calling).
-
-Paths are prefix-free (`/v1/...`), exactly as Pocket gateways forward them.
-
 <Cards>
-  <Card title="典 Citation Verifier" href="/docs/reference/cite/verify" description="citation-verify · verify, claim" />
-  <Card title="符 Code Reality Check" href="/docs/reference/code/check" description="code-reality-check · check, package, packages, versions, symbol, symbols" />
-  <Card title="今 Live Facts" href="/docs/reference/now/time" description="live-facts · time, holidays, business-days, fx, weather, fact, news, stocks, jobs" />
+  <Card title="典 Citation Verifier" href="/docs/reference/cite/verify" description="verify · claim" />
+  <Card title="符 Code Reality Check" href="/docs/reference/code/check" description="check · package · packages · versions · symbol · symbols" />
+  <Card title="今 Live Facts" href="/docs/reference/now/time" description="time · holidays · business-days · fx · weather · fact · news · stocks · jobs" />
 </Cards>
 
-The OpenAPI documents themselves are served by the API, one per service, and are the files Pocket Network's
-service cards point to:
+Paths are prefix-free (`/v1/...`), as Pocket gateways forward them. Through the portal, prefix them with
+`https://agent.pocket.network/v1/<service-id>`.
 
-| Service | OpenAPI |
+| Service | OpenAPI served by the API |
 |---|---|
 | citation-verify | `/specs/citation-verify.openapi.json` |
 | code-reality-check | `/specs/code-reality-check.openapi.json` |

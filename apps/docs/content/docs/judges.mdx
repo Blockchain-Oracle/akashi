@@ -1,0 +1,23 @@
+---
+title: For judges
+description: What to check, and where.
+---
+
+| Check | Where |
+|---|---|
+| The three services are registered on Pocket Beta | [Registered on Pocket](/docs/pocket/registration): explorer links for each ID and transaction |
+| How a call reaches Akashi through Pocket | [How a call reaches Akashi](/docs/pocket/how-a-call-flows) |
+| What each service answers, and its types | [Services](/docs/services/cite) and the [API reference](/docs/reference) |
+| The product itself | the [Akashi app](https://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io) |
+
+## Answers to expect
+
+| Input | Service | Verdict |
+|---|---|---|
+| *Varghese v. China Southern Airlines Co.*, 925 F.3d 1339 (11th Cir. 2019) | citation-verify | `not_found`: page 1339 is inside another case |
+| `10.1016/S0140-6736(97)11096-0` | citation-verify | `retracted` 2010-02-06 (Wakefield 1998) |
+| LeCun et al., *Deep learning*, Nature (2016) | citation-verify | `mismatch`: the year is 2015 |
+| PyPI `reqeusts` | code-reality-check | `does_not_exist`, did you mean `requests` |
+| npm `react-codeshift` | code-reality-check | `placeholder` |
+| USD → EUR | live-facts | `agree` across the ECB, Bank of Canada and Bank of England |
+| `APPL` | live-facts `/v1/stocks` | `not_found`, did you mean `AAPL` |

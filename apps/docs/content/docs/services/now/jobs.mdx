@@ -1,18 +1,9 @@
 ---
-title: Search job postings
-description: Search open roles at 89 companies from an index of their public Greenhouse, Lever and Ashby job boards, filtered by words, company, location, remote, salary and posting date.
+title: Who is hiring?
+description: POST /v1/jobs searches postings from 89 public company job boards (Greenhouse, Lever, Ashby), refreshed every 6 hours.
 ---
 
-You will call `/v1/jobs` and read postings with their source board and posting date. You need a way to call Akashi
-(the [mppx CLI](/docs/calling/curl-and-mppx) is the quickest; see [Calling Akashi](/docs/calling)).
-
-## When to use it
-
-- **"Who is hiring for X?"** among the indexed companies, with links straight to each posting.
-- **Filtering by salary or remote work** where the posting states it.
-
-The index covers 89 companies whose public boards Akashi checked one by one (61 on Greenhouse, 24 on Ashby, 4 on
-Lever); it is not a search of the whole job market.
+Postings come from Akashi's own index of public job boards, so a request never waits on the boards themselves.
 
 ## Request
 
@@ -20,178 +11,49 @@ All fields are optional; with none, you get the newest postings.
 
 <TypeTable
   type={{
-    query: { type: "string", description: "Words that must all appear in the title or team; up to 200 characters." },
-    companies: { type: "string[]", description: "Up to 20 company names; a posting matches any of them." },
-    location: { type: "string", description: "Words that must appear in the location, e.g. Berlin." },
-    remote: { type: "boolean", description: "true: remote postings only; false: postings not marked remote." },
-    salary_min: { type: "integer", description: "Only postings that state a salary at or above this amount." },
-    currency: { type: "string", description: "ISO 4217 code the stated salary must be in, e.g. USD." },
-    posted_within_days: { type: "integer", description: "1 to 90 days.", default: "90" },
-    limit: { type: "integer", description: "1 to 50 postings.", default: "10" },
+    query: { type: "string", description: "Words that must all appear in the title or team." },
+    companies: { type: "string[]", description: "Up to 20 company names." },
+    location: { type: "string", description: "Words in the location, e.g. Berlin." },
+    remote: { type: "boolean", description: "true: remote only; false: not marked remote." },
+    salary_min: { type: "integer", description: "Only postings stating a salary at or above this." },
+    currency: { type: "string", description: "ISO 4217 code the salary must be in." },
+    posted_within_days: { type: "integer", description: "1 to 90.", default: "90" },
+    limit: { type: "integer", description: "1 to 50.", default: "10" },
   }}
 />
 
-## Send it
+## Response: `results[i]`
 
-```json title="Request body"
-{ "query": "engineer", "remote": true, "limit": 3 }
-```
+<TypeTable
+  type={{
+    "title, company, location, department": { type: "string", description: "As the posting states them." },
+    remote: { type: "boolean | null", description: "Whether the posting is marked remote." },
+    salary: { type: "string | null", description: "The posting's own salary text." },
+    "salary_min, currency": { type: "number, string | null", description: "Parsed from salary: \"$170K – $255.5K\" → 170000 USD." },
+    posted_at: { type: "string | null", description: "The board's posting date." },
+    url: { type: "string", description: "The posting on the company's board." },
+    ats: { type: "string", description: "greenhouse, lever or ashby." },
+  }}
+/>
 
-```bash title="Terminal"
-MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/live-facts/v1/jobs -J '{"query":"engineer","remote":true,"limit":3}' --protocol x402
-```
+## Example
 
-<Callout type="warn" title="Not listed on the portal yet">
-  Akashi is registered on Pocket Network (Beta) but not yet listed on the agent portal, so this call works once
-  `live-facts` is listed. The answer on this page is real, captured from the running service.
-</Callout>
-
-## The answer
-
-```json title="POST /v1/jobs · 59 ms"
+```json title="{ remote: true } · results[1] (trimmed)"
 {
-  "service": "live-facts",
-  "operation": "jobs",
-  "version": "1.0.0",
-  "status": "complete",
-  "as_of": "2026-09-30T09:17:27+00:00",
-  "deadline_ms": 4000,
-  "elapsed_ms": 59,
-  "unavailable": [],
-  "summary": {
-    "ashby": 3
-  },
-  "results": [
-    {
-      "kind": "job",
-      "title": "Engineering Productivity Engineer",
-      "company": "supabase",
-      "location": "Remote, Global",
-      "department": "Engineering",
-      "remote": true,
-      "salary": null,
-      "salary_min": null,
-      "currency": null,
-      "posted_at": "2026-08-02",
-      "url": "https://jobs.ashbyhq.com/supabase/8229db66-dc3f-4ffe-8d86-90ce9ffb4c90",
-      "ats": "ashby",
-      "provenance": {
-        "sources": [
-          "ashby"
-        ],
-        "as_of": "2026-09-30T06:20:34+00:00",
-        "age_seconds": 10613,
-        "freshness": "fresh",
-        "agreement": "single_source",
-        "spread_pct": null,
-        "licence": null,
-        "attribution": "Public job boards (Greenhouse, Lever, Ashby), indexed by Akashi"
-      }
-    },
-    {
-      "kind": "job",
-      "title": "Security Engineer",
-      "company": "patreon",
-      "location": "Remote",
-      "department": "Engineering",
-      "remote": true,
-      "salary": "$170K – $255.5K • Offers Equity • Multiple Ranges",
-      "salary_min": 170000,
-      "currency": "USD",
-      "posted_at": "2026-09-28",
-      "url": "https://jobs.ashbyhq.com/patreon/95a84e99-4405-4cd1-ade4-13c17dc99293",
-      "ats": "ashby",
-      "provenance": {
-        "sources": [
-          "ashby"
-        ],
-        "as_of": "2026-09-30T06:20:34+00:00",
-        "age_seconds": 10613,
-        "freshness": "fresh",
-        "agreement": "single_source",
-        "spread_pct": null,
-        "licence": null,
-        "attribution": "Public job boards (Greenhouse, Lever, Ashby), indexed by Akashi"
-      }
-    },
-    {
-      "kind": "job",
-      "title": "Product Engineer",
-      "company": "posthog",
-      "location": "Remote",
-      "department": "Engineering",
-      "remote": true,
-      "salary": null,
-      "salary_min": null,
-      "currency": null,
-      "posted_at": "2026-09-24",
-      "url": "https://jobs.ashbyhq.com/posthog/20ab9628-20ff-4ae3-bd6a-46ae7e9dc6b8",
-      "ats": "ashby",
-      "provenance": {
-        "sources": [
-          "ashby"
-        ],
-        "as_of": "2026-09-30T06:20:34+00:00",
-        "age_seconds": 10613,
-        "freshness": "fresh",
-        "agreement": "single_source",
-        "spread_pct": null,
-        "licence": null,
-        "attribution": "Public job boards (Greenhouse, Lever, Ashby), indexed by Akashi"
-      }
-    }
-  ],
-  "sources": [
-    {
-      "name": "ats-boards",
-      "status": "ok",
-      "url": null,
-      "licence": null,
-      "attribution": "Public job boards (Greenhouse, Lever, Ashby), indexed by Akashi",
-      "as_of": null,
-      "fetched_at": null,
-      "latency_ms": null,
-      "cache": null
-    }
-  ],
-  "notes": [
-    "salary filters only match postings that state a salary (Greenhouse boards rarely do)"
-  ]
+  "kind": "job",
+  "title": "Security Engineer",
+  "company": "patreon",
+  "location": "Remote",
+  "department": "Engineering",
+  "remote": true,
+  "salary": "$170K – $255.5K • Offers Equity • Multiple Ranges",
+  "salary_min": 170000,
+  "currency": "USD"
 }
 ```
 
-## Reading the answer
+## Reading it
 
-- **`summary`** counts postings per job-board system (`ats`): here all three came from Ashby boards.
-- **`salary`** is the posting's own text; **`salary_min`** and **`currency`** are parsed from it, so
-  "$170K – $255.5K" becomes 170000 USD. When a posting states no salary, all three are `null`.
-- **`posted_at`** is the date the board gives for the posting; **`url`** opens it on the company's board.
-- **`provenance.as_of`** is when the index was last refreshed, and `freshness` turns `stale` when that was more than
-  12 hours ago (two missed refreshes).
-- The envelope's **`notes`** say that salary filters only match postings that state a salary; Greenhouse boards
-  rarely do.
-
-## Edge cases
-
-<Accordions>
-  <Accordion title="Why an index, not a live search">
-    Each board is fetched every 6 hours by a scheduled task and written to a local full-text index; a request never
-    waits on 89 job boards. That is why the answer takes tens of milliseconds.
-  </Accordion>
-  <Accordion title="Salaries in other currencies">
-    Currencies are read from the salary text: "CA$215K" is Canadian dollars, not US dollars. Filter with `currency`
-    to compare like with like.
-  </Accordion>
-  <Accordion title="The index is empty or old">
-    If the index cannot be read, the envelope is `partial` with `ats-boards` in `unavailable` and a note. If it is
-    more than 12 hours old, a note says how old.
-  </Accordion>
-</Accordions>
-
-## Next steps
-
-<Cards>
-  <Card title="Look up a current fact" href="/docs/services/now/facts" description="The current value of a Wikidata property." />
-  <Card title="How Live Facts works" href="/docs/services/now" description="Freshness and agreement, explained." />
-  <Card title="API reference: /v1/jobs" href="/docs/reference/now/jobs" description="Every field of the request and response." />
-</Cards>
+- `provenance.as_of` is when the index was last refreshed; it turns `stale` after 12 hours.
+- Salary filters only match postings that state a salary; Greenhouse boards rarely do.
+- "CA$215K" is Canadian dollars: filter with `currency` to compare like with like.

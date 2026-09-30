@@ -1,344 +1,94 @@
 ---
-title: Get the time and holidays
-description: Ask for the current time in a zone, city or country with its next UTC-offset change, list the holidays on a public or exchange calendar, and count business days.
+title: What time is it, and is it a working day?
+description: /v1/time, /v1/holidays and /v1/business-days, from the pinned IANA tz database and three holiday sources.
 ---
 
-You will call three endpoints: `/v1/time`, `/v1/holidays` and `/v1/business-days`. You need:
+Time zones come from the IANA tz database (release `2026d`); a note appears when IANA has published a newer one.
+Holidays are compared across python-holidays, Nager.Date and OpenHolidays.
 
-- a way to call Akashi (the [mppx CLI](/docs/calling/curl-and-mppx) is the quickest; see [Calling Akashi](/docs/calling));
-- an IANA zone name or a place name, and ISO 3166-1 country codes for calendars.
+## Request
 
-## When to use it
-
-- **Scheduling across zones.** "10:00 in Casablanca is what in New York?" A model's offsets may predate a rule
-  change; these come from the IANA tz database the service runs on, and the answer names the release.
-- **Deadlines and settlement dates.** "Three NYSE business days after 25 November" skips Thanksgiving; a public
-  calendar would not skip the same days.
-- **Checking a holiday.** Public calendars are cross-checked against up to two other datasets, so you see when they
-  disagree.
-
-## The time in a zone or a place
-
-### Request
-
+<Tabs items={["/v1/time", "/v1/holidays", "/v1/business-days"]}>
+<Tab value="/v1/time">
 <TypeTable
   type={{
     zone: { type: "string", description: "An IANA zone, e.g. Africa/Casablanca. Give this or place." },
-    place: { type: "string", description: "A city or country name. Give this or zone. Up to 100 characters." },
-    country: { type: "string", description: "ISO 3166-1 alpha-2 hint that narrows a place, e.g. CA." },
-    at: { type: "string (ISO 8601)", description: "The instant to evaluate, with a UTC offset or Z.", default: "now" },
-    convert_to: { type: "string[]", description: "Up to 10 more IANA zones to show the same instant in.", default: "[]" },
+    place: { type: "string", description: "A city or country name, up to 100 characters." },
+    country: { type: "string", description: "ISO 3166-1 alpha-2 hint for place." },
+    at: { type: "string (ISO 8601)", description: "The instant, with Z or an offset.", default: "now" },
+    convert_to: { type: "string[]", description: "Up to 10 more zones for the same instant." },
+  }}
+/>
+</Tab>
+<Tab value="/v1/holidays">
+<TypeTable
+  type={{
+    country: { type: "string", description: "ISO 3166-1 alpha-2.", required: true },
+    year: { type: "integer", description: "1900 to 2100.", required: true },
+    subdivision: { type: "string", description: "A region code, e.g. BY or CA." },
+    calendar: { type: "string", description: "public, or an exchange such as NYSE, LSE, JPX, ECB.", default: "public" },
+  }}
+/>
+</Tab>
+<Tab value="/v1/business-days">
+<TypeTable
+  type={{
+    country: { type: "string", description: "ISO 3166-1 alpha-2.", required: true },
+    calendar: { type: "string", description: "public or an exchange.", default: "public" },
+    start: { type: "string (date)", description: "Counted from, not itself counted.", required: true },
+    end: { type: "string (date)", description: "Count up to and including this date. Or add_days." },
+    add_days: { type: "integer", description: "Walk this many business days (negative walks back), up to 3,650." },
+  }}
+/>
+</Tab>
+</Tabs>
+
+## Response
+
+<TypeTable
+  type={{
+    "time: local_time, utc_offset, abbreviation, is_dst": { type: "string", description: "The instant in that zone." },
+    "time: next_transition": { type: "{ at, offset_before, offset_after } | null", description: "The next offset change within two years." },
+    "time: conversions": { type: "ZoneTime[]", description: "The same instant in the convert_to zones." },
+    "time: tzdb_version, tzdb_latest": { type: "string", description: "The release used, and the newest IANA has published." },
+    "holiday: date, name, observed": { type: "string, string, boolean", description: "observed marks the weekday a weekend holiday moved to." },
+    "holiday: listed_by": { type: "string[]", description: "Which sources list the date." },
+    "business_days: end, business_days": { type: "string, number", description: "The answer, and the count." },
+    "business_days: holidays_skipped": { type: "string[]", description: "Weekdays not counted." },
   }}
 />
 
-### Send it
+## Example
 
-```json title="Request body"
-{ "place": "New York", "at": "2026-10-20T12:00:00Z", "convert_to": ["America/Edmonton", "Asia/Tokyo"] }
-```
-
-```bash title="Terminal"
-MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/live-facts/v1/time -J '{"place":"New York","at":"2026-10-20T12:00:00Z","convert_to":["America/Edmonton","Asia/Tokyo"]}' --protocol x402
-```
-
-<Callout type="warn" title="Not listed on the portal yet">
-  Akashi is registered on Pocket Network (Beta) but not yet listed on the agent portal, so this call works once
-  `live-facts` is listed. The answers on this page are real, captured from the running service.
-</Callout>
-
-### The answer
-
-```json title="POST /v1/time · results[0] (trimmed to the result)"
+```json title="{ place: New York, at: 2026-10-20T12:00:00Z, convert_to: [America/Edmonton, Asia/Tokyo] } · results[0] (trimmed)"
 {
   "kind": "time",
   "zone": "America/New_York",
   "matched": "zone city New York",
-  "at_utc": "2026-10-20T12:00:00+00:00",
   "local_time": "2026-10-20T08:00:00-04:00",
   "utc_offset": "-04:00",
   "abbreviation": "EDT",
   "is_dst": true,
-  "next_transition": {
-    "at": "2026-11-01T06:00:00+00:00",
-    "offset_before": "-04:00",
-    "offset_after": "-05:00"
-  },
+  "next_transition": { "at": "2026-11-01T06:00:00+00:00", "offset_before": "-04:00", "offset_after": "-05:00" },
   "conversions": [
-    {
-      "zone": "America/Edmonton",
-      "local_time": "2026-10-20T06:00:00-06:00",
-      "utc_offset": "-06:00",
-      "abbreviation": "MDT",
-      "is_dst": true
-    },
-    {
-      "zone": "Asia/Tokyo",
-      "local_time": "2026-10-20T21:00:00+09:00",
-      "utc_offset": "+09:00",
-      "abbreviation": "JST",
-      "is_dst": false
-    }
+    { "zone": "America/Edmonton", "local_time": "2026-10-20T06:00:00-06:00", "abbreviation": "MDT" },
+    { "zone": "Asia/Tokyo", "local_time": "2026-10-20T21:00:00+09:00", "abbreviation": "JST" }
   ],
   "tzdb_version": "2026d",
   "tzdb_latest": "2026d",
-  "provenance": {
-    "sources": [
-      "tzdb"
-    ],
-    "as_of": "2026d",
-    "age_seconds": null,
-    "freshness": "fresh",
-    "agreement": "single_source",
-    "spread_pct": null,
-    "licence": "public domain",
-    "attribution": "IANA tz database (public domain), via the tzdata package"
-  },
-  "notes": []
+  "provenance": { "sources": ["tzdb"], "freshness": "fresh", "agreement": "single_source", "licence": "public domain" }
 }
 ```
 
-### Reading the answer
+## Reading it
 
-- **`matched`** says how the place resolved: here the tz database's own zone city, New York. A place that is not a
-  zone city is looked up on Wikidata and given the nearest zone city in its country, and `matched` says so.
-- **`local_time`, `utc_offset`, `abbreviation`, `is_dst`** describe the instant in that zone: 08:00 EDT, UTC−04:00.
-- **`next_transition`** is the next change of UTC offset, found by scanning up to two years ahead: New York moves to
-  UTC−05:00 at 06:00 UTC on 1 November 2026. `null` means no change in the next two years.
-- **`conversions`** shows the same instant elsewhere. Edmonton is UTC−06:00 here (MDT), and it stays at UTC−06:00
-  after November (`CST` on 15 November) under tzdb 2026d: it does not fall back an hour.
-- **`tzdb_version`** is the release the answer was computed from and **`tzdb_latest`** the newest release IANA has
-  published. When they differ, `freshness` is `stale` and a note names both.
+- `matched` says how a place resolved.
+- `next_transition` is when the offset changes next; `null` means not within two years.
+- Holidays listed by every source are `agree`; a date one source omits is `minor_diff`.
+- NYSE is not the federal calendar: Good Friday is an NYSE holiday, Columbus Day is not.
+- Three NYSE business days after 2026-11-25 is 2026-12-01; Thanksgiving is skipped.
 
-## Holidays
-
-### Request
-
-<TypeTable
-  type={{
-    country: { type: "string", description: "ISO 3166-1 alpha-2 country code.", required: true },
-    year: { type: "integer", description: "1900 to 2100.", required: true },
-    subdivision: { type: "string", description: "A state or region code, e.g. BY (Bavaria) or CA (California)." },
-    calendar: { type: "string", description: "public, or an exchange calendar such as NYSE, LSE, JPX or ECB.", default: "public" },
-  }}
-/>
-
-### Send it
-
-```json title="Request body"
-{ "country": "US", "year": 2026 }
-```
-
-```bash title="Terminal"
-MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/live-facts/v1/holidays -J '{"country":"US","year":2026}' --protocol x402
-```
-
-### The answer
-
-```json title="POST /v1/holidays (trimmed: 3 of 12 results, sources shortened)"
-{
-  "status": "complete",
-  "elapsed_ms": 21,
-  "unavailable": [],
-  "summary": {
-    "holiday": 12
-  },
-  "results": [
-    {
-      "kind": "holiday",
-      "date": "2026-07-03",
-      "name": "Independence Day (observed)",
-      "other_names": [
-        "Independence Day"
-      ],
-      "calendar": "public",
-      "observed": true,
-      "local_only": false,
-      "listed_by": [
-        "nager.date",
-        "python-holidays"
-      ],
-      "provenance": {
-        "sources": [
-          "nager.date",
-          "python-holidays"
-        ],
-        "as_of": "2026",
-        "age_seconds": null,
-        "freshness": "fresh",
-        "agreement": "agree",
-        "spread_pct": null,
-        "licence": "MIT",
-        "attribution": null
-      }
-    },
-    {
-      "kind": "holiday",
-      "date": "2026-07-04",
-      "name": "Independence Day",
-      "other_names": [],
-      "calendar": "public",
-      "observed": false,
-      "local_only": false,
-      "listed_by": [
-        "python-holidays"
-      ],
-      "provenance": {
-        "sources": [
-          "python-holidays"
-        ],
-        "as_of": "2026",
-        "age_seconds": null,
-        "freshness": "fresh",
-        "agreement": "minor_diff",
-        "spread_pct": null,
-        "licence": "MIT",
-        "attribution": null
-      }
-    },
-    {
-      "kind": "holiday",
-      "date": "2026-10-12",
-      "name": "Columbus Day",
-      "other_names": [],
-      "calendar": "public",
-      "observed": false,
-      "local_only": false,
-      "listed_by": [
-        "python-holidays"
-      ],
-      "provenance": {
-        "sources": [
-          "python-holidays"
-        ],
-        "as_of": "2026",
-        "age_seconds": null,
-        "freshness": "fresh",
-        "agreement": "minor_diff",
-        "spread_pct": null,
-        "licence": "MIT",
-        "attribution": null
-      }
-    }
-  ],
-  "sources": [
-    {
-      "name": "python-holidays",
-      "status": "ok",
-      "licence": "MIT"
-    },
-    {
-      "name": "nager.date",
-      "status": "ok",
-      "licence": "MIT"
-    }
-  ]
-}
-```
-
-### Reading the answer
-
-- A public calendar is built from the offline `python-holidays` library and cross-checked live against
-  **Nager.Date** and, where it covers the country, **OpenHolidays** (36 countries, not the US). **`listed_by`** says
-  which sources list each date.
-- **`observed`** marks the weekday a weekend holiday moved to: Independence Day falls on Saturday 4 July 2026, so
-  3 July is observed.
-- Nager.Date does not list 4 July itself or Columbus Day, so those dates carry **`agreement: minor_diff`**; dates
-  every source lists carry `agree`.
-- **`local_only`** marks municipality-level days, such as Augsburg's Peace Festival in Bavaria, which are not
-  counted when the sources are compared.
-
-## Business days
-
-### Request
-
-<TypeTable
-  type={{
-    country: { type: "string", description: "ISO 3166-1 alpha-2 country code.", required: true },
-    subdivision: { type: "string", description: "A state or region code." },
-    calendar: { type: "string", description: "public, or an exchange calendar such as NYSE.", default: "public" },
-    start: { type: "string (date)", description: "The day to count from (not itself counted).", required: true },
-    end: { type: "string (date)", description: "Count business days up to and including this date. Give this or add_days." },
-    add_days: { type: "integer", description: "Walk this many business days from start (negative walks back). Give this or end. At most 3,650." },
-  }}
-/>
-
-### Send it
-
-```json title="Request body"
-{ "country": "US", "calendar": "NYSE", "start": "2026-11-25", "add_days": 3 }
-```
-
-```bash title="Terminal"
-MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/live-facts/v1/business-days -J '{"country":"US","calendar":"NYSE","start":"2026-11-25","add_days":3}' --protocol x402
-```
-
-### The answer
-
-```json title="POST /v1/business-days · results[0]"
-{
-  "kind": "business_days",
-  "calendar": "NYSE",
-  "start": "2026-11-25",
-  "end": "2026-12-01",
-  "business_days": 3,
-  "weekend": [
-    "Sat",
-    "Sun"
-  ],
-  "holidays_skipped": [
-    "2026-11-26 Thanksgiving Day"
-  ],
-  "provenance": {
-    "sources": [
-      "python-holidays"
-    ],
-    "as_of": null,
-    "age_seconds": null,
-    "freshness": "fresh",
-    "agreement": "single_source",
-    "spread_pct": null,
-    "licence": "MIT",
-    "attribution": null
-  }
-}
-```
-
-### Reading the answer
-
-- **`end`** is the answer: three NYSE business days after Wednesday 25 November 2026 is Tuesday 1 December.
-- **`holidays_skipped`** names the non-weekend days that were not counted (Thanksgiving), and **`weekend`** the days
-  the calendar treats as the weekend.
-- Business days are computed offline from the same calendar data as `/v1/holidays`, so this endpoint never waits on
-  an upstream source.
-
-## Edge cases
-
-<Accordions>
-  <Accordion title="A zone name is misspelled">
-    The call fails with `422 invalid_input` and suggestions: `Europe/Lodnon` gives "did you mean Europe/London,
-    Europe/Lisbon, Europe/Monaco?".
-  </Accordion>
-  <Accordion title="at has no UTC offset">
-    `2026-11-15T18:00:00` is rejected with `422`: an instant needs `Z` or an offset, e.g. `2026-11-15T18:00:00Z`.
-  </Accordion>
-  <Accordion title="The place is a region, not a city">
-    Names are matched against the tz database's zone cities first, then single-zone countries, then Wikidata. Give
-    `country` to narrow an ambiguous name, or pass the IANA zone directly.
-  </Accordion>
-  <Accordion title="An exchange calendar has only one source">
-    Market calendars (NYSE, LSE, JPX and others) come from `python-holidays` only; there is no independent free
-    dataset to compare them with, so their dates are `single_source`.
-  </Accordion>
-  <Accordion title="A source is down">
-    If Nager.Date or OpenHolidays does not answer, the offline calendar still answers, the envelope is `partial` and
-    the missing source is named in `unavailable`.
-  </Accordion>
+<Accordions type="single">
+  <Accordion title="A misspelled zone">`Europe/Lodnon` fails with 422 and suggests Europe/London, Europe/Lisbon, Europe/Monaco.</Accordion>
+  <Accordion title="Exchange calendars">NYSE, LSE and JPX come from python-holidays only, so they are `single_source`.</Accordion>
 </Accordions>
-
-## Next steps
-
-<Cards>
-  <Card title="Get an exchange rate" href="/docs/services/now/fx" description="Rates from central banks, with each fixing's age." />
-  <Card title="How Live Facts works" href="/docs/services/now" description="Freshness and agreement, explained." />
-  <Card title="API reference: /v1/time" href="/docs/reference/now/time" description="Every field of the request and response." />
-</Cards>

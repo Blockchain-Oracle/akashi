@@ -1,10 +1,12 @@
 ---
-title: The response envelope
-description: The JSON object every successful Akashi call returns, field by field.
+title: The response
+description: "What an agent receives: the portal's wrapper, Akashi's envelope inside it, one typed result per input."
 ---
 
-Every success from every service has the same outer shape, so one piece of code can read all of them. Only
-`results` differs: each service puts its own typed items there.
+<EnvelopeAnatomy />
+
+The portal's wrapper is the same for every Pocket service. Inside it, every Akashi answer has the same outer
+shape; only `results` differs per service.
 
 <TypeTable
   type={{

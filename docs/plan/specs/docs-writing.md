@@ -1,5 +1,10 @@
 # Docs: structure and writing guide (apps/docs)
 
+> **Purpose (user, 2026-09-30, binding):** the docs explain Akashi *as Pocket Network services* — how it connects to
+> Pocket (registration, relays, sessions/claims, the portal's payment, calling from an agent) and the request/response
+> types — for Pocket hackathon judges and Pocket agents. Diagrams (animated, themed) over prose; minimal words; no
+> SDK/x402/wallet tutorials (payment is the portal's job); the playground lives in the web app (/play/*), not the docs.
+>
 > Written 2026-09-30 after the user rejected a thin, custom-styled docs site. Research: Fumadocs' own guidance via
 > Context7 (`/fuma-nama/fumadocs`: meta.json separators and root folders, Cards, Steps, Tabs with `groupId`/`persist`,
 > code-block `tab=` groups and `title=`, Callout types, TypeTable, Accordions, llms.txt) and the Diátaxis framework

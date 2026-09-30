@@ -1,163 +1,65 @@
 ---
-title: Look up a current fact
-description: Get the current value of a Wikidata property for any item (a head of government, a capital, a CEO, a population) with ended statements left out and the rules for "current" made explicit.
+title: What is true now?
+description: POST /v1/fact returns the current value of a Wikidata property, with ended statements left out.
 ---
 
-You will call `/v1/fact` with an item and a property and read which statement counts as current. You need a way to
-call Akashi (the [mppx CLI](/docs/calling/curl-and-mppx) is the quickest; see [Calling Akashi](/docs/calling)).
-
-## When to use it
-
-- **Office holders and leadership** that change: presidents, prime ministers, secretaries-general, CEOs.
-- **Figures that are revised**: population, GDP, number of employees.
-- **Any Wikidata property** of any item, by its ID or by its label.
+Office holders, capitals, populations and CEOs change. The answer keeps only current statements: not deprecated, no
+end date in the past, preferred rank if marked, the latest point in time.
 
 ## Request
 
 <TypeTable
   type={{
-    subject: { type: "string", description: "A Wikidata item ID (Q17) or a name (Japan); up to 200 characters.", required: true },
-    property: { type: "string", description: "A property ID (P6), a plain alias (head of government) or a property label.", required: true },
+    subject: { type: "string", description: "A Wikidata ID (Q17) or a name (Japan), up to 200 characters.", required: true },
+    property: { type: "string", description: "A property ID (P6), an alias (head of government, capital, population, ceo) or a label.", required: true },
   }}
 />
 
-Plain aliases include `head of state`, `president`, `head of government`, `prime minister`, `capital`, `population`,
-`currency`, `ceo`, `headquarters`, `official website`, `founded`, `number of employees` and `time zone`. Anything else
-is looked up as a property label on Wikidata.
+## Response: `results[0]`
 
-## Send it
+<TypeTable
+  type={{
+    "subject_qid, subject_label": { type: "string", description: "What the subject resolved to." },
+    "property_pid, property_label": { type: "string", description: "What the property resolved to." },
+    values: { type: "FactValue[]", description: "The current statements: value, qid, unit, start, point_in_time, rank. Up to 10." },
+    ended_values: { type: "number", description: "Statements left out because they have ended." },
+    wikipedia_url: { type: "string | null", description: "The English Wikipedia article." },
+    provenance: { type: "Provenance", description: "as_of is the item's last edit; licence CC0." },
+  }}
+/>
 
-```json title="Request body"
-{ "subject": "Secretary-General of the United Nations", "property": "officeholder" }
-```
+## Example
 
-```bash title="Terminal"
-MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/live-facts/v1/fact -J '{"subject":"Secretary-General of the United Nations","property":"officeholder"}' --protocol x402
-```
-
-<Callout type="warn" title="Not listed on the portal yet">
-  Akashi is registered on Pocket Network (Beta) but not yet listed on the agent portal, so this call works once
-  `live-facts` is listed. The answer on this page is real, captured from the running service.
-</Callout>
-
-## The answer
-
-```json title="POST /v1/fact"
+```json title="{ subject: \"Secretary-General of the United Nations\", property: \"officeholder\" } · results[0]"
 {
-  "service": "live-facts",
-  "operation": "fact",
-  "version": "1.0.0",
-  "status": "complete",
-  "as_of": "2026-09-30T09:17:25+00:00",
-  "deadline_ms": 4000,
-  "elapsed_ms": 1022,
-  "unavailable": [],
-  "summary": {
-    "fact": 1
-  },
-  "results": [
-    {
-      "kind": "fact",
-      "subject_qid": "Q81066",
-      "subject_label": "United Nations Secretary-General",
-      "property_pid": "P1308",
-      "property_label": "position holder",
-      "values": [
-        {
-          "value": "António Guterres",
-          "qid": "Q311440",
-          "unit": null,
-          "start": "2017-01-01",
-          "point_in_time": null,
-          "rank": "preferred"
-        }
-      ],
-      "ended_values": 9,
-      "wikipedia_url": "https://en.wikipedia.org/wiki/Secretary-General_of_the_United_Nations",
-      "provenance": {
-        "sources": [
-          "wikidata"
-        ],
-        "as_of": "2026-08-31T18:12:17Z",
-        "age_seconds": 2559908,
-        "freshness": "fresh",
-        "agreement": "single_source",
-        "spread_pct": null,
-        "licence": "CC0",
-        "attribution": "Wikidata"
-      }
-    }
+  "kind": "fact",
+  "subject_qid": "Q81066",
+  "subject_label": "United Nations Secretary-General",
+  "property_pid": "P1308",
+  "property_label": "position holder",
+  "values": [
+    { "value": "António Guterres", "qid": "Q311440", "unit": null, "start": "2017-01-01", "point_in_time": null, "rank": "preferred" }
   ],
-  "sources": [
-    {
-      "name": "wikidata",
-      "status": "ok",
-      "url": null,
-      "licence": "CC0",
-      "attribution": null,
-      "as_of": null,
-      "fetched_at": null,
-      "latency_ms": null,
-      "cache": null
-    }
-  ],
-  "notes": []
+  "ended_values": 9,
+  "wikipedia_url": "https://en.wikipedia.org/wiki/Secretary-General_of_the_United_Nations",
+  "provenance": {
+    "sources": ["wikidata"],
+    "as_of": "2026-08-31T18:12:17Z",
+    "freshness": "fresh",
+    "agreement": "single_source",
+    "licence": "CC0",
+    "attribution": "Wikidata"
+  }
 }
 ```
 
-## Reading the answer
+## Reading it
 
-- **`subject_qid` and `property_pid`** show what the names resolved to: the item Q81066 and property P1308
-  ("position holder"), found by searching Wikidata for "officeholder". Check them when you pass names.
-- **`values`** holds the current statements, rendered as text: here António Guterres, holder since 2017-01-01
-  (`start`).
-- **`ended_values`: 9** counts the statements left out because they have an end date in the past, such as
-  earlier holders of the office.
-- **`rank: preferred`** means Wikidata's editors marked this statement as the preferred one.
-- **`provenance.as_of`** is when the Wikidata item was last edited, and `age_seconds` how long ago.
-- **`wikipedia_url`** links the English Wikipedia article for the item, when there is one.
+- Check `subject_qid` and `property_pid` when you pass names.
+- `ended_values: 9` are the earlier office holders, left out.
+- `{"subject": "Japan", "property": "head of government"}` returned Sanae Takaichi, since 2025-10-21.
 
-## How "current" is decided
-
-A property can hold many statements. The answer keeps, in order:
-
-<Steps>
-  <Step>Statements that are not deprecated and have a value.</Step>
-  <Step>Of those, statements without an end time (P582) in the past.</Step>
-  <Step>Of those, the preferred-rank statements, if any are marked preferred.</Step>
-  <Step>If every remaining statement has a point in time (P585), only those with the latest date.</Step>
-</Steps>
-
-At most 10 values are returned. For example, `{"subject": "Japan", "property": "head of government"}` returned
-Sanae Takaichi (since 2025-10-21) with 4 ended statements left out.
-
-## Edge cases
-
-<Accordions>
-  <Accordion title="The name matches the wrong item">
-    A name is looked up with Wikidata's search, preferring an exact label match. "New York" can be the city or the
-    state; pass the item ID (Q60 for the city) when it matters.
-  </Accordion>
-  <Accordion title="An item has no English label">
-    Labels fall back from English to Wikidata's multilingual default label, then to the English Wikipedia title, then to
-    the ID itself.
-  </Accordion>
-  <Accordion title="Nothing matches">
-    An unknown subject or property fails with `422 invalid_input`, naming what was not found.
-  </Accordion>
-  <Accordion title="Wikidata is not answering">
-    The call fails with `422 invalid_input` ("Wikidata is not answering right now; retry shortly"), because there is no
-    second source to answer from.
-  </Accordion>
-  <Accordion title="How fresh is a repeated call">
-    An item is cached for 1 hour and labels for 7 days. `as_of` always shows the edit time of the item the answer used.
-  </Accordion>
+<Accordions type="single">
+  <Accordion title="The name matches the wrong item">"New York" can be the city or the state; pass Q60 for the city.</Accordion>
+  <Accordion title="Wikidata is not answering">The call fails with 422 ("Wikidata is not answering right now; retry shortly"): there is no second source.</Accordion>
 </Accordions>
-
-## Next steps
-
-<Cards>
-  <Card title="Get a stock quote" href="/docs/services/now/stocks" description="Demo-grade US quotes with a two-feed close check." />
-  <Card title="How Live Facts works" href="/docs/services/now" description="Freshness and agreement, explained." />
-  <Card title="API reference: /v1/fact" href="/docs/reference/now/fact" description="Every field of the request and response." />
-</Cards>

@@ -1,278 +1,73 @@
 ---
-title: Get a stock quote
-description: Get demo-grade quotes for up to five US tickers, each ticker checked against the last session's listings first, the latest price from Twelve Data and the last official close cross-checked against Massive.
+title: What is the stock price?
+description: POST /v1/stocks quotes up to five US tickers, checks each ticker first, and cross-checks the last close across two feeds. Demo-grade.
 ---
 
-You will call `/v1/stocks` with tickers and read the price, the market clock and the close check. You need a way to
-call Akashi (the [mppx CLI](/docs/calling/curl-and-mppx) is the quickest; see [Calling Akashi](/docs/calling)).
-
-<Callout type="warn" title="Demo-grade data">
-  Quotes come from free market-data plans whose terms forbid redistribution. Every quote is labelled
-  `demo-only; not for redistribution`. Do not use it for trading decisions.
+<Callout type="warn" title="Demo-grade">
+  Quotes come from free market-data plans that forbid redistribution. Every quote is labelled
+  `demo-only; not for redistribution`.
 </Callout>
 
-## When to use it
-
-- **"What is AAPL trading at?"** with the session the price belongs to and whether the market is open.
-- **Catching a wrong ticker.** A misspelled ticker comes back `not_found` with suggestions, instead of the price of
-  some other instrument.
+A ticker is first checked against every US ticker that traded in the last session. A typo is `not_found` with
+suggestions instead of some other instrument's price.
 
 ## Request
 
 <TypeTable
   type={{
-    symbols: { type: "string[]", description: "1 to 5 US-listed tickers, e.g. AAPL, SPY, BRK.B. BRK-B, BRK/B and BRK B are read as BRK.B; lower case is accepted.", required: true },
+    symbols: { type: "string[]", description: "1 to 5 US tickers, e.g. AAPL, SPY, BRK.B (BRK-B and BRK/B also work).", required: true },
   }}
 />
 
-## Send it
+## Response: `results[i]`
 
-```json title="Request body"
-{ "symbols": ["AAPL", "SPY", "APPL"] }
-```
+<TypeTable
+  type={{
+    status: { type: "string", description: "ok, not_found or unavailable." },
+    price: { type: "number | null", description: "The latest price; the official close when price_is_close is true." },
+    session_date: { type: "string | null", description: "The trading day the price belongs to." },
+    "previous_close, change, change_pct": { type: "number | null", description: "Against the previous session." },
+    close_check: { type: "CloseCheck | null", description: "The same session's close from Twelve Data and Massive, and their agreement." },
+    market: { type: "MarketClock", description: "The NYSE clock: state (open, pre_market, after_hours, closed), next_open_at, early_close." },
+    suggestions: { type: "{ symbol, name }[]", description: "Up to three real tickers, when not_found." },
+  }}
+/>
 
-```bash title="Terminal"
-MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/live-facts/v1/stocks -J '{"symbols":["AAPL","SPY","APPL"]}' --protocol x402
-```
+## Example
 
-<Callout type="warn" title="Not listed on the portal yet">
-  Akashi is registered on Pocket Network (Beta) but not yet listed on the agent portal, so this call works once
-  `live-facts` is listed. The answer on this page is real, captured from the running service.
-</Callout>
-
-## The answer
-
-```json title="POST /v1/stocks (trimmed: the SPY result omitted)"
-{
-  "service": "live-facts",
-  "operation": "stocks",
-  "version": "1.0.0",
-  "status": "complete",
-  "as_of": "2026-09-30T09:17:27+00:00",
-  "deadline_ms": 4000,
-  "elapsed_ms": 52,
-  "unavailable": [],
-  "summary": {
-    "ok": 2,
-    "not_found": 1
+```json title="{ symbols: [AAPL, APPL] } · results (trimmed)"
+[
+  {
+    "symbol": "AAPL",
+    "status": "ok",
+    "name": "Apple Inc.",
+    "price": 329.4,
+    "price_is_close": true,
+    "session_date": "2026-09-29",
+    "close_check": { "session_date": "2026-09-29", "twelvedata": 329.4, "massive": 329.4, "agreement": "agree", "spread_pct": 0.0 },
+    "market": { "calendar": "NYSE", "state": "pre_market", "next_open_at": "2026-09-30T09:30:00-04:00" }
   },
-  "results": [
-    {
-      "kind": "quote",
-      "symbol": "AAPL",
-      "status": "ok",
-      "name": "Apple Inc.",
-      "exchange": "NASDAQ",
-      "mic_code": "XNGS",
-      "currency": "USD",
-      "price": 329.4,
-      "price_is_close": true,
-      "price_as_of": "2026-09-29T19:59:00+00:00",
-      "session_date": "2026-09-29",
-      "previous_close": 338.4,
-      "change": -9.0,
-      "change_pct": -2.6596,
-      "open": 336.97,
-      "high": 337.09,
-      "low": 328.7,
-      "volume": 38427200,
-      "close_check": {
-        "session_date": "2026-09-29",
-        "twelvedata": 329.4,
-        "massive": 329.4,
-        "agreement": "agree",
-        "spread_pct": 0.0
-      },
-      "suggestions": [],
-      "market": {
-        "calendar": "NYSE",
-        "state": "pre_market",
-        "session_date": "2026-09-30",
-        "closes_at": "2026-09-30T16:00:00-04:00",
-        "early_close": false,
-        "last_close_at": "2026-09-29T16:00:00-04:00",
-        "next_open_at": "2026-09-30T09:30:00-04:00"
-      },
-      "provenance": {
-        "sources": [
-          "twelvedata",
-          "massive"
-        ],
-        "as_of": "2026-09-29T19:59:00+00:00",
-        "age_seconds": 47907,
-        "freshness": "fresh",
-        "agreement": "agree",
-        "spread_pct": 0.0,
-        "licence": "demo-only; not for redistribution",
-        "attribution": "Twelve Data; close cross-checked with Massive (formerly Polygon.io)"
-      },
-      "notes": []
-    },
-    {
-      "kind": "quote",
-      "symbol": "APPL",
-      "status": "not_found",
-      "name": null,
-      "exchange": null,
-      "mic_code": null,
-      "currency": null,
-      "price": null,
-      "price_is_close": false,
-      "price_as_of": null,
-      "session_date": null,
-      "previous_close": null,
-      "change": null,
-      "change_pct": null,
-      "open": null,
-      "high": null,
-      "low": null,
-      "volume": null,
-      "close_check": null,
-      "suggestions": [
-        {
-          "symbol": "AAPL",
-          "name": "Apple Inc."
-        },
-        {
-          "symbol": "AMAT",
-          "name": "APPLIED MATERIALS INC /DE"
-        },
-        {
-          "symbol": "APP",
-          "name": "AppLovin Corp"
-        }
-      ],
-      "market": {
-        "calendar": "NYSE",
-        "state": "pre_market",
-        "session_date": "2026-09-30",
-        "closes_at": "2026-09-30T16:00:00-04:00",
-        "early_close": false,
-        "last_close_at": "2026-09-29T16:00:00-04:00",
-        "next_open_at": "2026-09-30T09:30:00-04:00"
-      },
-      "provenance": {
-        "sources": [
-          "massive"
-        ],
-        "as_of": "2026-09-29",
-        "age_seconds": null,
-        "freshness": "fresh",
-        "agreement": "single_source",
-        "spread_pct": null,
-        "licence": "demo-only; not for redistribution",
-        "attribution": null
-      },
-      "notes": [
-        "APPL did not trade on a US exchange on 2026-09-29: a typo, a delisted company or not a US listing"
-      ]
-    }
-  ],
-  "sources": [
-    {
-      "name": "massive",
-      "status": "ok",
-      "url": null,
-      "licence": "demo-only; not for redistribution",
-      "attribution": "Massive (formerly Polygon.io)",
-      "as_of": "2026-09-29",
-      "fetched_at": null,
-      "latency_ms": null,
-      "cache": null
-    },
-    {
-      "name": "twelvedata",
-      "status": "ok",
-      "url": null,
-      "licence": "demo-only; not for redistribution",
-      "attribution": "Twelve Data",
-      "as_of": null,
-      "fetched_at": null,
-      "latency_ms": null,
-      "cache": "hit"
-    },
-    {
-      "name": "sec",
-      "status": "ok",
-      "url": null,
-      "licence": null,
-      "attribution": "SEC EDGAR",
-      "as_of": null,
-      "fetched_at": null,
-      "latency_ms": null,
-      "cache": null
-    }
-  ],
-  "notes": [
-    "demo-grade quotes from free data plans: not for redistribution or trading decisions"
-  ]
-}
+  {
+    "symbol": "APPL",
+    "status": "not_found",
+    "suggestions": [
+      { "symbol": "AAPL", "name": "Apple Inc." },
+      { "symbol": "AMAT", "name": "APPLIED MATERIALS INC /DE" },
+      { "symbol": "APP", "name": "AppLovin Corp" }
+    ],
+    "notes": ["APPL did not trade on a US exchange on 2026-09-29: a typo, a delisted company or not a US listing"]
+  }
+]
 ```
 
-## Reading the answer
+## Reading it
 
-- **`status`** is per ticker: `ok`, `not_found` (it did not trade on a US exchange in the last session) or
-  `unavailable` (no price source answered in time). `summary` counts them.
-- **`price`** with **`price_is_close: true`** is the official close of `session_date`; during a session it is the
-  latest price and `price_is_close` is `false`. **`price_as_of`** is the time of the last quote.
-- **`close_check`** compares the one number both feeds publish independently: the official close of the same
-  session. Twelve Data and Massive both say 329.4 for 29 September, so `agreement` is `agree` (within 0.1 %; up to
-  1 % is `minor_diff`).
-- **`market`** is the NYSE clock at the time of the answer: `state` is `pre_market` here (04:00–09:30 New York
-  time), with the next open and the last close. On early-close days `early_close` is `true` and `closes_at` is 13:00.
-- **`APPL`** is not a ticker that traded, so it is `not_found`, with up to three **`suggestions`**: tickers one edit
-  away or whose company name matches, most traded first, named from the SEC's company list.
-- **`provenance.licence`** is `demo-only; not for redistribution` on every quote.
+- `close_check` compares the one number both feeds publish independently; within 0.1 % is `agree`.
+- The NYSE clock knows closures and early closes (1 p.m. the day after Thanksgiving and on Christmas Eve).
+- A quote from before the last session is `stale`, with a note on when it last traded.
 
-## How a quote is built
-
-<Steps>
-  <Step>
-    **Check the ticker.** Massive's grouped daily file lists every US ticker that traded in the last completed
-    session with its official close (about 12,600 tickers, ETFs included) and is fetched once per session. A ticker
-    not in it is `not_found`, and no quote credit is spent on it.
-  </Step>
-  <Step>
-    **Quote it.** Listed tickers are quoted by Twelve Data in one batch call, pinned to the US listing (SHOP and RY
-    also trade in Toronto). Quotes are cached for 60 seconds while the market is open, and after the close has
-    settled (30 minutes) until the next open.
-  </Step>
-  <Step>
-    **Cross-check the close.** Twelve Data's close for the session Massive published (or its `previous_close`, once
-    Twelve Data has moved on to the next session) is compared with Massive's.
-  </Step>
-  <Step>
-    **State the market.** The NYSE clock comes from the exchange calendar in `python-holidays`: full closures and
-    early closes, such as 1 p.m. on the day after Thanksgiving and on Christmas Eve 2026.
-  </Step>
-</Steps>
-
-## Edge cases
-
-<Accordions>
-  <Accordion title="Twelve Data is out of free credits">
-    The free plan allows 8 tickers a minute and 800 a day. When they run out, a listed ticker still gets the official
-    close of the last session from Massive, with `price_is_close: true`, a note saying no live quote was available,
-    `twelvedata` in `unavailable`, and the envelope `partial`.
-  </Accordion>
-  <Accordion title="A ticker resolves to an old instrument">
-    If a quote's session is older than the last completed session, `freshness` is `stale` and a note says when it
-    last traded: halted, delisted, or not the instrument you meant.
-  </Accordion>
-  <Accordion title="No trade yet today">
-    Just after the open, a thinly traded ticker may not have printed yet: its price is the last close and `freshness`
-    is `lagging`.
-  </Accordion>
-  <Accordion title="Stock quotes are switched off">
-    A deployment without the market-data keys answers `422 unsupported`: "Stock quotes are switched off on this
-    deployment."
+<Accordions type="single">
+  <Accordion title="Out of free quote credits">
+    A listed ticker still gets the last official close from Massive, labelled, and the envelope is `partial`.
   </Accordion>
 </Accordions>
-
-## Next steps
-
-<Cards>
-  <Card title="Get an exchange rate" href="/docs/services/now/fx" description="Central-bank fixings with each one's age." />
-  <Card title="How Live Facts works" href="/docs/services/now" description="Freshness and agreement, explained." />
-  <Card title="API reference: /v1/stocks" href="/docs/reference/now/stocks" description="Every field of the request and response." />
-</Cards>

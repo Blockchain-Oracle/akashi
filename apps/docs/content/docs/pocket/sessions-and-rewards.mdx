@@ -1,0 +1,13 @@
+---
+title: Sessions, claims and rewards
+description: How a relay to Akashi becomes settled POKT.
+---
+
+<SessionTimeline />
+
+- **Price:** 40,000 CU per relay for `citation-verify`, 20,000 for `code-reality-check` and 10,000 for `live-facts`
+  (1 CU = 0.04 uPOKT on Beta). Heavier checks cost more.
+- **Claim:** after each session the RelayMiner submits one claim per application with the total compute units.
+- **Proof:** on Beta almost every claim needs a Merkle proof; a missing proof forfeits the session.
+- **Why Akashi never returns a 5xx:** a relay answered with a 5xx loses its reward. An upstream outage becomes a
+  `partial` answer instead.

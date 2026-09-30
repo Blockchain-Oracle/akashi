@@ -1,0 +1,13 @@
+---
+title: Paying for a call
+description: The portal takes payment. Akashi never sees a wallet.
+---
+
+<PaymentHandshake />
+
+- **Price:** $0.005 per call, set by the portal for every service.
+- **How:** USDC on Base with x402, or USDC.e on Tempo with MPP. No account, no API key.
+- **Not charged:** when an answer fails its declared output schema, the portal does not deliver or charge for it.
+
+Client libraries for paying are the portal's, not Akashi's: see
+[Pocket's agent integration guide](https://agent.pocket.network/agent-integration).

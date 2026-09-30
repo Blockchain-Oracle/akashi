@@ -1,170 +1,60 @@
 ---
-title: Check that a function exists
-description: Ask /v1/symbol whether a function, class or method exists in a package version, and get its real signature.
+title: Does the function exist?
+description: POST /v1/symbol and /v1/symbols check a function, class or method in a package version and return its real signature.
 ---
 
-You will check a single symbol, such as `pandas.DataFrame.to_markdown`, against the published package and read its
-signature. You need a way to call Akashi (see [Call Akashi](/docs/calling)).
-
-## When to use it
-
-When generated code calls a method you have not seen, or when you want the real signature before writing a call.
-`/v1/symbol` checks one symbol and `/v1/symbols` up to 50 in the same package.
-
-## Where the answer comes from
-
-The symbol is looked up in the package as published, never in a model's memory:
-
-| Ecosystem | Source | `evidence_source` |
-|---|---|---|
-| npm | The package's TypeScript declarations, read with the TypeScript compiler | `d.ts` |
-| PyPI | Stubs and source read from the wheel (standard library from typeshed) | `pyi`, `py-ast`, `typeshed` |
-| crates.io | rustdoc JSON from docs.rs | `rustdoc` |
-| Go | pkg.go.dev | `pkgsite` |
-
-Other ecosystems answer `exists: "unknown"` with the reason `symbols_not_supported_for_ecosystem`.
+Symbols are read from the package's published type information: `.pyi` stubs or source for Python, `.d.ts` for npm,
+rustdoc JSON for Rust, and pkg.go.dev for Go.
 
 ## Request
 
 <TypeTable
   type={{
-    ecosystem: { description: "One of npm, pypi, cargo or go for symbol lookups.", type: "string", required: true },
-    package: { description: "The package name (for npm, a subpath such as next/server also works).", type: "string", required: true },
-    version: { description: "The version to check. Without it the latest is used.", type: "string" },
-    symbol: { description: "A dotted path such as DataFrame.to_markdown (Rust uses ::), up to 300 characters. /v1/symbols takes symbols: string[] instead, up to 50.", type: "string", required: true },
+    ecosystem: { description: "npm, pypi, cargo or go.", type: "string", required: true },
+    package: { description: "The package (npm subpaths such as next/server work).", type: "string", required: true },
+    version: { description: "The version. Without it, the latest.", type: "string" },
+    symbol: { description: "A dotted path such as DataFrame.to_markdown (Rust uses ::). /v1/symbols takes symbols: string[], up to 50.", type: "string", required: true },
   }}
 />
 
-## Send it
+## Response: `results[i]`
 
-```bash title="Does pandas have DataFrame.to_markdown?"
-MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/code-reality-check/v1/symbol -J '{"ecosystem": "pypi", "package": "pandas", "symbol": "DataFrame.to_markdown"}' --protocol x402
-```
+<TypeTable
+  type={{
+    exists: { description: "yes, no or unknown.", type: "string" },
+    package_exists: { description: "Whether the package itself exists.", type: "string" },
+    resolved_version: { description: "The version checked.", type: "string | null" },
+    symbol_kind: { description: "function, class, method, attribute, type or module.", type: "string | null" },
+    signature: { description: "The real signature.", type: "string | null" },
+    overloads: { description: "Every overload, when there are several.", type: "string[]" },
+    defined_in: { description: "Where it is defined.", type: "string | null" },
+    did_you_mean: { description: "Close real names, when it does not exist.", type: "string[]" },
+    evidence_source: { description: "pyi, py-ast, d.ts, rustdoc, pkgsite or typeshed.", type: "string | null" },
+    pending: { description: "true while type information is still loading; retry after retry_after_ms.", type: "boolean" },
+  }}
+/>
 
-<Callout type="warn" title="Not on the portal yet">
-  Akashi's services are registered on Pocket Network (Beta) but not yet listed on the agent portal, so this call works
-  once they are listed. The answers on this page were captured from the running service.
-</Callout>
+## Example
 
-The command pays with a Base Sepolia wallet through x402. To set up a client in code, see [Call Akashi](/docs/calling).
-
-## The answer
-
-```json title="200 · 314 ms"
-{
-  "service": "code-reality-check",
-  "operation": "symbol",
-  "version": "1.0.0",
-  "status": "complete",
-  "as_of": "2026-09-30T09:19:21+00:00",
-  "deadline_ms": 7000,
-  "elapsed_ms": 314,
-  "unavailable": [],
-  "summary": {
-    "yes": 1
-  },
-  "results": [
-    {
-      "kind": "symbol",
-      "ecosystem": "pypi",
-      "package": "pandas",
-      "symbol": "DataFrame.to_markdown",
-      "package_exists": "yes",
-      "resolved_version": "3.0.6",
-      "exists": "yes",
-      "symbol_kind": "method",
-      "signature": "def to_markdown(self, buf: None=..., *, mode: str=..., index: bool=..., storage_options: StorageOptions | None=..., **kwargs) -> str",
-      "overloads": [
-        "def to_markdown(self, buf: None=..., *, mode: str=..., index: bool=..., storage_options: StorageOptions | None=..., **kwargs) -> str",
-        "def to_markdown(self, buf: FilePath | WriteBuffer[str], *, mode: str=..., index: bool=..., storage_options: StorageOptions | None=..., **kwargs) -> None",
-        "def to_markdown(self, buf: FilePath | WriteBuffer[str] | None, *, mode: str=..., index: bool=..., storage_options: StorageOptions | None=..., **kwargs) -> str | None"
-      ],
-      "defined_in": "pandas.core.frame.DataFrame.to_markdown",
-      "did_you_mean": [],
-      "evidence_source": "py-ast",
-      "pending": false,
-      "retry_after_ms": null,
-      "reason": null
-    }
-  ],
-  "sources": [
-    {
-      "name": "pypi-files",
-      "status": "ok",
-      "url": null,
-      "licence": null,
-      "attribution": null,
-      "as_of": null,
-      "fetched_at": null,
-      "latency_ms": null,
-      "cache": null
-    }
-  ],
-  "notes": []
-}
-```
-
-## Reading the answer
-
-- **`exists`** is `yes`, `no` or `unknown`, and **`package_exists`** says whether the package itself was found.
-- **`resolved_version`** is the version that was read (the latest, when you gave none).
-- **`symbol_kind`** is `function`, `class`, `method`, `attribute`, `type`, `module` and similar.
-- **`signature`** is the declared signature, and **`overloads`** lists every overload when there are several.
-- **`defined_in`** is where the symbol is actually defined, which may differ from where it is re-exported.
-- **`did_you_mean`** lists close real names when the symbol does not exist.
-- **`pending`** and **`retry_after_ms`**: see the edge cases below.
-
-## Another answer
-
-`axios.fetchJson`, a method that does not exist in axios 1.7.9's declarations.
-
-```json title="npm axios@1.7.9 fetchJson · results[0] (trimmed)"
+```json title="pypi pandas DataFrame.to_markdown · results[0] (trimmed)"
 {
   "kind": "symbol",
-  "ecosystem": "npm",
-  "package": "axios",
-  "symbol": "fetchJson",
+  "ecosystem": "pypi",
+  "package": "pandas",
+  "symbol": "DataFrame.to_markdown",
   "package_exists": "yes",
-  "resolved_version": "1.7.9",
-  "exists": "no",
-  "symbol_kind": null,
-  "signature": null,
-  "overloads": [],
-  "defined_in": "axios",
-  "did_you_mean": [],
-  "evidence_source": "d.ts",
-  "pending": false,
-  "retry_after_ms": null,
-  "reason": null
+  "resolved_version": "3.0.6",
+  "exists": "yes",
+  "symbol_kind": "method",
+  "signature": "def to_markdown(self, buf: None=..., *, mode: str=..., index: bool=..., storage_options: StorageOptions | None=..., **kwargs) -> str",
+  "defined_in": "pandas.core.frame.DataFrame.to_markdown",
+  "evidence_source": "py-ast",
+  "pending": false
 }
 ```
 
-## Edge cases
+## Reading it
 
-<Accordions type="single">
-  <Accordion title="pending: true">
-    For an npm package that has not been read before, building its type information can take longer than five
-    seconds. The answer is then `exists: "unknown"` with `pending: true` and `retry_after_ms: 3000`; the build
-    finishes in the background, and asking again after that delay gives the real answer.
-  </Accordion>
-  <Accordion title="The package or version does not exist">
-    `exists` is `no`, `package_exists` is `no`, and `reason` is `package_or_version_not_found`. Check the package
-    with [`/v1/package`](/docs/services/code/packages-and-typosquats) to see why.
-  </Accordion>
-  <Accordion title="The registry did not answer">
-    `exists` is `unknown` with the reason `registry_unavailable`, and the source is named in the envelope's
-    `unavailable` list.
-  </Accordion>
-  <Accordion title="Pin a version for a stable answer">
-    Answers for a pinned version are cached permanently, because a published version never changes. Without a
-    version, the latest is resolved each time.
-  </Accordion>
-</Accordions>
-
-## Next steps
-
-<Cards>
-  <Card title="Check a code snippet" href="/docs/services/code/snippet-check" description="Every symbol in a snippet, in one call." />
-  <Card title="Check packages before you install them" href="/docs/services/code/packages-and-typosquats" description="Is the package itself real?" />
-  <Card title="API reference: /v1/symbol" href="/docs/reference/code/symbol" description="Every field, with a playground." />
-</Cards>
+- `exists: no` with `package_exists: yes` means the package is real but the symbol is not.
+- `pending: true` is not an answer yet: ask again after `retry_after_ms`.
+- The signature is quoted from the published types, so it can be shown to a user as-is.

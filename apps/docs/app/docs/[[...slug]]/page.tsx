@@ -25,7 +25,7 @@ export default async function Page({ params }: Props) {
     return (
       <DocsPage full>
         <DocsTitle>{page.data.title}</DocsTitle>
-        <DocsDescription>{page.data.description}</DocsDescription>
+        {/* the operation's own description renders inside the reference block */}
         <DocsBody>
           <OpenAPIPage {...page.data.getOpenAPIPageProps()} />
         </DocsBody>

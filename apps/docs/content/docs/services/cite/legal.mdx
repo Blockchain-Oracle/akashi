@@ -1,285 +1,81 @@
 ---
-title: Check a court case citation
-description: Find out whether a US case citation points at a real case, the right case, or the middle of someone else's.
+title: Is the court case real?
+description: A US case citation is checked by reporter, volume and page against the Caselaw Access Project.
 ---
 
-You will check a case citation such as `347 U.S. 483` and learn what each answer means. Case citations use the
-same endpoint as every other citation, [`POST /v1/verify`](/docs/reference/cite/verify).
-
-## When to use it
-
-Whenever a model cites US case law: a brief, a memo, a summary of precedent. In *Mata v. Avianca* (S.D.N.Y. 2023)
-lawyers filed a brief whose cases a chatbot had invented; this check catches that kind of citation.
-
-## How a case citation is checked
-
-A fabricated case citation usually points at a real reporter volume, so the check is structural. Akashi reads the
-reporter, volume and page (and the party names and year when present), then looks at every case in that volume of
-the Caselaw Access Project:
-
-- **A case starts on that page.** The party names and year are compared with it: `verified` if they match,
-  `mismatch` with `field_diffs` if not.
-- **The page is inside the case you named.** You gave a pin cite rather than the first page: `mismatch` with a
-  `minor` page difference.
-- **The page is inside a different case.** No case can start there: `not_found`, reason `page_inside_other_case`.
-- **Nothing is on that page.** `not_found`, reason `no_case_at_page`.
+Invented case citations usually point at a real volume, so the check is structural: does a case start on that page?
+Case citations use the same endpoint, [`POST /v1/verify`](/docs/reference/cite/verify).
 
 ## Request
-
-Send the citation as written, or as a structured object with `legal_cite`.
 
 <TypeTable
   type={{
     citations: {
-      description: "Case citations such as \"Brown v. Board of Education, 347 U.S. 483 (1954)\", 1 to 10 per request.",
+      description: "Case citations as written, such as \"Brown v. Board of Education, 347 U.S. 483 (1954)\", or { legal_cite }. 1 to 10.",
       type: "(string | { legal_cite: string })[]",
       required: true,
     },
   }}
 />
 
-Coverage is the Caselaw Access Project (CC0). The last year each reporter covers:
+## Response: `results[i].legal`
 
-| Reporter | Covered through |
+<TypeTable
+  type={{
+    reporter: { description: "The reporter read from the citation, e.g. F.3d.", type: "string" },
+    volume: { description: "The volume.", type: "string" },
+    page: { description: "The page.", type: "string" },
+    case_name: { description: "The case that starts on that page, when one does.", type: "string | null" },
+    date_filed: { description: "Its decision date.", type: "string | null" },
+    court: { description: "Its court.", type: "string | null" },
+    link: { description: "The same citation on CourtListener.", type: "string" },
+    covered_through: { description: "The last year this reporter is covered.", type: "number" },
+  }}
+/>
+
+| What is on that page | Verdict |
 |---|---|
-| U.S. | 2014 |
-| S. Ct. | 2020 |
-| F.3d | 2019 |
-| F.2d | 1993 |
-| F. | 1932 |
-| F. Supp. | 1998 |
-| F. Supp. 2d | 2014 |
-| F. Supp. 3d | 2019 |
+| the case you named | `verified` (or `mismatch` if the name or year differs) |
+| inside the case you named (a pin cite) | `mismatch`, minor page difference |
+| inside a different case | `not_found`, reason `page_inside_other_case` |
+| nothing | `not_found`, reason `no_case_at_page` |
+| beyond coverage | `unverifiable` |
 
-## Send it
+Coverage ends: U.S. 2014 · S. Ct. 2020 · F.3d 2019 · F.2d 1993 · F. Supp. 2d 2014 · F. Supp. 3d 2019.
 
-```bash title="Check the Varghese citation from Mata v. Avianca"
-MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/citation-verify/v1/verify -J '{"citations": ["Varghese v. China Southern Airlines Co., 925 F.3d 1339 (11th Cir. 2019)"]}' --protocol x402
-```
+## Example
 
-<Callout type="warn" title="Not on the portal yet">
-  Akashi's services are registered on Pocket Network (Beta) but not yet listed on the agent portal, so this call works
-  once they are listed. The answers on this page were captured from the running service.
-</Callout>
+The case invented for the brief in *Mata v. Avianca* (S.D.N.Y. 2023).
 
-The command pays with a Base Sepolia wallet through x402. To set up a client in code, see [Call Akashi](/docs/calling).
-
-## The answer
-
-```json title="200 · 6 ms"
-{
-  "service": "citation-verify",
-  "operation": "verify",
-  "version": "1.0.0",
-  "status": "complete",
-  "as_of": "2026-09-30T09:18:35+00:00",
-  "deadline_ms": 8500,
-  "elapsed_ms": 6,
-  "unavailable": [],
-  "summary": {
-    "not_found": 1
-  },
-  "results": [
-    {
-      "kind": "citation",
-      "index": 0,
-      "input_kind": "legal",
-      "verdict": "not_found",
-      "confidence": 0.95,
-      "matched": null,
-      "field_diffs": [],
-      "retraction": null,
-      "candidates": [],
-      "legal": {
-        "reporter": "F.3d",
-        "volume": "925",
-        "page": "1339",
-        "case_name": null,
-        "date_filed": null,
-        "court": null,
-        "link": "https://www.courtlistener.com/c/F.3d/925/1339/",
-        "covered_through": 2019
-      },
-      "web": null,
-      "reasons": [
-        "page_inside_other_case",
-        "page 1339 falls inside J.D. v. Azar (925 F.3d 1291-1349); no case starts there"
-      ],
-      "retryable": false
-    }
-  ],
-  "sources": [
-    {
-      "name": "case.law",
-      "status": "ok",
-      "url": null,
-      "licence": "CC0",
-      "attribution": "Caselaw Access Project (Harvard Law School Library)",
-      "as_of": null,
-      "fetched_at": null,
-      "latency_ms": null,
-      "cache": null
-    }
-  ],
-  "notes": []
-}
-```
-
-## Reading the answer
-
-- **`verdict`** is `not_found` and **`reasons`** says why in two forms: a code (`page_inside_other_case`) and a
-  sentence naming the case that occupies those pages, *J.D. v. Azar* (925 F.3d 1291–1349).
-- **`legal`** echoes what was read from your citation (`reporter`, `volume`, `page`) and, when a case was matched,
-  its `case_name`, `date_filed` and `court`. `covered_through` is the last year the reporter is covered.
-- **`legal.link`** opens the same citation on CourtListener, so a person can check it.
-- **`confidence`** is 0.95 for every structural answer from the case index.
-- **`retryable: false`**: asking again gives the same answer.
-
-## Other answers
-
-<Tabs items={["pin cite", "wrong year", "outside coverage"]}>
-<Tab value="pin cite">
-
-*Brown v. Board of Education* cited at page 495, a page inside the opinion that starts at 483. The case is right; the
-page is a pin cite, reported as a minor difference.
-
-```json title="347 U.S. 495 · results[0] (trimmed)"
+```json title="Varghese v. China Southern Airlines Co., 925 F.3d 1339 (11th Cir. 2019) · results[0]"
 {
   "kind": "citation",
-  "index": 0,
   "input_kind": "legal",
-  "verdict": "mismatch",
+  "verdict": "not_found",
   "confidence": 0.95,
-  "matched": null,
-  "field_diffs": [
-    {
-      "field": "page",
-      "given": "495",
-      "found": "483",
-      "severity": "minor"
-    }
-  ],
-  "retraction": null,
-  "candidates": [],
   "legal": {
-    "reporter": "U.S.",
-    "volume": "347",
-    "page": "495",
-    "case_name": "Brown v. Board of Education",
-    "date_filed": "1954-05-17",
-    "court": "U.S.",
-    "link": "https://www.courtlistener.com/c/U.S./347/495/",
-    "covered_through": 2014
-  },
-  "web": null,
-  "reasons": [],
-  "retryable": false
-}
-```
-
-</Tab>
-<Tab value="wrong year">
-
-*Roe v. Wade*, 410 U.S. 113, cited with the year 1972. The case was decided in 1973.
-
-```json title="410 U.S. 113 (1972) · results[0] (trimmed)"
-{
-  "kind": "citation",
-  "index": 0,
-  "input_kind": "legal",
-  "verdict": "mismatch",
-  "confidence": 0.95,
-  "matched": null,
-  "field_diffs": [
-    {
-      "field": "year",
-      "given": "1972",
-      "found": "1973",
-      "severity": "major"
-    }
-  ],
-  "retraction": null,
-  "candidates": [],
-  "legal": {
-    "reporter": "U.S.",
-    "volume": "410",
-    "page": "113",
-    "case_name": "Roe v. Wade",
-    "date_filed": "1973-01-22",
-    "court": "U.S.",
-    "link": "https://www.courtlistener.com/c/U.S./410/113/",
-    "covered_through": 2014
-  },
-  "web": null,
-  "reasons": [],
-  "retryable": false
-}
-```
-
-</Tab>
-<Tab value="outside coverage">
-
-*Dobbs* (597 U.S. 215, 2022) is newer than the U.S. Reports coverage, which ends in 2014. The answer says so rather
-than guessing.
-
-```json title="597 U.S. 215 (2022) · results[0] (trimmed)"
-{
-  "kind": "citation",
-  "index": 0,
-  "input_kind": "legal",
-  "verdict": "unverifiable",
-  "confidence": 0.0,
-  "matched": null,
-  "field_diffs": [],
-  "retraction": null,
-  "candidates": [],
-  "legal": {
-    "reporter": "U.S.",
-    "volume": "597",
-    "page": "215",
+    "reporter": "F.3d",
+    "volume": "925",
+    "page": "1339",
     "case_name": null,
-    "date_filed": null,
-    "court": null,
-    "link": "https://www.courtlistener.com/c/U.S./597/215/",
-    "covered_through": 2014
+    "link": "https://www.courtlistener.com/c/F.3d/925/1339/",
+    "covered_through": 2019
   },
-  "web": null,
   "reasons": [
-    "U.S. coverage ends 2014"
+    "page_inside_other_case",
+    "page 1339 falls inside J.D. v. Azar (925 F.3d 1291-1349); no case starts there"
   ],
   "retryable": false
 }
 ```
 
-</Tab>
-</Tabs>
+## Reading it
 
-## Edge cases
+- `reasons` names the case that occupies those pages.
+- `legal.link` lets a person check it on CourtListener.
+- `retryable: false`: the answer will not change.
 
 <Accordions type="single">
-  <Accordion title="Several cases in one string">
-    Only the first full case citation in a string is checked. Send each case as its own item in `citations`.
-  </Accordion>
-  <Accordion title="A reporter that is not covered">
-    A reporter outside the list above, or a citation dated after its coverage, comes back `unverifiable` with
-    `retryable: false` and a reason naming the limit.
-  </Accordion>
-  <Accordion title="The volume is not in the index">
-    If the Caselaw Access Project has no such volume, the answer is `unverifiable` ("is not indexed"), not
-    `not_found`.
-  </Accordion>
-  <Accordion title="The case index did not answer">
-    The answer is `unverifiable` with `retryable: true`, and `case.law` appears in the envelope's `unavailable` list.
-  </Accordion>
-  <Accordion title="Statutes">
-    Statute citations are recognised and answered `unverifiable`, with a pointer to Pocket's `us-code-cfr` service.
-  </Accordion>
+  <Accordion title="Several cases in one string">Only the first is checked. Send each as its own item.</Accordion>
+  <Accordion title="The case index did not answer">The verdict is `unverifiable` with `retryable: true`, and `case.law` is in `unavailable`.</Accordion>
 </Accordions>
-
-## Next steps
-
-<Cards>
-  <Card title="Verify citations" href="/docs/services/cite/verdicts" description="Scholarly works and URLs, and every verdict." />
-  <Card title="Check a claim against its source" href="/docs/services/cite/claims" description="Does the source say what it is cited for?" />
-  <Card title="API reference: /v1/verify" href="/docs/reference/cite/verify" description="Every field, with a playground." />
-</Cards>

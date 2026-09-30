@@ -1,183 +1,51 @@
 ---
-title: How Live Facts works
-description: Why a model cannot answer "what is true right now", and how live-facts states where each value came from, how old it is and whether independent sources agree.
+title: Live Facts
+description: Facts a model cannot know from training, each with its sources, its age and whether they agree. Capability ID live-facts.
 ---
 
-This page explains the idea behind `live-facts` and how to read the provenance on every answer. To make a call, go
-straight to one of the [guides](#guides).
+Every answer comes from the sources, not memory. Each result carries `provenance`: where the value came from, how old it
+is against its source's own schedule, and whether independent sources agree.
 
-## The problem: facts that change
+<ServicePipeline service="now" />
 
-A language model's knowledge stops at its training cut-off, and it cannot tell which of its facts have since
-changed. Some change on a schedule, some without warning:
-
-- **Time-zone rules change.** Governments move their clocks with little notice. The IANA tz database ships several
-  releases a year; `live-facts` runs on a pinned release (`2026d`) and says so when a newer one exists.
-- **Rates are fixed daily, and not all at the same hour.** The ECB publishes after 16:00 Frankfurt time; the Bank of
-  England and the Bank of Canada trail it by a day intraday; the Federal Reserve's H.10 series is weekly.
-- **Calendars disagree.** A US federal holiday is not an NYSE holiday, and in 2026 one holiday dataset lists only
-  the observed Friday of Independence Day (July 3) while another lists both the Friday and the Saturday.
-- **Office holders change.** A model trained a year ago may name the wrong prime minister with full confidence.
-
-An agent that answers these from memory is fluent and wrong. `live-facts` answers them from the sources, and shows
-its working.
-
-## Provenance: the working, on every result
-
-Every result has a `provenance` object. It is the part an agent should repeat alongside the value.
+## Provenance, on every result
 
 <TypeTable
   type={{
-    sources: { type: "string[]", description: "The sources the value was taken from, e.g. ECB, BOC, met.no, nws." },
-    as_of: { type: "string | null", description: "When the underlying data was true or published: a fixing date, a forecast's issue time, a tzdb release." },
-    age_seconds: { type: "number | null", description: "Seconds between as_of and the answer, when as_of is a point in time." },
-    freshness: { type: '"fresh" | "lagging" | "stale" | "unknown"', description: "Measured against the source's own publishing schedule (see below)." },
-    agreement: { type: '"agree" | "minor_diff" | "conflict" | "single_source"', description: "Whether independent sources give the same answer." },
-    spread_pct: { type: "number | null", description: "For numeric values: (max − min) ÷ median of the compared values, in percent." },
-    licence: { type: "string | null", description: "The terms the data comes with, e.g. CC0, CC BY 4.0, central-bank reference data." },
-    attribution: { type: "string | null", description: "How the source asks to be credited." },
+    sources: { type: "string[]", description: "Where the value came from, e.g. ECB, BOC, met.no, nws." },
+    as_of: { type: "string | null", description: "When the data was true or published: a fixing date, a forecast issue time, a tzdb release." },
+    age_seconds: { type: "number | null", description: "How long ago as_of was." },
+    freshness: { type: "string", description: "fresh, lagging, stale or unknown, judged by the source's own schedule." },
+    agreement: { type: "string", description: "agree, minor_diff, conflict or single_source." },
+    spread_pct: { type: "number | null", description: "(max − min) ÷ median of the compared values, in percent." },
+    licence: { type: "string | null", description: "The data's terms, e.g. CC0, CC BY 4.0." },
   }}
 />
 
-### Freshness is judged by each source's own schedule
+<VerdictGrid set="agreement" />
 
-A value is not "old" in the abstract; it is old for its source. `fresh` means the newest data the source publishes,
-`lagging` means on the source's own schedule but behind the others, `stale` means later than the source's schedule
-allows, and `unknown` means the schedule could not be checked.
+<VerdictGrid set="freshness" className="mt-4" />
 
-| Fact | What "fresh" is measured against |
+## Endpoints
+
+| Endpoint | Answers |
 |---|---|
-| Time | the newest tzdb release IANA has published (checked daily); pinned rules behind it are `stale` |
-| Exchange rates | each central bank's cadence: a daily fixing is `stale` after 2 business days, a weekly one (FRED H.10) after 6; an older fixing than the newest is `lagging` |
-| Weather | the forecast in force: `as_of` is its issue time, and MET Norway's `Expires` header decides when it is fetched again |
-| News | the GDELT index, refreshed every 15 minutes; a note appears when it is more than 30 minutes old |
-| Jobs | the job-board index, refreshed every 6 hours; `stale` after 12 hours |
-| Stock quotes | the NYSE session: a quote from before the last completed session is `stale` |
+| [`/v1/time`](/docs/reference/now/time) · [`/v1/holidays`](/docs/reference/now/holidays) · [`/v1/business-days`](/docs/reference/now/business-days) | time zones, holidays, working days |
+| [`/v1/fx`](/docs/reference/now/fx) | exchange rates from the issuing central banks |
+| [`/v1/weather`](/docs/reference/now/weather) | the current forecast hour, two sources in the US |
+| [`/v1/news`](/docs/reference/now/news) | recent headlines from GDELT and Hacker News |
+| [`/v1/stocks`](/docs/reference/now/stocks) | US quotes, demo-grade |
+| [`/v1/jobs`](/docs/reference/now/jobs) | postings from public company job boards |
+| [`/v1/fact`](/docs/reference/now/fact) | current Wikidata statements |
 
-### Agreement is tested per kind of fact
-
-Disagreement is reported, never averaged away:
-
-| Fact | Compared on | `agree` | `minor_diff` | otherwise |
-|---|---|---|---|---|
-| Exchange rates | spread of the current fixings | ≤ 0.5 % | ≤ 1.5 % | `conflict` |
-| Weather | temperature gap in °C (percentages are meaningless near 0 °C) | ≤ 1.5 °C | ≤ 3.0 °C | `conflict` |
-| Holidays | the set of dates each source lists | identical | up to 3 dates differ (or 20 % of them, if more) | `conflict` |
-| Stock closes | one session's official close from two feeds | ≤ 0.1 % | ≤ 1 % | `conflict` |
-
-Time, Wikidata facts, news and jobs each have one authoritative source, so they are `single_source`.
-
-## A worked example: a conflict, reported
-
-Here is a real answer for US dollars to Nigerian naira. Four central banks publish the pair; one of them is not like
-the others.
-
-```json title="POST /v1/fx · results[0] (trimmed to the result)"
-{
-  "kind": "fx_rate",
-  "base": "USD",
-  "quote": "NGN",
-  "rate": 1329.9737,
-  "date": "2026-09-30",
-  "amount": null,
-  "converted": null,
-  "providers": [
-    {
-      "provider": "BOTA",
-      "name": "Bank of Tanzania",
-      "rate": 1332.49,
-      "date": "2026-09-30",
-      "rate_type": "indicative rate",
-      "issuer": false,
-      "cadence": "daily",
-      "freshness": "fresh",
-      "business_days_old": 0
-    },
-    {
-      "provider": "CBG",
-      "name": "Central Bank of The Gambia",
-      "rate": 1205.5,
-      "date": "2026-09-29",
-      "rate_type": "indicative rate",
-      "issuer": false,
-      "cadence": "daily",
-      "freshness": "lagging",
-      "business_days_old": 1
-    },
-    {
-      "provider": "BNA",
-      "name": "Banco Nacional de Angola",
-      "rate": 1329.01,
-      "date": "2026-09-29",
-      "rate_type": "reference rate",
-      "issuer": false,
-      "cadence": "daily",
-      "freshness": "lagging",
-      "business_days_old": 1
-    },
-    {
-      "provider": "CBN",
-      "name": "Central Bank of Nigeria",
-      "rate": 1329.9737,
-      "date": "2026-09-29",
-      "rate_type": "official exchange rate",
-      "issuer": true,
-      "cadence": "daily",
-      "freshness": "lagging",
-      "business_days_old": 1
-    }
-  ],
-  "provenance": {
-    "sources": [
-      "BOTA",
-      "CBG",
-      "BNA",
-      "CBN"
-    ],
-    "as_of": "2026-09-30",
-    "age_seconds": 33441,
-    "freshness": "fresh",
-    "agreement": "conflict",
-    "spread_pct": 9.5518,
-    "licence": "central-bank reference data",
-    "attribution": "Central-bank reference rates via Frankfurter (frankfurter.dev)"
-  }
-}
-```
-
-Read it top to bottom:
-
-1. **`rate` is 1329.9737**, the Central Bank of Nigeria's own fixing. When the quote currency's issuer publishes a
-   current rate (`issuer: true`), that is the headline; otherwise it is the median of the current fixings.
-2. **`providers`** lists every fixing with its date and its age in business days. The Central Bank of The Gambia
-   says 1205.5, about 9 % below the other three.
-3. **`agreement` is `conflict`** and **`spread_pct` is 9.55**: the answer does not hide the outlier, and an agent can
-   say "the official rate is 1,329.97; one central bank publishes a rate about 9 % lower".
-4. **`freshness` is `fresh`**: the newest fixing is from today (2026-09-30), and the others are within one business
-   day of it.
-
-## The four-second budget
-
-`live-facts` has a hard stop of **4 seconds**. Sources are asked in parallel; one that has not answered by then is
-listed in the envelope's `unavailable` array, the envelope's `status` becomes `partial`, and the result is built from
-the sources that did answer. An upstream outage is never a server error. See
-[the response contract](/docs/contract/response).
-
-## Guides
+Hard stop: 4 seconds. A source that misses it is named in `unavailable`; the rest of the answer still arrives.
 
 <Cards>
-  <Card title="Get the time and holidays" href="/docs/services/now/time-and-holidays" description="Zones, the next offset change, public and exchange calendars, business days." />
-  <Card title="Get an exchange rate" href="/docs/services/now/fx" description="Central-bank fixings, the issuer's own rate, each fixing's age." />
-  <Card title="Get the weather" href="/docs/services/now/weather" description="MET Norway everywhere, cross-checked by NWS in the US." />
-  <Card title="Find recent news" href="/docs/services/now/news" description="A 72-hour GDELT headline index merged with live Hacker News." />
-  <Card title="Get a stock quote" href="/docs/services/now/stocks" description="Demo-grade quotes, a listed-ticker check and a two-feed close check." />
-  <Card title="Search job postings" href="/docs/services/now/jobs" description="An index of public Greenhouse, Lever and Ashby boards." />
-  <Card title="Look up a current fact" href="/docs/services/now/facts" description="The current value of a Wikidata property." />
-</Cards>
-
-## Next steps
-
-<Cards>
-  <Card title="Calling Akashi" href="/docs/calling" description="Choose a route: x402 in code, the mppx CLI, MCP or the skill." />
-  <Card title="API reference" href="/docs/reference/now/time" description="Every live-facts endpoint, generated from the published OpenAPI." />
+  <Card title="Time and holidays" href="/docs/services/now/time-and-holidays" />
+  <Card title="Exchange rates" href="/docs/services/now/fx" />
+  <Card title="Weather" href="/docs/services/now/weather" />
+  <Card title="News" href="/docs/services/now/news" />
+  <Card title="Stocks" href="/docs/services/now/stocks" />
+  <Card title="Jobs" href="/docs/services/now/jobs" />
+  <Card title="Facts" href="/docs/services/now/facts" />
 </Cards>

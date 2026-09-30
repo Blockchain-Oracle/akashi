@@ -2,4 +2,5 @@
 
 import { createOpenAPIPage } from "fumadocs-openapi/ui";
 
-export const OpenAPIPage = createOpenAPIPage();
+// Types and examples only: trying Akashi lives in the Akashi app, not in the reference.
+export const OpenAPIPage = createOpenAPIPage({ playground: { enabled: false } });

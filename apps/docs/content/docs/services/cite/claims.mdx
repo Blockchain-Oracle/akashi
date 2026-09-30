@@ -1,306 +1,66 @@
 ---
-title: Check a claim against its source
-description: Ask /v1/claim whether a cited paper, or text you provide, supports a claim, and read the sentence that decides it.
+title: Does the source say it?
+description: POST /v1/claim checks a claim against the cited source's abstract, or text you send, and returns the sentence that decides it.
 ---
 
-You will check whether a source supports a claim attributed to it, and find the sentence the answer rests on. You
-need a way to call Akashi (see [Call Akashi](/docs/calling)).
-
-## When to use it
-
-A citation can be real and still not say what it is cited for. Use this when generated text attributes a finding
-to a source: "the Lancet paper showed…", "according to Vaswani et al.…".
-
-## How the check works
-
-<Steps>
-<Step>
-
-### Find the evidence
-
-If you send `evidence_text`, that text is the evidence. Otherwise the citation is verified first (as in
-[Verify citations](/docs/services/cite/verdicts)), and if it is `verified`, `mismatch` or `retracted` and has a DOI, its
-abstract is fetched from the first source that has one: Europe PMC, then OpenAlex, then DataCite for arXiv papers.
-
-</Step>
-<Step>
-
-### Pick the candidate sentences
-
-The evidence is split into sentences. The six closest to the claim, plus the two best sentences joined with the
-sentence that follows each, are scored. The whole abstract is never scored at once.
-
-</Step>
-<Step>
-
-### Score them with a natural-language-inference model
-
-Each sentence gets three probabilities: it entails the claim, is neutral, or contradicts it. Only a sentence that
-shares a content word with the claim may decide the verdict, so an unrelated sentence cannot "contradict" it.
-
-</Step>
-</Steps>
+A citation can be real and still not say what it is cited for. Akashi verifies the source, reads its abstract and
+scores the closest sentences with a natural-language-inference model.
 
 ## Request
 
 <TypeTable
   type={{
-    claim: { description: "The claim to test, up to 1,000 characters.", type: "string", required: true },
-    citation: {
-      description: "The source the claim is attributed to: a string or a structured citation. Give this, evidence_text, or both.",
-      type: "string | StructuredCitation",
-    },
-    evidence_text: {
-      description: "The source text itself, up to 20,000 characters. When present it is used instead of fetching an abstract.",
-      type: "string",
-    },
+    claim: { description: "The claim, up to 1,000 characters.", type: "string", required: true },
+    citation: { description: "The source it is attributed to. Give this, evidence_text, or both.", type: "string | StructuredCitation" },
+    evidence_text: { description: "The source text, up to 20,000 characters. Used instead of fetching an abstract.", type: "string" },
   }}
 />
 
-## Send it
+## Response: `results[i]`
 
-```bash title="Does 'Attention Is All You Need' say Transformers rely on recurrence?"
-MPPX_PRIVATE_KEY=0x... npx -y mppx@0.11.0 https://test.agent.pocket.network/v1/citation-verify/v1/claim -J '{"claim": "Transformers rely entirely on recurrence", "citation": "arXiv:1706.03762"}' --protocol x402
-```
+<TypeTable
+  type={{
+    verdict: { description: "supported, contradicted, insufficient_evidence or unverifiable.", type: "string" },
+    evidence_sentence: { description: "The sentence (or pair) that decided it. Quote this.", type: "string | null" },
+    scores: { description: "That sentence's entailment, neutral and contradiction probabilities.", type: "{ entailment, neutral, contradiction }" },
+    evidence_scope: { description: "abstract or provided_text.", type: "string | null" },
+    premise_source: { description: "Where the text came from: europepmc, openalex, datacite or provided_text.", type: "string | null" },
+    model: { description: "The inference model that scored it.", type: "string | null" },
+    citation: { description: "The source's own verification, as /v1/verify returns it.", type: "CitationResult | null" },
+    reasons: { description: "Why, e.g. \"the cited work is retracted\".", type: "string[]" },
+    retryable: { description: "Whether asking again could change the answer.", type: "boolean" },
+  }}
+/>
 
-<Callout type="warn" title="Not on the portal yet">
-  Akashi's services are registered on Pocket Network (Beta) but not yet listed on the agent portal, so this call works
-  once they are listed. The answers on this page were captured from the running service.
-</Callout>
+## Example
 
-The command pays with a Base Sepolia wallet through x402. To set up a client in code, see [Call Akashi](/docs/calling).
-
-## The answer
-
-```json title="200 · 1388 ms"
-{
-  "service": "citation-verify",
-  "operation": "claim",
-  "version": "1.0.0",
-  "status": "complete",
-  "as_of": "2026-09-30T09:19:01+00:00",
-  "deadline_ms": 8500,
-  "elapsed_ms": 1388,
-  "unavailable": [],
-  "summary": {
-    "contradicted": 1
-  },
-  "results": [
-    {
-      "kind": "claim",
-      "verdict": "contradicted",
-      "scores": {
-        "entailment": 0.0005,
-        "neutral": 0.0005,
-        "contradiction": 0.999
-      },
-      "evidence_sentence": "We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train.",
-      "evidence_scope": "abstract",
-      "premise_source": "datacite",
-      "model": "deberta-v3-base-mnli-fever-anli",
-      "citation": {
-        "kind": "citation",
-        "index": 0,
-        "input_kind": "scholarly",
-        "verdict": "verified",
-        "confidence": 0.99,
-        "matched": {
-          "doi": "10.48550/arxiv.1706.03762",
-          "title": "Attention Is All You Need",
-          "authors": [
-            "Vaswani",
-            "Shazeer",
-            "Parmar",
-            "Uszkoreit",
-            "Jones",
-            "Gomez",
-            "Kaiser",
-            "Polosukhin"
-          ],
-          "year": 2017,
-          "venue": "arXiv",
-          "volume": null,
-          "pages": null,
-          "type": "preprint",
-          "url": "https://arxiv.org/abs/1706.03762",
-          "record_source": "datacite"
-        },
-        "field_diffs": [],
-        "retraction": {
-          "status": "none",
-          "date": null,
-          "notice_doi": null,
-          "source": null
-        },
-        "candidates": [],
-        "legal": null,
-        "web": null,
-        "reasons": [],
-        "retryable": false
-      },
-      "reasons": [],
-      "retryable": false
-    }
-  ],
-  "sources": [
-    {
-      "name": "datacite",
-      "status": "ok",
-      "url": null,
-      "licence": null,
-      "attribution": "DataCite REST API",
-      "as_of": null,
-      "fetched_at": null,
-      "latency_ms": null,
-      "cache": null
-    },
-    {
-      "name": "doi.org",
-      "status": "ok",
-      "url": null,
-      "licence": null,
-      "attribution": "doi.org handle API",
-      "as_of": null,
-      "fetched_at": null,
-      "latency_ms": null,
-      "cache": null
-    },
-    {
-      "name": "openalex",
-      "status": "not_found",
-      "url": null,
-      "licence": "CC0",
-      "attribution": "OpenAlex (CC0)",
-      "as_of": null,
-      "fetched_at": null,
-      "latency_ms": null,
-      "cache": null
-    },
-    {
-      "name": "europepmc",
-      "status": "ok",
-      "url": null,
-      "licence": "abstracts: publisher terms (quoted as evidence, not redistributed)",
-      "attribution": "Europe PMC",
-      "as_of": null,
-      "fetched_at": null,
-      "latency_ms": null,
-      "cache": null
-    },
-    {
-      "name": "nli",
-      "status": "ok",
-      "url": null,
-      "licence": null,
-      "attribution": null,
-      "as_of": null,
-      "fetched_at": null,
-      "latency_ms": null,
-      "cache": null
-    }
-  ],
-  "notes": []
-}
-```
-
-## Reading the answer
-
-- **`verdict`** is one of:
-
-  | Verdict | When |
-  |---|---|
-  | `supported` | A relevant sentence entails the claim (entailment ≥ 0.80) and does not also look contradicting (contradiction < 0.20) |
-  | `contradicted` | A relevant sentence contradicts the claim (contradiction ≥ 0.80) |
-  | `insufficient_evidence` | The evidence was read and says neither, or there was no evidence to read (`reasons` says which) |
-  | `unverifiable` | The model could not be reached; `retryable: true` |
-
-- **`evidence_sentence`** is the sentence (or sentence pair) that decided the verdict. Quote it.
-- **`scores`** are that sentence's entailment, neutral and contradiction probabilities.
-- **`evidence_scope`** is `abstract` or `provided_text`, and **`premise_source`** says where the text came from
-  (`europepmc`, `openalex`, `datacite` or `provided_text`).
-- **`model`** names the NLI model that scored it.
-- **`citation`** is the full verification of the cited work, the same object `/v1/verify` returns.
-
-## Other answers
-
-<Tabs items={["supported", "retracted source"]}>
-<Tab value="supported">
-
-The LeCun, Bengio and Hinton review in *Nature* supports its own opening claim; the evidence came from Europe PMC.
-
-```json title="10.1038/nature14539 · results[0] (trimmed: citation omitted)"
+```json title="\"Transformers rely entirely on recurrence\" · arXiv:1706.03762 · results[0] (trimmed)"
 {
   "kind": "claim",
-  "verdict": "supported",
-  "scores": {
-    "entailment": 0.9971,
-    "neutral": 0.0022,
-    "contradiction": 0.0007
-  },
-  "evidence_sentence": "Deep learning allows computational models that are composed of multiple processing layers to learn representations of data with multiple levels of abstraction. These methods have dramatically improved the state-of-the-art in speech recognition, visual object recognition, object detection and many other domains such as drug discovery and genomics.",
+  "verdict": "contradicted",
+  "scores": { "entailment": 0.0005, "neutral": 0.0005, "contradiction": 0.999 },
+  "evidence_sentence": "We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train.",
   "evidence_scope": "abstract",
-  "premise_source": "europepmc",
+  "premise_source": "datacite",
   "model": "deberta-v3-base-mnli-fever-anli",
   "reasons": [],
   "retryable": false
 }
 ```
 
-</Tab>
-<Tab value="retracted source">
+## Reading it
 
-"The Lancet paper showed MMR vaccination causes autism", attributed to the retracted Wakefield paper. The abstract
-does not state it, and `reasons` flags the retraction.
-
-```json title="10.1016/S0140-6736(97)11096-0 · results[0] (trimmed: citation omitted)"
-{
-  "kind": "claim",
-  "verdict": "insufficient_evidence",
-  "scores": {
-    "entailment": 0.0009,
-    "neutral": 0.8828,
-    "contradiction": 0.1163
-  },
-  "evidence_sentence": "Histology showed patchy chronic inflammation in the colon in 11 children and reactive ileal lymphoid hyperplasia in seven, but no granulomas.",
-  "evidence_scope": "abstract",
-  "premise_source": "europepmc",
-  "model": "deberta-v3-base-mnli-fever-anli",
-  "reasons": [
-    "the cited work is retracted"
-  ],
-  "retryable": false
-}
-```
-
-</Tab>
-</Tabs>
-
-## Edge cases
+- `supported` needs entailment ≥ 0.80 and contradiction < 0.20; `contradicted` needs contradiction ≥ 0.80.
+- Only a sentence sharing a content word with the claim can decide the verdict.
+- A retracted source is flagged in `reasons`, whatever the verdict.
 
 <Accordions type="single">
-  <Accordion title="The first claim after a quiet spell comes back unverifiable">
-    The model loads on demand and unloads after 15 idle minutes. A claim that arrives while it is loading can come
-    back `unverifiable` with the reason "the NLI model is unavailable" and `retryable: true`. Ask again a few
-    seconds later.
+  <Accordion title="The first claim after a quiet spell is unverifiable">
+    The model loads on demand and unloads after 15 idle minutes. A claim sent while it loads is `unverifiable`
+    with `retryable: true`. Ask again a few seconds later.
   </Accordion>
-  <Accordion title="The citation could not be verified">
-    If the cited work is `not_found`, `ambiguous` or `unverifiable`, there is nothing to read: the verdict is
-    `insufficient_evidence` with the reason "the citation could not be verified". Send `evidence_text` instead.
-  </Accordion>
-  <Accordion title="No DOI, or no abstract">
-    Abstracts are fetched by DOI. A work without one, or whose abstract no source holds, gives
-    `insufficient_evidence` with a reason saying which. Send the text as `evidence_text`.
-  </Accordion>
-  <Accordion title="The claim is about the paper's body, not its abstract">
-    Only the abstract is read, so a claim about a result deep in the paper may be `insufficient_evidence`. Send the
-    relevant passage as `evidence_text`.
+  <Accordion title="No abstract to read">
+    If the source is not verified, has no DOI, or no source holds its abstract, the answer is
+    `insufficient_evidence`. Send the text as `evidence_text`.
   </Accordion>
 </Accordions>
-
-## Next steps
-
-<Cards>
-  <Card title="Verify citations" href="/docs/services/cite/verdicts" description="Check the source exists before checking what it says." />
-  <Card title="API reference: /v1/claim" href="/docs/reference/cite/claim" description="Every field, with a playground." />
-  <Card title="Code Reality Check" href="/docs/services/code" description="The same idea for packages and functions." />
-</Cards>
