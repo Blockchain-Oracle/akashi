@@ -18,3 +18,6 @@ class SymbolAnswer:
     suggest_for: str | None = None  # the token that failed (defaults to the last one)
     pending: bool = False  # a cold build is still running; retry after retry_after_ms
     retry_after_ms: int | None = None
+
+    def __post_init__(self) -> None:
+        self.exists = Tristate(self.exists)  # cache hits carry the enum as a plain string

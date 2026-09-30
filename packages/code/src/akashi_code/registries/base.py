@@ -25,3 +25,8 @@ class PackageFacts:
     has_entrypoint: bool | None = None
     sources: list[SourceRef] = field(default_factory=list)
     unavailable: list[str] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        # Cache hits rebuild this from JSON, where enums are plain strings; callers compare with `is`.
+        self.exists = Tristate(self.exists)
+        self.version_exists = Tristate(self.version_exists)
