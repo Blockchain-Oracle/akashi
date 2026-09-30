@@ -87,7 +87,7 @@ export function DeskInput({
         }}
         placeholder="Paste a citation, code, or ask about today…"
         spellCheck={false}
-        className="block w-full resize-none bg-transparent px-5 pt-4 pb-2 text-base leading-relaxed outline-none placeholder:text-muted-foreground"
+        className="block w-full resize-none rounded-t-lg bg-transparent px-5 pt-4 pb-2 text-base leading-relaxed placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
       />
       <div className="flex flex-wrap items-center gap-2 border-border border-t px-3 py-2">
         <ModeTabs value={mode} onChange={onMode} />
