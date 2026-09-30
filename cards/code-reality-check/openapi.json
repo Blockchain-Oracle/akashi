@@ -432,8 +432,17 @@
             "title": "Code"
           },
           "versions": {
-            "additionalProperties": {
-              "type": "string"
+            "patternProperties": {
+              "^[!-~]+$": {
+                "type": "string",
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[!-~]+$"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 214,
+              "minLength": 1
             },
             "type": "object",
             "maxProperties": 50,
@@ -972,13 +981,16 @@
             "type": "string",
             "maxLength": 214,
             "minLength": 1,
+            "pattern": "^[!-~]+$",
             "title": "Name"
           },
           "version": {
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 128
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[!-~]+$"
               },
               {
                 "type": "null"
@@ -1353,13 +1365,16 @@
             "type": "string",
             "maxLength": 214,
             "minLength": 1,
+            "pattern": "^[!-~]+$",
             "title": "Package"
           },
           "version": {
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 128
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[!-~]+$"
               },
               {
                 "type": "null"
@@ -1523,13 +1538,16 @@
             "type": "string",
             "maxLength": 214,
             "minLength": 1,
+            "pattern": "^[!-~]+$",
             "title": "Package"
           },
           "version": {
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 128
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[!-~]+$"
               },
               {
                 "type": "null"
@@ -1609,13 +1627,16 @@
             "type": "string",
             "maxLength": 214,
             "minLength": 1,
+            "pattern": "^[!-~]+$",
             "title": "Name"
           },
           "range": {
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 256
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[ -~]+$"
               },
               {
                 "type": "null"

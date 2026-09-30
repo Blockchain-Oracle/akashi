@@ -19,12 +19,15 @@
         "name": {
           "maxLength": 214,
           "minLength": 1,
+          "pattern": "^[!-~]+$",
           "type": "string"
         },
         "version": {
           "anyOf": [
             {
               "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[!-~]+$",
               "type": "string"
             },
             {
@@ -60,12 +63,15 @@
               "name": {
                 "maxLength": 214,
                 "minLength": 1,
+                "pattern": "^[!-~]+$",
                 "type": "string"
               },
               "version": {
                 "anyOf": [
                   {
                     "maxLength": 128,
+                    "minLength": 1,
+                    "pattern": "^[!-~]+$",
                     "type": "string"
                   },
                   {
@@ -108,12 +114,15 @@
         "name": {
           "maxLength": 214,
           "minLength": 1,
+          "pattern": "^[!-~]+$",
           "type": "string"
         },
         "range": {
           "anyOf": [
             {
               "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[ -~]+$",
               "type": "string"
             },
             {
@@ -146,12 +155,15 @@
         "package": {
           "maxLength": 214,
           "minLength": 1,
+          "pattern": "^[!-~]+$",
           "type": "string"
         },
         "version": {
           "anyOf": [
             {
               "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[!-~]+$",
               "type": "string"
             },
             {
@@ -190,12 +202,15 @@
         "package": {
           "maxLength": 214,
           "minLength": 1,
+          "pattern": "^[!-~]+$",
           "type": "string"
         },
         "version": {
           "anyOf": [
             {
               "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[!-~]+$",
               "type": "string"
             },
             {
@@ -239,10 +254,19 @@
           "type": "string"
         },
         "versions": {
-          "additionalProperties": {
-            "type": "string"
-          },
           "maxProperties": 50,
+          "patternProperties": {
+            "^[!-~]+$": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[!-~]+$",
+              "type": "string"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 214,
+            "minLength": 1
+          },
           "type": "object"
         }
       },

@@ -18,6 +18,13 @@ from akashi_code.constants import (
 from akashi_core.contract.enums import Tristate
 from akashi_core.contract.fields import UntrustedStr
 
+# Names and versions go into registry URLs: every ecosystem's are printable ASCII without spaces (npm scopes,
+# Maven group:artifact and Go module paths included). Fuzzing sent a control character → InvalidURL → 500.
+PRINTABLE_TOKEN = r"^[!-~]+$"
+PRINTABLE_TEXT = r"^[ -~]+$"  # a version range may contain spaces ("^1.2 || >=2")
+PackageName = Annotated[str, Field(min_length=1, max_length=MAX_PACKAGE_NAME_CHARS, pattern=PRINTABLE_TOKEN)]
+VersionText = Annotated[str, Field(min_length=1, max_length=MAX_VERSION_CHARS, pattern=PRINTABLE_TOKEN)]
+
 
 class Ecosystem(StrEnum):
     npm = "npm"
@@ -43,8 +50,8 @@ class PackageVerdict(StrEnum):
 
 class PackageQuery(BaseModel):
     ecosystem: Ecosystem
-    name: str = Field(min_length=1, max_length=MAX_PACKAGE_NAME_CHARS)
-    version: str | None = Field(default=None, max_length=MAX_VERSION_CHARS)
+    name: PackageName
+    version: VersionText | None = None
 
 
 class PackagesRequest(BaseModel):
@@ -88,8 +95,8 @@ class PackageResult(BaseModel):
 
 class VersionsQuery(BaseModel):
     ecosystem: Ecosystem
-    name: str = Field(min_length=1, max_length=MAX_PACKAGE_NAME_CHARS)
-    range: str | None = Field(default=None, max_length=MAX_RANGE_CHARS)
+    name: PackageName
+    range: str | None = Field(default=None, min_length=1, max_length=MAX_RANGE_CHARS, pattern=PRINTABLE_TEXT)
 
 
 class VersionsResult(BaseModel):
@@ -112,15 +119,15 @@ SymbolName = Annotated[str, Field(min_length=1, max_length=MAX_SYMBOL_CHARS)]
 
 class SymbolQuery(BaseModel):
     ecosystem: Ecosystem
-    package: str = Field(min_length=1, max_length=MAX_PACKAGE_NAME_CHARS)
-    version: str | None = Field(default=None, max_length=MAX_VERSION_CHARS)
+    package: PackageName
+    version: VersionText | None = None
     symbol: SymbolName
 
 
 class SymbolsQuery(BaseModel):
     ecosystem: Ecosystem
-    package: str = Field(min_length=1, max_length=MAX_PACKAGE_NAME_CHARS)
-    version: str | None = Field(default=None, max_length=MAX_VERSION_CHARS)
+    package: PackageName
+    version: VersionText | None = None
     symbols: list[SymbolName] = Field(min_length=1, max_length=MAX_SYMBOLS_PER_REQUEST)
 
 
@@ -154,7 +161,8 @@ class CheckLanguage(StrEnum):
 class CheckRequest(BaseModel):
     language: CheckLanguage
     code: str = Field(min_length=1, max_length=MAX_CHECK_CODE_BYTES)
-    versions: dict[str, str] = Field(default_factory=dict, max_length=MAX_CHECK_PINS)  # package → pinned version
+    # package → pinned version
+    versions: dict[PackageName, VersionText] = Field(default_factory=dict, max_length=MAX_CHECK_PINS)
 
 
 class DiagnosticVerdict(StrEnum):
