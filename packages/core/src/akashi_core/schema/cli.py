@@ -31,11 +31,16 @@ def _input_schema(requests: list[type[BaseModel]]) -> dict[str, Any]:
     return {"$schema": JSON_SCHEMA_DIALECT, "anyOf": [model_schema(r) for r in requests]}
 
 
-def _openapi(spec: SchemaSpec) -> dict[str, Any]:
+def openapi_document(spec: SchemaSpec) -> dict[str, Any]:
     app = FastAPI(title=spec.title, version="1.0.0", openapi_url="/openapi.json")
     app.include_router(probe_router(spec.service_id))
     app.include_router(spec.router)
     return app.openapi()  # paths are prefix-free (/v1/...), as gateways and the portal call them
+
+
+def render(doc: dict[str, Any]) -> bytes:
+    """The exact bytes written to cards/ and served at /specs/, so a pinned sha256 matches both."""
+    return (json.dumps(doc, indent=2, sort_keys=False) + "\n").encode("utf-8")
 
 
 def write_all(specs: list[SchemaSpec], out_dir: Path, echo: Callable[[str], None] = print) -> None:
@@ -45,8 +50,8 @@ def write_all(specs: list[SchemaSpec], out_dir: Path, echo: Callable[[str], None
         files = {
             "output-schema.json": output_schema(spec.results, spec.example),
             "input-schema.json": _input_schema(spec.requests),
-            "openapi.json": _openapi(spec),
+            "openapi.json": openapi_document(spec),
         }
         for name, doc in files.items():
-            (target / name).write_text(json.dumps(doc, indent=2, sort_keys=False) + "\n")
+            (target / name).write_bytes(render(doc))
         echo(f"{spec.service_id}: wrote {', '.join(files)} → {target}")
