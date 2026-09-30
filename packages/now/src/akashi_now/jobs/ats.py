@@ -8,8 +8,21 @@ from typing import Any
 
 from akashi_now.constants import MS_PER_S, THOUSAND
 
-_MONEY_RE = re.compile(r"([$€£])\s?([\d.,]+)\s?([KkMm]?)")
-_SYMBOL_CURRENCY = {"$": "USD", "€": "EUR", "£": "GBP"}
+_MONEY_RE = re.compile(r"((?:CA|C|AU|A|NZ|S|HK|US)?\$|€|£)\s?([\d.,]+)\s?([KkMm]?)")
+# "CA$215K" is Canadian dollars: a bare "$" is read as USD only when no country prefix precedes it.
+_SYMBOL_CURRENCY = {
+    "$": "USD",
+    "US$": "USD",
+    "CA$": "CAD",
+    "C$": "CAD",
+    "AU$": "AUD",
+    "A$": "AUD",
+    "NZ$": "NZD",
+    "S$": "SGD",
+    "HK$": "HKD",
+    "€": "EUR",
+    "£": "GBP",
+}
 MILLION = 1_000_000
 REMOTE_WORDS = ("remote",)
 
