@@ -4,11 +4,11 @@
 
 ## Steps
 - [x] Regenerate schemas (`uv run akashi-schemas`; also served live at `/specs/<id>.openapi.json`, byte-identical)
-- [ ] [OK?] Card v2 via add-service (live CUPR + name) — **needs S2** (services not on-chain yet). Cards are ready:
-      `cards/<id>/card.template.json` → `python3 scripts/render_cards.py --api-base https://api.<d> --repo-url …`
-      (all three validate against the bundled schema, 3.3 KB each; IDs still free on Beta)
+- [ ] [OK?] Card v2 via add-service (live CUPR + name) — v1 is on-chain (h 691097–9, temp host). v2 = the domain:
+      `python3 scripts/render_cards.py --api-base https://api.<d> --repo-url …` → add-service (gas only) → `encode_card.py diff`
 - [x] schemathesis over each OpenAPI; lint_backend ×3 (see Findings for the gate command)
-- [ ] Latency measurement (`scripts/latency.py`); audit green (audit **needs S2**)
+- [ ] Latency measurement (`scripts/latency.py`): cite/code well inside target; live-facts one cold outlier (5.99 s wall,
+      see acceptance 03:37) → re-measure from the server; audit green (audit **needs S2** step 11)
 - [ ] cards/<id>/registry.json → PNF; publish sage-service.yaml — packages built (`scripts/build_registry.py`),
       `deploy/gateway/sage-service.yaml` written; **sending waits on the domain** (the spec URL and example host
       must be the final ones)
@@ -44,6 +44,7 @@ Audit with no FAIL; p95 within targets.
 - **lint_backend** (card healthchecks + bad-input probes) 21/21 PASS on all three before the fixes.
 
 ## Handoff
-Next: deploy a731410+, re-run the schemathesis gate on cite, production calibration (40/40 · 40/40 expected),
-`scripts/latency.py`, then record in acceptance.md. The rest of S6 (card v2, audit, sending the registry
-packages) waits for S2, which waits for the domain (Q-001).
+Final build 3a460fa: schemathesis PASS on all three (cite 892, code 677, now 972 cases), production calibration
+40/40 · 40/40, lint_backend 21/21. Registry packages recaptured (Vaswani now verified). Open in S6: the live-facts
+cold-latency outlier (re-measure from the server), card v2 on the real domain (`render_cards.py` → `add-service`,
+gas only), the audit, and sending the packages to PNF — all after the domain (Q-001).
