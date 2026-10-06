@@ -1,38 +1,47 @@
 "use client";
 
+import { SERVICES } from "@akashi/brand";
 import { motion } from "motion/react";
 
 import type { DeskMode } from "@/lib/constants/desk";
+import { SPRING_SNAPPY } from "@/lib/constants/ui";
 import { cn } from "@/lib/utils";
 
-const MODES: { value: DeskMode; label: string }[] = [
+const MODES: { value: DeskMode; label: string; kanji?: string }[] = [
   { value: "auto", label: "Auto" },
-  { value: "cite", label: "Cite" },
-  { value: "code", label: "Code" },
-  { value: "now", label: "Now" },
+  { value: "cite", label: "Cite", kanji: SERVICES.cite.kanji },
+  { value: "code", label: "Code", kanji: SERVICES.code.kanji },
+  { value: "now", label: "Now", kanji: SERVICES.now.kanji },
 ];
-const SPRING = { type: "spring", stiffness: 500, damping: 36 } as const;
 
-/** Auto-detect, or force a service (segmented control, after 21st.dev micka_design/segmented-tabs 26923). */
+/** Auto-detect, or force a service: a tab strip with a dark active tab (Superthread's hero tabs; 21st 26923). */
 export function ModeTabs({ value, onChange }: { value: DeskMode; onChange: (m: DeskMode) => void }) {
   return (
-    <div role="radiogroup" aria-label="Which check" className="inline-flex rounded-chip border border-border p-0.5 text-xs">
-      {MODES.map((m) => (
-        <button
-          key={m.value}
-          type="button"
-          role="radio"
-          aria-checked={value === m.value}
-          onClick={() => onChange(m.value)}
-          className={cn(
-            "relative rounded-chip px-2.5 py-1 font-medium transition-colors",
-            value === m.value ? "text-foreground" : "text-muted-foreground hover:text-foreground",
-          )}
-        >
-          {value === m.value && <motion.span layoutId="desk-mode" className="absolute inset-0 rounded-chip bg-secondary" transition={SPRING} />}
-          <span className="relative">{m.label}</span>
-        </button>
-      ))}
+    <div role="radiogroup" aria-label="Which check" className="inline-flex rounded-chip bg-band p-1 text-sm">
+      {MODES.map((m) => {
+        const active = value === m.value;
+        return (
+          <button
+            key={m.value}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            onClick={() => onChange(m.value)}
+            className={cn(
+              "relative inline-flex items-center gap-1.5 rounded-chip px-3 py-1.5 font-medium transition-colors duration-(--duration-fast)",
+              active ? "text-background" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {active && <motion.span layoutId="desk-mode" className="absolute inset-0 rounded-chip bg-foreground" transition={SPRING_SNAPPY} />}
+            {m.kanji && (
+              <span className="relative font-mark text-xs leading-none" aria-hidden>
+                {m.kanji}
+              </span>
+            )}
+            <span className="relative">{m.label}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }

@@ -46,7 +46,7 @@ export function RequestPath({ className }: { className?: string }) {
 
   const current = STEPS[step] ?? STEPS[0]!;
   return (
-    <figure className={cn("not-prose rounded-3xl border border-border bg-card p-5 md:p-8", className)}>
+    <figure className={cn("not-prose card p-5 md:p-8", className)}>
       <div className="flex flex-col items-stretch md:flex-row md:items-center">
         {NODES.map((node, i) => {
           const active = !reduce && (i === current.hop || i === current.hop + 1);
@@ -54,11 +54,11 @@ export function RequestPath({ className }: { className?: string }) {
             <div key={node.title} className="flex flex-col items-center md:flex-1 md:flex-row">
               <div
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-2xl border px-4 py-3 transition-colors duration-300 md:w-auto md:flex-col md:gap-2 md:px-3 md:py-4 md:text-center",
+                  "flex w-full items-center gap-3 rounded-(--radius) border px-4 py-3 transition-colors duration-300 md:w-auto md:flex-col md:gap-2 md:px-3 md:py-4 md:text-center",
                   active ? "border-primary bg-primary/5" : "border-border bg-background",
                 )}
               >
-                <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl", active ? "text-primary" : "text-foreground")}>
+                <span className={cn("grid size-10 shrink-0 place-items-center rounded-(--radius)", active ? "text-primary" : "text-foreground")}>
                   {node.Icon ? <node.Icon className="size-6" strokeWidth={ICON_STROKE} /> : <Seal className="size-8" label={null} />}
                 </span>
                 <span>

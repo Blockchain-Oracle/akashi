@@ -2,58 +2,60 @@
 # Akashi web: design context
 
 - Product: agent-facing verification APIs (citations, code, live facts) on Pocket Network
+- Concept: **The Highlighter** (Refero research 2026-10-06 → `docs/plan/specs/ui-revamp.md`): a cool near-white canvas, midnight ink type at heavy weight, one vivid lemon marker, elevated white cards, a Deep-Midnight console
 - Stack: nextjs-16, react-19, shadcn (radix-nova), tailwind-v4, motion
-- Colour mode: light (washi) by default; dark (sumi) via the .dark class from next-themes; both from the same token rules
-- Density: certificate ledger: hairlines and whitespace do the layout, mono data, no card chrome except the receipt
+- Colour mode: light by default; dark (midnight) via `.dark`; `.console` is a scoped dark theme for machine output and the one showcase band
 
 ## Tokens
 
 ### Colors
-- **background**: var(--background) oklch(0.975 0.006 85) washi · dark oklch(0.16 0.008 260) sumi
-- **foreground**: var(--foreground) oklch(0.20 0.010 260) · dark oklch(0.95 0.005 85)
-- **accent**: var(--primary) 藍 indigo oklch(0.45 0.14 265) · dark oklch(0.72 0.12 265): the only accent, interaction and brand only
-- **hairline**: var(--border) oklch(0.88 0.008 85) · dark oklch(0.30 0.010 260)
-- **muted**: var(--muted) / var(--muted-foreground)
-- **verdicts**: --verdict-verified 青磁 · --verdict-mismatch 琥珀 · --verdict-not-found 朱 · --verdict-retracted 紅 · --verdict-ambiguous 藤 · --verdict-unknown grey; all ≥ 4.5:1 on background and card (D-024)
+- **background** `oklch(0.985 0.002 250)` · dark `oklch(0.15 0.015 260)`; `--band` for alternating sections
+- **card** white · dark `oklch(0.195 0.015 260)`, with `--shadow-1`
+- **foreground** midnight ink `oklch(0.21 0.02 265)` · dark `oklch(0.96 0.004 250)`
+- **marker** lemon `oklch(0.92 0.19 102)` · dark `oklch(0.88 0.17 100)`: CTA fill, the hero stroke, the active tab, console values; never body text, never a verdict
+- **primary** = the ink: the black button and dark active pills
+- **link** cobalt `oklch(0.45 0.17 258)`: text links and the docs' active nav only
+- **signal / warn** status pills only
+- **console** Deep Midnight `oklch(0.26 0.03 260)` · dark `oklch(0.12 0.02 260)`: the readout, code, the Pocket band
+- **verdicts** 青磁 verified · 琥珀 mismatch · 朱 not-found · 紅 retracted · 藤 ambiguous · grey unknown; the `*-dark` set on the console and in dark mode; all ≥ 4.5:1 (D-024)
 
 ### Typography
-- **display**: var(--font-display) Newsreader; one italic word per headline at most
-- **ui**: var(--font-sans) IBM Plex Sans 400/500/600
-- **data**: var(--font-mono) IBM Plex Mono: verdict codes, receipts, as_of, IDs, JSON; eyebrows uppercase with widest tracking
-- **mark**: var(--font-mark) Shippori Mincho B1 800: the 証 mark and the kanji index (典 符 今) only
+- **display** Gabarito 700/800; tracking −0.03em (hero), −0.025em (sections), −0.02em (card titles)
+- **ui** Instrument Sans 400–700; 15–18 px
+- **data** Geist Mono 400–600: `.label` (11.5 px uppercase, tracking 0.12em), pills (12.5 px), codes, timings, JSON
+- **mark** Shippori Mincho B1 800: 証 and the kanji index (典 符 今) only
 
-### Radius
-- **card**: var(--radius) 6px
-- **chip**: var(--radius-chip) 999px
+### Shape, elevation, motion
+- radii 6 / 10 / 16 (cards) / 20 (the console band); pills and buttons 999
+- `--shadow-1` cards · `--shadow-2` hover, the readout · `--shadow-3` the desk card, the receipt · `--shadow-marker` under the lemon button
+- `--ease-seal`; fast 120 · state 180 · slow 320 ms; the marker stroke draws once; `VerdictStamp` presses with an ink bloom; cards lift 2 px on hover; the desk strip sweeps while running; reduced motion = fades
 
-### Shadows
-- **receipt**: var(--shadow-receipt): the only drop shadow in the app
-
-### Motion
-- **ease**: var(--ease-seal) cubic-bezier(.2,.8,.2,1); state changes only, 150–240 ms (--duration-state 180ms)
-- **signature**: seal press: scale 1.06 → 1 plus a 120 ms ink bloom when a verdict lands
-- **reduced**: prefers-reduced-motion gives cross-fades only; ambient loops pause off-screen
+## Patterns
+- `.card` (+ `.card-hover`) for records and interactive cells · `.well` for a data strip inside a card · `.console` for machine output
+- `.btn .btn-marker` (lemon) / `.btn-ink` (black) / `.btn-white` · `.pill` variants · `.eyebrow-bar` + `.label` above a section title · `.key` + `MarkerStroke` for the hero keyword
+- A verdict is always glyph + word + colour (`VerdictStamp`: a tinted pill, `TONE_PILL`)
 
 ## Must
-
-- Tokens only: no hex, rgb or px literals in TSX; colours through theme utilities or var(--token)
-- 藍 indigo (--primary) is the only accent and never a verdict colour
+- Tokens only: no hex, rgb or px literals in TSX
+- Lemon is the marker: CTA fill, hero stroke, active tab, console values; never body text, never a verdict
 - Verdicts are glyph + word + colour, never colour alone
-- Dark and light from the same rules (.dark overrides in packages/brand/tokens/theme.css)
-- Constants, not magic numbers (ESLint @typescript-eslint/no-magic-numbers); files ≤ 400 lines
-- Real Akashi examples and copy, never lorem ipsum
-- framer-motion imports become motion/react
+- Dark and light from the same rules
+- Constants, not magic numbers; files ≤ 400 lines
+- Real Akashi examples and copy
+- `framer-motion` → `motion/react`
 
 ## Avoid
-
-- round hanko, brush fonts, kanji watermarks
-- glassmorphism, purple gradients, generic SaaS gradient heroes
-- Tailwind palette colour utilities (text-blue-500 …) and pasted HTML
-- a second accent colour
-- drop shadows other than the receipt's
+- grey canvases, serif display, 2 px corners, underline-as-emphasis, italic word swaps
+- glassmorphism beyond the nav's blur; gradients beyond the lemon button; purple
+- Tailwind palette colour utilities; pasted HTML
+- a second vivid accent in marketing surfaces; scroll-reveal on sections
 
 ## Decisions
-
-- **D-024**: Brand tokens: light mismatch/ambiguous/unknown darkened (L 0.55/0.55/0.545) so every verdict colour passes AA on washi
-- **D-025**: One primitive family per app: web uses shadcn radix-nova (21st picks and AI Elements are Radix); docs uses Fumadocs' Base UI build
-- **D-foundation-2026-09-30**: S7 foundation page: seal + letters-only wordmark in the nav (never 証 twice), Newsreader headline, ledger of the three services with endpoints generated from the OpenAPI
+- **D-024** verdict tokens pass AA in both themes; the `*-dark` set is reused on the console
+- **D-025** one primitive family per app (web: radix-nova; docs: Fumadocs Base UI)
+- **D-028** UI revamp v2 "The Highlighter" (lock + ledger in `docs/plan/specs/ui-revamp.md`)
+- **D-029** hero pills, Gabarito 800 + lemon stroke, lemon + black CTA pair, ✦ facts; the desk as a code card; exhibits as chips
+- **D-030** readout on Deep Midnight with a lemon edge; evidence as white cards with pill verdicts and wells; sources as a card
+- **D-031** story bands, eyebrow bar, stat cards, lemon-badged steps, the Pocket band, service cards, nested envelope, the receipt
+- **D-032** docs on the same tokens; `fd-primary` = cobalt; lemon/black/white CTAs; Gabarito titles
+- **D-breakpoints** ≥ 1100 px evidence | sources (18 rem, sticky); stat cards 1 / 2 / 4; service cards 1 / 3; steps 1 / 2 / 4; nav anchors from md

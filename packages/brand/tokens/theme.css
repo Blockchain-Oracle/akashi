@@ -1,13 +1,18 @@
 /*
- * Akashi 証 brand tokens (specs/web.md §2): a certificate ledger in washi (light, the default) and sumi (dark).
- * oklch values, shadcn variable names, so 21st/shadcn components re-tokenize by deleting their colours.
+ * Akashi 証 brand tokens, v3 "The Highlighter" (specs/ui-revamp.md §4): a cool near-white canvas, midnight ink type,
+ * one vivid lemon marker, elevated white cards, a Deep-Midnight console. oklch values, shadcn variable names, so
+ * 21st/shadcn components re-tokenize by deleting their colours.
  *
- * Rules: 藍 indigo (--primary) is the only accent and never a verdict colour. A verdict is always glyph + word +
- * colour. Hairlines do the layout; the receipt owns the only drop shadow. Verdict colours pass WCAG AA (≥ 4.5:1)
- * as text on --background and --card in both themes (D-024: light mismatch/ambiguous/unknown darkened to pass).
+ * Roles (the token's role is part of the token):
+ *   --marker (lemon) = the highlighter: CTA fill, the hero stroke, the active tab, console values. Never body text.
+ *   --primary = the ink: the black button, dark active pills. --link (cobalt) = text links and the docs' active nav.
+ *   --signal (green) = live/ok status pills. --warn = partial notes.
+ *   Verdict tones = verdicts only; a verdict is always glyph + word + colour (D-024: AA in both themes).
+ *   .console = machine output and the one showcase band: Deep Midnight, lemon values.
+ *   Elevation: --shadow-1 cards · --shadow-2 hover / buttons · --shadow-3 the desk and the receipt.
  *
  * Fonts: each app loads them with next/font and exposes these variables on <html>:
- *   --font-newsreader (display) · --font-plex-sans (UI) · --font-plex-mono (data) · --font-shippori (the mark only)
+ *   --font-gabarito (display) · --font-instrument (UI) · --font-geist-mono (data) · --font-shippori (証 only)
  */
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -15,24 +20,50 @@
 :root {
   color-scheme: light;
 
-  --background: oklch(0.975 0.006 85); /* washi */
-  --foreground: oklch(0.2 0.01 260); /* sumi ink */
-  --card: oklch(0.99 0.004 85);
+  --background: oklch(0.985 0.002 250); /* canvas */
+  --band: oklch(0.962 0.003 250); /* an alternating section band */
+  --card: oklch(1 0 0);
   --card-foreground: var(--foreground);
   --popover: var(--card);
   --popover-foreground: var(--foreground);
-  --primary: oklch(0.45 0.14 265); /* 藍 indigo */
-  --primary-foreground: oklch(0.985 0.004 85);
-  --secondary: oklch(0.94 0.006 85);
+  --foreground: oklch(0.21 0.02 265); /* midnight ink */
+  --muted-foreground: oklch(0.47 0.02 260);
+  --faint-foreground: oklch(0.62 0.015 258);
+  --border: oklch(0.92 0.004 250);
+  --border-2: oklch(0.87 0.005 250);
+  --input: var(--border-2);
+  --secondary: var(--band);
   --secondary-foreground: var(--foreground);
-  --muted: oklch(0.94 0.006 85);
-  --muted-foreground: oklch(0.48 0.01 260);
-  --accent: oklch(0.95 0.008 85); /* shadcn's hover surface, not a colour accent */
+  --muted: var(--band);
+  --accent: oklch(0.945 0.004 250); /* shadcn's hover surface, not a colour accent */
   --accent-foreground: var(--foreground);
+
+  --marker: oklch(0.92 0.19 102); /* lemon highlighter */
+  --marker-2: oklch(0.86 0.19 100); /* pressed */
+  --marker-soft: oklch(from var(--marker) l c h / 0.22);
+  --marker-foreground: oklch(0.21 0.02 265);
+
+  --primary: var(--foreground); /* the black button */
+  --primary-foreground: oklch(0.985 0.002 250);
+  --ring: var(--marker-2);
+
+  --link: oklch(0.45 0.17 258); /* cobalt: text links */
+  --link-soft: oklch(from var(--link) l c h / 0.1);
+  --link-line: oklch(from var(--link) l c h / 0.32);
+
+  --signal: oklch(0.56 0.15 150);
+  --signal-soft: oklch(from var(--signal) l c h / 0.12);
+  --signal-line: oklch(from var(--signal) l c h / 0.34);
+  --warn: oklch(0.62 0.15 70);
+  --warn-soft: oklch(from var(--warn) l c h / 0.12);
   --destructive: oklch(0.55 0.18 35);
-  --border: oklch(0.88 0.008 85); /* hairline */
-  --input: var(--border);
-  --ring: var(--primary);
+
+  /* machine output and the showcase band: Deep Midnight, in both themes */
+  --console: oklch(0.26 0.03 260);
+  --console-2: oklch(0.3 0.03 260);
+  --console-foreground: oklch(0.97 0.004 250);
+  --console-muted: oklch(0.72 0.02 255);
+  --console-border: oklch(0.38 0.03 260);
 
   --verdict-verified: oklch(0.52 0.1 165); /* 青磁 celadon */
   --verdict-mismatch: oklch(0.55 0.13 70); /* 琥珀 amber */
@@ -41,46 +72,110 @@
   --verdict-ambiguous: oklch(0.55 0.09 300); /* 藤 wisteria */
   --verdict-unknown: oklch(0.545 0.01 260);
 
-  --radius: 6px; /* cards */
+  /* the same six as they read on a dark surface (the console in light mode, everything in dark mode) */
+  --verdict-verified-dark: oklch(0.8 0.12 165);
+  --verdict-mismatch-dark: oklch(0.84 0.14 78);
+  --verdict-not-found-dark: oklch(0.74 0.17 38);
+  --verdict-retracted-dark: oklch(0.72 0.18 15);
+  --verdict-ambiguous-dark: oklch(0.78 0.1 300);
+  --verdict-unknown-dark: oklch(0.7 0.01 260);
+
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-chip: 999px;
   --hairline: 1px;
-  --shadow-receipt: 0 1px 0 oklch(0 0 0 / 0.04), 0 12px 32px -12px oklch(0.2 0.01 260 / 0.28);
-  --receipt-drop: drop-shadow(0 12px 14px oklch(0.2 0.01 260 / 0.22)); /* the same shadow, for a torn (masked) receipt */
+
+  --shadow-1: 0 0.6px 0.6px -1.25px oklch(0 0 0 / 0.18), 0 2.3px 2.3px -2.5px oklch(0 0 0 / 0.16), 0 10px 10px -3.75px oklch(0 0 0 / 0.06);
+  --shadow-2: 0 20px 25px -5px oklch(0 0 0 / 0.1), 0 8px 10px -6px oklch(0 0 0 / 0.1);
+  --shadow-3: 0 4px 30px oklch(0 0 0 / 0.16), 0 1px 2px oklch(0 0 0 / 0.06);
+  --shadow-marker: 0 8px 20px -8px oklch(from var(--marker) l c h / 0.6);
+  --shadow-receipt: var(--shadow-3);
+  --receipt-drop: drop-shadow(0 12px 14px oklch(0.2 0.02 260 / 0.22));
 
   --ease-seal: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --duration-state: 180ms; /* state changes: 150–240 ms */
-  --duration-ink: 120ms; /* the seal press's ink bloom */
+  --duration-fast: 120ms;
+  --duration-state: 180ms;
+  --duration-slow: 320ms;
+  --duration-ink: 120ms;
   --seal-press-scale: 1.06;
 }
 
 .dark {
   color-scheme: dark;
 
-  --background: oklch(0.16 0.008 260); /* sumi */
-  --foreground: oklch(0.95 0.005 85);
-  --card: oklch(0.19 0.008 260);
-  --primary: oklch(0.72 0.12 265);
-  --primary-foreground: oklch(0.16 0.008 260);
-  --secondary: oklch(0.21 0.008 260);
-  --muted: oklch(0.21 0.008 260);
-  --muted-foreground: oklch(0.68 0.01 260);
-  --accent: oklch(0.23 0.008 260);
-  --destructive: oklch(0.7 0.16 35);
-  --border: oklch(0.3 0.01 260);
+  --background: oklch(0.15 0.015 260); /* midnight */
+  --band: oklch(0.175 0.015 260);
+  --card: oklch(0.195 0.015 260);
+  --foreground: oklch(0.96 0.004 250);
+  --muted-foreground: oklch(0.72 0.012 255);
+  --faint-foreground: oklch(0.58 0.012 255);
+  --border: oklch(0.3 0.015 260);
+  --border-2: oklch(0.36 0.015 260);
+  --accent: oklch(0.23 0.015 260);
+  --marker: oklch(0.88 0.17 100);
+  --marker-2: oklch(0.82 0.17 98);
+  --marker-foreground: oklch(0.17 0.02 265);
+  --primary: oklch(0.96 0.004 250);
+  --primary-foreground: oklch(0.15 0.015 260);
+  --link: oklch(0.78 0.11 235);
+  --signal: oklch(0.74 0.14 150);
+  --warn: oklch(0.8 0.13 75);
+  --destructive: oklch(0.72 0.16 35);
 
-  --verdict-verified: oklch(0.78 0.11 165);
-  --verdict-mismatch: oklch(0.82 0.13 75);
-  --verdict-not-found: oklch(0.7 0.16 35);
-  --verdict-retracted: oklch(0.68 0.17 15);
-  --verdict-ambiguous: oklch(0.74 0.09 300);
-  --verdict-unknown: oklch(0.62 0.01 260);
+  --console: oklch(0.12 0.02 260);
+  --console-2: oklch(0.16 0.02 260);
+  --console-border: oklch(0.27 0.02 260);
 
-  --shadow-receipt: 0 1px 0 oklch(1 0 0 / 0.04), 0 12px 32px -12px oklch(0 0 0 / 0.6);
+  --verdict-verified: var(--verdict-verified-dark);
+  --verdict-mismatch: var(--verdict-mismatch-dark);
+  --verdict-not-found: var(--verdict-not-found-dark);
+  --verdict-retracted: var(--verdict-retracted-dark);
+  --verdict-ambiguous: var(--verdict-ambiguous-dark);
+  --verdict-unknown: var(--verdict-unknown-dark);
+
+  --shadow-1: 0 1px 2px oklch(0 0 0 / 0.4);
+  --shadow-2: 0 20px 25px -5px oklch(0 0 0 / 0.45), 0 8px 10px -6px oklch(0 0 0 / 0.4);
+  --shadow-3: 0 4px 30px oklch(0 0 0 / 0.5);
   --receipt-drop: drop-shadow(0 12px 14px oklch(0 0 0 / 0.55));
+}
+
+/* The console: machine output. A scoped dark theme, so every token-based utility reads on it unchanged. */
+.console {
+  color-scheme: dark;
+  --background: var(--console);
+  --band: var(--console-2);
+  --foreground: var(--console-foreground);
+  --card: var(--console-2);
+  --card-foreground: var(--console-foreground);
+  --muted: var(--console-2);
+  --muted-foreground: var(--console-muted);
+  --faint-foreground: oklch(from var(--console-muted) calc(l - 0.14) c h);
+  --secondary: oklch(from var(--console) calc(l + 0.08) c h);
+  --accent: oklch(from var(--console) calc(l + 0.08) c h);
+  --border: var(--console-border);
+  --border-2: oklch(from var(--console-border) calc(l + 0.06) c h);
+  --input: var(--console-border);
+  --primary: var(--marker);
+  --primary-foreground: var(--marker-foreground);
+  --link: var(--marker);
+  --ring: var(--marker);
+  --signal: oklch(0.74 0.14 150);
+  --warn: oklch(0.8 0.13 75);
+  --verdict-verified: var(--verdict-verified-dark);
+  --verdict-mismatch: var(--verdict-mismatch-dark);
+  --verdict-not-found: var(--verdict-not-found-dark);
+  --verdict-retracted: var(--verdict-retracted-dark);
+  --verdict-ambiguous: var(--verdict-ambiguous-dark);
+  --verdict-unknown: var(--verdict-unknown-dark);
+  background: var(--background);
+  color: var(--foreground);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-band: var(--band);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -88,16 +183,33 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-marker: var(--marker);
+  --color-marker-2: var(--marker-2);
+  --color-marker-soft: var(--marker-soft);
+  --color-marker-foreground: var(--marker-foreground);
+  --color-link: var(--link);
+  --color-link-soft: var(--link-soft);
+  --color-link-line: var(--link-line);
+  --color-signal: var(--signal);
+  --color-signal-soft: var(--signal-soft);
+  --color-signal-line: var(--signal-line);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-faint-foreground: var(--faint-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
+  --color-border-2: var(--border-2);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-console: var(--console);
+  --color-console-2: var(--console-2);
+  --color-console-foreground: var(--console-foreground);
 
   --color-verdict-verified: var(--verdict-verified);
   --color-verdict-mismatch: var(--verdict-mismatch);
@@ -106,17 +218,26 @@
   --color-verdict-ambiguous: var(--verdict-ambiguous);
   --color-verdict-unknown: var(--verdict-unknown);
 
-  --font-display: var(--font-newsreader), ui-serif, Georgia, serif;
-  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-display: var(--font-gabarito), system-ui, sans-serif;
+  --font-sans: var(--font-instrument), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
   --font-mark: var(--font-shippori), serif;
 
-  --radius-sm: calc(var(--radius) - 2px);
+  --radius-xs: 4px;
+  --radius-sm: var(--radius-sm);
   --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) + 2px);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: 24px;
+  --radius-3xl: 28px;
   --radius-chip: var(--radius-chip);
+  --shadow-1: var(--shadow-1);
+  --shadow-2: var(--shadow-2);
+  --shadow-3: var(--shadow-3);
+  --shadow-marker: var(--shadow-marker);
   --shadow-receipt: var(--shadow-receipt);
   --ease-seal: var(--ease-seal);
+  --tracking-label: 0.12em;
 }
 
 @layer base {
@@ -128,14 +249,187 @@
     color: var(--foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
   ::selection {
-    background: var(--primary);
-    color: var(--primary-foreground);
+    background: var(--marker);
+    color: var(--marker-foreground);
   }
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* An elevated card: white, 16 px corners, the three-layer soft shadow. Lifts on hover when interactive. */
+  .card {
+    background: var(--card);
+    color: var(--card-foreground);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-1);
+  }
+  .card-hover {
+    transition:
+      box-shadow var(--duration-state) var(--ease-seal),
+      transform var(--duration-state) var(--ease-seal),
+      border-color var(--duration-state) var(--ease-seal);
+  }
+  .card-hover:hover {
+    box-shadow: var(--shadow-2);
+    transform: translateY(-2px);
+    border-color: var(--border-2);
+  }
+  /* A muted well inside a card: a code block, a data strip. */
+  .well {
+    background: var(--band);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius);
+  }
+  /* The section eyebrow: a short lemon bar above the title (Val Town). */
+  .eyebrow-bar {
+    display: block;
+    width: 3.5rem;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--marker);
+  }
+  /* A mono label: 11–12 px, uppercase, tracked. */
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    line-height: 1.4;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+  /* Tinted pills: a dot, mono text, a soft fill and a line in the same hue. */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: var(--radius-chip);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1.3;
+    background: var(--link-soft);
+    border: var(--hairline) solid var(--link-line);
+    color: var(--link);
+  }
+  .pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: currentColor;
+    flex: none;
+  }
+  .pill-signal {
+    background: var(--signal-soft);
+    border-color: var(--signal-line);
+    color: var(--signal);
+  }
+  .pill-warn {
+    background: var(--warn-soft);
+    border-color: oklch(from var(--warn) l c h / 0.4);
+    color: var(--warn);
+  }
+  .pill-ink {
+    background: var(--foreground);
+    border-color: var(--foreground);
+    color: var(--background);
+  }
+  .pill-plain::before {
+    display: none;
+  }
+  /* Buttons: lemon marker (primary), ink (secondary), white (tertiary). All pills. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.35rem;
+    border-radius: var(--radius-chip);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.2;
+    text-decoration: none;
+    border: var(--hairline) solid transparent;
+    transition:
+      transform var(--duration-fast) var(--ease-seal),
+      box-shadow var(--duration-fast) var(--ease-seal),
+      background-color var(--duration-fast) var(--ease-seal),
+      border-color var(--duration-fast) var(--ease-seal),
+      filter var(--duration-fast) var(--ease-seal);
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+  .btn-marker {
+    color: var(--marker-foreground);
+    background: var(--marker);
+    box-shadow: var(--shadow-marker);
+  }
+  .btn-marker:hover {
+    background: var(--marker-2);
+  }
+  .btn-ink {
+    color: var(--primary-foreground);
+    background: var(--primary);
+  }
+  .btn-ink:hover {
+    filter: brightness(1.15);
+  }
+  .btn-white {
+    color: var(--foreground);
+    background: var(--card);
+    border-color: var(--border-2);
+    box-shadow: var(--shadow-1);
+  }
+  .btn-white:hover {
+    border-color: var(--faint-foreground);
+  }
+  /* The hero keyword: ink text over a hand-drawn lemon marker stroke (the SVG is drawn by .marker-stroke). */
+  .key {
+    position: relative;
+    display: inline-block;
+    white-space: nowrap;
+    isolation: isolate; /* so the stroke's z-index: -1 stays inside the word, not behind the page */
+  }
+  .key > svg {
+    position: absolute;
+    left: -2%;
+    right: -2%;
+    bottom: -0.08em;
+    width: 104%;
+    height: 0.36em;
+    z-index: -1;
+    overflow: visible;
+  }
+  .marker-stroke {
+    fill: none;
+    stroke: var(--marker);
+    stroke-width: 14;
+    stroke-linecap: round;
+    stroke-dasharray: 420;
+    stroke-dashoffset: 420;
+    animation: marker-draw 0.7s var(--ease-seal) 0.25s forwards;
+  }
+  @keyframes marker-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  /* Dot leaders between a name and its value on the same row. */
+  .leader {
+    flex: 1;
+    min-width: 0.75rem;
+    margin-bottom: 0.3em;
+    border-bottom: 1px dotted var(--border-2);
   }
 }
 
@@ -147,5 +441,8 @@
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
     scroll-behavior: auto !important;
+  }
+  .marker-stroke {
+    stroke-dashoffset: 0;
   }
 }

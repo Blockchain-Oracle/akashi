@@ -55,14 +55,14 @@ export function ClaimCheck({ className }: { className?: string }) {
           transition={{ duration: DURATION_S, ease: EASE, delay: i * ROW_STAGGER_S }}
           className="grid gap-3 md:grid-cols-2 md:gap-4"
         >
-          <div className="flex gap-3 rounded-2xl border border-border bg-background p-4">
+          <div className="flex gap-3 rounded-(--radius) border border-border bg-background p-4">
             <Bot className="mt-0.5 size-5 shrink-0 text-muted-foreground" strokeWidth={ICON_STROKE} />
             <div>
               <div className="text-muted-foreground text-xs">An AI assistant says</div>
               <p className="mt-1 text-sm">“{c.says}”</p>
             </div>
           </div>
-          <div className="flex gap-3 rounded-2xl border border-border bg-card p-4">
+          <div className="flex gap-3 rounded-(--radius) border border-border bg-card p-4">
             <Seal className="mt-0.5 size-6 shrink-0" label={null} />
             <div>
               <Verdict tone={c.tone} word={c.word} />

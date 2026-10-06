@@ -1,133 +1,102 @@
 {
-  "version": 1,
+  "version": 3,
   "project": {
     "name": "web",
     "productType": "agent-facing verification APIs (citations, code, live facts) on Pocket Network",
-    "stack": [
-      "nextjs-16",
-      "react-19",
-      "shadcn (radix-nova)",
-      "tailwind-v4",
-      "motion"
-    ]
+    "stack": ["nextjs-16", "react-19", "shadcn (radix-nova)", "tailwind-v4", "motion"]
   },
   "sources": {
-    "tokens": [
-      "../../packages/brand/tokens/theme.css"
-    ],
-    "components": [
-      "src/components/ui",
-      "src/components/evidence",
-      "../../packages/brand/src/react.tsx"
-    ],
-    "assets": [
-      "../../packages/brand/assets"
-    ],
-    "instructions": [
-      "../../docs/plan/specs/web.md",
-      "../../docs/plan/specs/ui-shortlist/picks.md"
-    ]
+    "tokens": ["../../packages/brand/tokens/theme.css"],
+    "components": ["src/components/evidence", "src/components/shell", "src/components/ui", "src/features", "../../packages/ui/src", "../../packages/brand/src/react.tsx"],
+    "assets": ["../../packages/brand/assets"],
+    "instructions": ["../../docs/plan/specs/ui-revamp.md", "../../docs/plan/specs/web.md"]
   },
   "design": {
-    "colorMode": "light (washi) by default; dark (sumi) via the .dark class from next-themes; both from the same token rules",
+    "concept": "The Highlighter (Refero research 2026-10-06: Superthread primary; Val Town code card + Deep Midnight; Aaply lemon + black pair; Convex framed console; cdr-kit pills and facts row). A cool near-white canvas, midnight ink type at heavy weight, one vivid lemon marker, elevated white cards, a Deep-Midnight console.",
+    "colorMode": "light by default; dark (midnight) via the .dark class from next-themes; .console is a scoped dark theme for machine output and the one showcase band",
     "colors": {
-      "background": "var(--background) oklch(0.975 0.006 85) washi · dark oklch(0.16 0.008 260) sumi",
-      "foreground": "var(--foreground) oklch(0.20 0.010 260) · dark oklch(0.95 0.005 85)",
-      "accent": "var(--primary) 藍 indigo oklch(0.45 0.14 265) · dark oklch(0.72 0.12 265): the only accent, interaction and brand only",
-      "hairline": "var(--border) oklch(0.88 0.008 85) · dark oklch(0.30 0.010 260)",
-      "muted": "var(--muted) / var(--muted-foreground)",
-      "verdicts": "--verdict-verified 青磁 · --verdict-mismatch 琥珀 · --verdict-not-found 朱 · --verdict-retracted 紅 · --verdict-ambiguous 藤 · --verdict-unknown grey; all ≥ 4.5:1 on background and card (D-024)"
+      "background": "var(--background) oklch(0.985 0.002 250) · dark oklch(0.15 0.015 260); --band for alternating sections",
+      "card": "var(--card) white · dark oklch(0.195 0.015 260), with --shadow-1",
+      "foreground": "var(--foreground) midnight ink oklch(0.21 0.02 265) · dark oklch(0.96 0.004 250)",
+      "marker": "var(--marker) lemon oklch(0.92 0.19 102) · dark oklch(0.88 0.17 100): CTA fill, the hero stroke, the active tab, console values; never body text",
+      "primary": "= the ink: the black button and dark active pills",
+      "link": "var(--link) cobalt oklch(0.45 0.17 258): text links and the docs' active nav only",
+      "signal / warn": "status pills only",
+      "console": "var(--console) Deep Midnight oklch(0.26 0.03 260) · dark oklch(0.12 0.02 260): the readout, code, the Pocket band",
+      "verdicts": "--verdict-verified 青磁 · --verdict-mismatch 琥珀 · --verdict-not-found 朱 · --verdict-retracted 紅 · --verdict-ambiguous 藤 · --verdict-unknown grey; the *-dark set reads on the console and in dark mode; all ≥ 4.5:1 (D-024)"
     },
     "typography": {
-      "display": "var(--font-display) Newsreader; one italic word per headline at most",
-      "ui": "var(--font-sans) IBM Plex Sans 400/500/600",
-      "data": "var(--font-mono) IBM Plex Mono: verdict codes, receipts, as_of, IDs, JSON; eyebrows uppercase with widest tracking",
-      "mark": "var(--font-mark) Shippori Mincho B1 800: the 証 mark and the kanji index (典 符 今) only"
+      "display": "var(--font-display) Gabarito 700/800, tracking -0.03em (hero), -0.025em (sections), -0.02em (card titles)",
+      "ui": "var(--font-sans) Instrument Sans 400–700; 15–18 px",
+      "data": "var(--font-mono) Geist Mono 400–600: .label (11.5 px uppercase, tracking 0.12em), pills (12.5 px), codes, timings, JSON",
+      "mark": "var(--font-mark) Shippori Mincho B1 800: 証 and the kanji index (典 符 今) only"
     },
-    "spacing": {
-      "page": "max-w-5xl, px-6",
-      "ledger row": "py-8 between hairlines, dot leaders between name and ID"
-    },
-    "radius": {
-      "card": "var(--radius) 6px",
-      "chip": "var(--radius-chip) 999px"
-    },
-    "shadows": {
-      "receipt": "var(--shadow-receipt): the only drop shadow in the app"
-    },
+    "spacing": { "page": "max-w-6xl, px-5 sm:px-8", "section": "py-16 md:py-24, alternating canvas / band", "card": "p-6" },
+    "radius": { "sm": "6px", "default": "10px", "lg": "16px (cards)", "xl": "20px (the console band)", "chip": "999px (pills, buttons)" },
+    "shadows": { "1": "cards (Superthread three-layer)", "2": "hover, the readout", "3": "the desk card, the receipt", "marker": "under the lemon button" },
     "motion": {
-      "ease": "var(--ease-seal) cubic-bezier(.2,.8,.2,1); state changes only, 150–240 ms (--duration-state 180ms)",
-      "signature": "seal press: scale 1.06 → 1 plus a 120 ms ink bloom when a verdict lands",
-      "reduced": "prefers-reduced-motion gives cross-fades only; ambient loops pause off-screen"
+      "ease": "var(--ease-seal) cubic-bezier(.2,.8,.2,1); fast 120 · state 180 · slow 320",
+      "signature": "the marker stroke draws under the hero keyword once (700 ms); VerdictStamp presses 1.08 → 1 with an ink bloom; readout glyphs pop (SPRING_POP); cards lift 2 px on hover; the desk strip sweeps while running",
+      "reduced": "prefers-reduced-motion gives cross-fades only; the stroke is drawn"
     },
-    "density": "certificate ledger: hairlines and whitespace do the layout, mono data, no card chrome except the receipt"
+    "density": "comfortable: cards and pills, bands instead of rules, big type"
   },
   "components": {
     "installed": [],
-    "preferredPrimitives": [
-      "radix-ui (via shadcn radix-nova)",
-      "lucide-react at stroke 1.5",
-      "motion/react"
+    "adapted": [
+      "Text Highlighter 18772 → components/ui/marker-stroke (one SVG path, CSS-drawn)",
+      "Hero Pill 983 + cdr-kit → .pill / .pill-signal / .pill-warn / .pill-ink",
+      "Segmented Tabs 26923 + Superthread tabs → features/desk/ModeTabs (dark active tab)",
+      "useAutoResizeTextarea 1097 + Val Town code card → features/desk/DeskInput",
+      "Log Viewer 31646 (row grammar) → features/desk/Readout",
+      "Code Block 28281 / 28695 → components/evidence/SnippetSheet",
+      "Stats 29870 → features/story/Failures",
+      "Vertical Stepper 29866 → packages/ui/diagrams/plain-steps",
+      "Feature Grid 26797 → features/story/ServiceCards",
+      "Number Ticker 19063 → components/ui/number-ticker",
+      "Receipt Tiers 29978 → features/story/PriceReceipt",
+      "Animated Beam 919 → packages/ui/animated-beam"
     ],
+    "preferredPrimitives": ["radix-ui (via shadcn radix-nova)", "lucide-react at stroke 1.5 (ICON_STROKE)", "motion/react"],
     "patterns": [
-      "Seal and Wordmark from @akashi/brand/react (outlined SVG, currentColor + var(--primary))",
-      "a verdict is always glyph + word + colour (packages/brand TONES)",
-      "21st picks from docs/plan/specs/ui-shortlist/picks.md, re-tokenized"
+      ".card (+ .card-hover) for records and interactive cells; .well for a data strip inside a card; .console for machine output",
+      ".btn .btn-marker (lemon) / .btn-ink (black) / .btn-white; .pill variants; .eyebrow-bar + .label above a section title; .key + MarkerStroke for the hero keyword",
+      "a verdict is always glyph + word + colour (VerdictStamp: a tinted pill, TONE_PILL)"
     ]
   },
   "constraints": {
     "must": [
       "Tokens only: no hex, rgb or px literals in TSX; colours through theme utilities or var(--token)",
-      "藍 indigo (--primary) is the only accent and never a verdict colour",
+      "Lemon is the marker: CTA fill, hero stroke, active tab, console values; never body text, never a verdict",
       "Verdicts are glyph + word + colour, never colour alone",
-      "Dark and light from the same rules (.dark overrides in packages/brand/tokens/theme.css)",
+      "Dark and light from the same rules (.dark and .console overrides in packages/brand/tokens/theme.css)",
       "Constants, not magic numbers (ESLint @typescript-eslint/no-magic-numbers); files ≤ 400 lines",
       "Real Akashi examples and copy, never lorem ipsum",
       "framer-motion imports become motion/react"
     ],
     "avoid": [
-      "round hanko, brush fonts, kanji watermarks",
-      "glassmorphism, purple gradients, generic SaaS gradient heroes",
+      "grey canvases, serif display, 2 px corners, underline-as-emphasis, italic word swaps",
+      "glassmorphism beyond the nav's blur; gradients beyond the lemon button; purple",
       "Tailwind palette colour utilities (text-blue-500 …) and pasted HTML",
-      "a second accent colour",
-      "drop shadows other than the receipt's"
+      "a second vivid accent in marketing surfaces; scroll-reveal on sections"
     ]
   },
   "decisions": [
-    {
-      "id": "D-024",
-      "summary": "Brand tokens: light mismatch/ambiguous/unknown darkened (L 0.55/0.55/0.545) so every verdict colour passes AA on washi"
-    },
-    {
-      "id": "D-025",
-      "summary": "One primitive family per app: web uses shadcn radix-nova (21st picks and AI Elements are Radix); docs uses Fumadocs' Base UI build"
-    },
-    {
-      "id": "D-foundation-2026-09-30",
-      "summary": "S7 foundation page: seal + letters-only wordmark in the nav (never 証 twice), Newsreader headline, ledger of the three services with endpoints generated from the OpenAPI"
-    }
+    { "id": "D-024", "summary": "Verdict tokens pass AA in both themes; the *-dark set is reused on the console" },
+    { "id": "D-025", "summary": "One primitive family per app: web uses shadcn radix-nova; docs uses Fumadocs' Base UI build" },
+    { "id": "D-028", "summary": "UI revamp v2 'The Highlighter' after the user rejected the v1 ledger: cool white canvas, midnight ink, lemon marker, Deep-Midnight console, 10/16/20 radii, three soft shadows, Gabarito / Instrument Sans / Geist Mono. Lock + ledger in docs/plan/specs/ui-revamp.md" },
+    { "id": "D-029", "summary": "Hero: pills, Gabarito 800 headline with a hand-drawn lemon stroke under the keyword, lemon + black CTA pair, ✦ facts row; the desk as a code card (header bar, dark active tabs, lemon Check); exhibits as white chips" },
+    { "id": "D-030", "summary": "Readout: Deep-Midnight card with a lemon top edge, route + per-item timings + verdict bar; evidence: white cards with the verdict as a tinted pill and data rows in a well; sources: a card of rows" },
+    { "id": "D-031", "summary": "Story: bands alternate canvas / band, lemon eyebrow bar, stat cards, lemon-badged steps, the Pocket relay in the one Deep-Midnight band (radius 20), service cards with lemon kanji tiles, nested envelope cards, the receipt" },
+    { "id": "D-032", "summary": "Docs: same tokens; fd-primary = cobalt (links, active nav); landing with pills, lemon/black/white CTAs, start-here cards, the curl quickstart on the console; titles in Gabarito" },
+    { "id": "D-breakpoints", "summary": "≥ 1100 px: evidence | sources card (18 rem, sticky); below: sources under the cards. Stat cards 1 / 2 / 4; service cards 1 / 3; steps 1 / 2 / 4. Nav anchors from md; the Docs button always" }
   ],
   "evidence": [
-    {
-      "fact": "project.stack:nextjs",
-      "source": "package.json"
-    },
-    {
-      "fact": "project.stack:react",
-      "source": "package.json"
-    },
-    {
-      "fact": "project.stack:shadcn",
-      "source": "components.json"
-    },
-    {
-      "fact": "project.stack:tailwind-v3",
-      "source": "package.json"
-    },
-    {
-      "fact": "tokens in packages/brand/tokens/theme.css (Tailwind v4 @theme inline)",
-      "source": "packages/brand"
-    }
+    { "fact": "project.stack:nextjs", "source": "package.json" },
+    { "fact": "project.stack:react", "source": "package.json" },
+    { "fact": "project.stack:shadcn", "source": "components.json" },
+    { "fact": "project.stack:tailwind-v4", "source": "package.json" },
+    { "fact": "tokens in packages/brand/tokens/theme.css (Tailwind v4 @theme inline)", "source": "packages/brand" }
   ],
-  "generatedAt": "2026-09-30T05:25:39.445Z"
+  "generatedAt": "2026-10-06T14:30:00.000Z"
 }

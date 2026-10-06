@@ -12,7 +12,7 @@ export function KindPicker({ onPick, disabled }: { onPick: (kind: PickableKind) 
           type="button"
           disabled={disabled}
           onClick={() => onPick(kind)}
-          className="rounded-(--radius-chip) border border-border px-3 py-1 text-xs transition-colors hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50"
+          className="rounded-chip border border-border-2 bg-card px-3 py-1.5 text-sm font-medium transition-colors duration-(--duration-fast) hover:border-foreground disabled:opacity-50"
         >
           {KIND_LABELS[kind]}
         </button>

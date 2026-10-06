@@ -1,25 +1,10 @@
-import { IBM_Plex_Mono, IBM_Plex_Sans, Newsreader, Shippori_Mincho_B1 } from "next/font/google";
+import { Gabarito, Geist_Mono, Instrument_Sans, Shippori_Mincho_B1 } from "next/font/google";
 
-/** The four brand faces (specs/web.md §2), exposed as the CSS variables tokens/theme.css expects. */
-const newsreader = Newsreader({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  variable: "--font-newsreader",
-  display: "swap",
-});
-const plexSans = IBM_Plex_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-plex-sans",
-  display: "swap",
-});
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-plex-mono",
-  display: "swap",
-});
+/** The four brand faces (tokens/theme.css v3), exposed as the CSS variables the tokens expect. */
+const gabarito = Gabarito({ subsets: ["latin"], weight: ["600", "700", "800"], variable: "--font-gabarito", display: "swap" });
+const instrument = Instrument_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-instrument", display: "swap" });
+const geistMono = Geist_Mono({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-geist-mono", display: "swap" });
 // Kanji index only (典 符 今 証): CJK is served in unicode-range slices, so nothing is preloaded.
 const shippori = Shippori_Mincho_B1({ weight: "800", variable: "--font-shippori", display: "swap", preload: false });
 
-export const fontVariables = [newsreader, plexSans, plexMono, shippori].map((f) => f.variable).join(" ");
+export const fontVariables = [gabarito, instrument, geistMono, shippori].map((f) => f.variable).join(" ");

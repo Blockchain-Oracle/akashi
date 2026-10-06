@@ -27,7 +27,7 @@ export function PaymentHandshake({ className }: { className?: string }) {
   }, [reduce]);
 
   return (
-    <figure className={cn("not-prose rounded-3xl border border-border bg-card p-5 md:p-8", className)}>
+    <figure className={cn("not-prose card p-5 md:p-8", className)}>
       <div className="flex justify-between font-medium text-sm">
         <span>Agent</span>
         <span>Agentic Portal</span>

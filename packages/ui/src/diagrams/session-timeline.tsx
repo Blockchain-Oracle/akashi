@@ -27,12 +27,12 @@ const total = PHASES.reduce((n, p) => n + p.blocks, 0);
 /** From a relay to settled POKT: the session timeline, then how the settlement is split. */
 export function SessionTimeline({ className }: { className?: string }) {
   return (
-    <figure className={cn("not-prose space-y-8 rounded-3xl border border-border bg-card p-5 md:p-8", className)}>
+    <figure className={cn("not-prose space-y-8 card p-5 md:p-8", className)}>
       <div>
         <div className="mb-3 font-mono text-[11px] text-muted-foreground uppercase tracking-[0.16em]">
           From first relay to settlement on Beta · {total} blocks ≈ {Math.round((total * BETA_BLOCK_S) / SECONDS_PER_MINUTE)} min
         </div>
-        <div className="relative flex h-10 overflow-hidden rounded-xl">
+        <div className="relative flex h-10 overflow-hidden rounded-(--radius)">
           {PHASES.map((p, i) => (
             <div
               key={`${p.label}-${i}`}

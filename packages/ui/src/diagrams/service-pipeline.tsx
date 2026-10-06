@@ -58,9 +58,9 @@ const BAR_STAGGER_S = 0.12;
 export function ServicePipeline({ service, className }: { service: ServiceKey; className?: string }) {
   const p = PIPELINES[service];
   return (
-    <figure className={cn("not-prose rounded-3xl border border-border bg-card p-5 md:p-8", className)}>
+    <figure className={cn("not-prose card p-5 md:p-8", className)}>
       <div className="grid items-center gap-5 md:grid-cols-[auto_1fr_auto] md:gap-8">
-        <div className="rounded-2xl border border-border bg-background px-4 py-3 text-center">
+        <div className="rounded-(--radius) border border-border bg-background px-4 py-3 text-center">
           <div className="font-mark text-2xl" aria-hidden>
             {SERVICES[service].kanji}
           </div>
@@ -85,7 +85,7 @@ export function ServicePipeline({ service, className }: { service: ServiceKey; c
             ))}
           </ul>
         </div>
-        <div className="rounded-2xl border border-primary/60 bg-primary/5 px-4 py-3 text-center">
+        <div className="rounded-(--radius) border border-primary/60 bg-primary/5 px-4 py-3 text-center">
           <div className="font-medium text-sm">verdict</div>
           <div className="mt-1 max-w-[12rem] text-muted-foreground text-xs">{p.decide}</div>
         </div>

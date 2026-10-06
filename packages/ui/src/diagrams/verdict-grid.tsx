@@ -46,7 +46,7 @@ const SETS: Record<string, Row[]> = {
 /** A verdict vocabulary: glyph + word + colour, and what each one means. */
 export function VerdictGrid({ set, className }: { set: keyof typeof SETS; className?: string }) {
   return (
-    <div className={cn("not-prose grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2", className)}>
+    <div className={cn("not-prose grid gap-px overflow-hidden rounded-(--radius) border border-border bg-border sm:grid-cols-2", className)}>
       {(SETS[set] ?? []).map(([word, tone, meaning]) => (
         <div key={word} className="bg-card px-4 py-3">
           <Verdict tone={tone} word={word} />

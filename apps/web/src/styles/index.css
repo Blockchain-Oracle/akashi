@@ -4,7 +4,49 @@
 @import "@akashi/ui/diagrams.css";
 @source "../../../../packages/ui/src";
 
-/* The pricing receipt (features/story/PriceReceipt.tsx): the app's only drop shadow, a torn bottom edge, a barcode. */
+/*
+ * The desk (features/desk/DeskInput.tsx): a code card with the product-mockup shadow. A lemon ring while it has focus;
+ * the footer strip runs a sweep while a check is in flight.
+ */
+.desk-card {
+  transition:
+    box-shadow var(--duration-state) var(--ease-seal),
+    border-color var(--duration-state) var(--ease-seal);
+}
+.desk-card:focus-within {
+  border-color: var(--marker-2);
+  box-shadow:
+    0 0 0 4px var(--marker-soft),
+    var(--shadow-3);
+}
+.sweep {
+  position: relative;
+  overflow: hidden;
+}
+.sweep::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--marker), transparent);
+  animation: sweep 1.4s var(--ease-seal) infinite;
+}
+@keyframes sweep {
+  from {
+    translate: -100% 0;
+  }
+  to {
+    translate: 100% 0;
+  }
+}
+
+/* The readout (features/desk/Readout.tsx): the console card with a lemon top edge, like a highlighted line. */
+.readout {
+  border-top: 3px solid var(--marker);
+}
+
+/* The pricing receipt (features/story/PriceReceipt.tsx): a torn bottom edge, a barcode. */
 .receipt {
   filter: var(--receipt-drop);
 }
@@ -22,4 +64,12 @@
     currentColor 0.3125rem 0.375rem,
     transparent 0.375rem 0.5625rem
   );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sweep::after {
+    animation: none;
+    translate: 0 0;
+    background: var(--marker);
+  }
 }

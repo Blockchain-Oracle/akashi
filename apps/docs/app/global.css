@@ -8,7 +8,11 @@
 @source "../node_modules/fumadocs-openapi/dist";
 @source "../../../packages/ui/src";
 
-/* Stock Fumadocs layout and components; only the theme variables point at the Akashi brand tokens. */
+/*
+ * Stock Fumadocs layout and components on the Akashi tokens (v3 "The Highlighter"). The theme variables point at the
+ * brand; Fumadocs' primary is the cobalt link colour (its text links and active nav need a readable hue, not lemon);
+ * the radii are the brand's (via @theme in tokens.css); headings take the display face.
+ */
 :root,
 :root.dark {
   --color-fd-background: var(--background);
@@ -20,8 +24,8 @@
   --color-fd-popover: var(--popover);
   --color-fd-popover-foreground: var(--popover-foreground);
   --color-fd-border: var(--border);
-  --color-fd-primary: var(--primary);
-  --color-fd-primary-foreground: var(--primary-foreground);
+  --color-fd-primary: var(--link);
+  --color-fd-primary-foreground: oklch(1 0 0);
   --color-fd-secondary: var(--secondary);
   --color-fd-secondary-foreground: var(--secondary-foreground);
   --color-fd-accent: var(--accent);
@@ -29,41 +33,44 @@
   --color-fd-ring: var(--ring);
 }
 
-/* Border beam (components/landing/border-beam.tsx). */
-@theme {
-  --animate-border-beam: border-beam calc(var(--duration) * 1s) infinite linear;
-  @keyframes border-beam {
-    100% {
-      offset-distance: 100%;
-    }
-  }
+/* Page titles and prose headings in the display face. */
+.prose :is(h1, h2, h3) {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.prose h2 {
+  font-size: 1.8rem;
+  line-height: 1.15;
+}
+.prose h3 {
+  font-size: 1.3rem;
+  line-height: 1.25;
 }
 
-/* Landing entrance for the bento cells. */
-@keyframes ak-rise {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 18px, 0) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+/* Inline code and tables read as data. */
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  border-radius: var(--radius-sm);
 }
-.ak-rise {
-  animation: ak-rise 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+.prose table {
+  font-size: 0.9rem;
 }
-@media (prefers-reduced-motion: reduce) {
-  .ak-rise {
-    animation: none;
-  }
+.prose th {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  font-weight: 500;
 }
 
-/* Shiki dual themes in the code showcase. */
-.ak-code .shiki span {
+/* Shiki dual themes in code blocks. */
+.shiki span {
   color: var(--shiki-light);
 }
-.dark .ak-code .shiki span {
+.dark .shiki span {
   color: var(--shiki-dark);
 }
-

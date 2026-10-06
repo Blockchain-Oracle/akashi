@@ -2,17 +2,17 @@
 
 import { useState } from "react";
 
-import type { DeskMode } from "@/lib/constants/desk";
+import type { DeskMode, Exhibit } from "@/lib/constants/desk";
 import { SECONDS_PER_MINUTE } from "@/lib/constants/ui";
 
 import { DeskInput } from "./DeskInput";
-import { ExampleChips } from "./ExampleChips";
+import { Exhibits } from "./Exhibits";
 import { KindPicker } from "./KindPicker";
+import { Readout } from "./Readout";
 import { Results } from "./Results";
-import { Trace } from "./Trace";
 import { useDesk } from "./useDesk";
 
-/** The Evidence desk: one box for anything, routed to the right check, evidence streamed back. */
+/** The Evidence desk: one card for anything, routed to the right check, the readout and the evidence below. */
 export function Desk() {
   const [input, setInput] = useState("");
   const [mode, setMode] = useState<DeskMode>("auto");
@@ -23,37 +23,33 @@ export function Desk() {
     if (text.trim()) void run(text, mode);
   };
 
+  const pick = (exhibit: Exhibit) => {
+    setInput(exhibit.input);
+    setMode("auto");
+    submit(exhibit.input);
+  };
+
   return (
     <div className="space-y-6">
-      <div className="mx-auto max-w-3xl space-y-4">
+      <div className="space-y-4">
         <DeskInput value={input} onChange={setInput} mode={mode} onMode={setMode} onSubmit={() => submit()} running={running} />
-        <ExampleChips
-          onPick={(text) => {
-            setInput(text);
-            setMode("auto");
-            submit(text);
-          }}
-        />
+        <Exhibits onPick={pick} />
       </div>
 
       {state.phase === "error" && state.error && (
-        <div role="alert" className="mx-auto max-w-3xl rounded-lg border border-border bg-card p-4 text-sm">
-          {state.error.code !== "needs_kind" && <span className="font-mono text-muted-foreground text-xs">{state.error.code}</span>}
+        <div role="alert" className="card border-l-4 border-l-warn px-5 py-4 text-[15px]">
+          {state.error.code !== "needs_kind" && <div className="label">{state.error.code}</div>}
           <p className={state.error.code === "needs_kind" ? undefined : "mt-1"}>{state.error.message}</p>
-          {state.error.code === "needs_kind" && (
-            <KindPicker disabled={running} onPick={(kind) => void run(state.input, "now", kind)} />
-          )}
+          {state.error.code === "needs_kind" && <KindPicker disabled={running} onPick={(kind) => void run(state.input, "now", kind)} />}
           {state.error.retry_after_s !== undefined && (
-            <p className="mt-1 text-muted-foreground text-xs">Try again in {Math.ceil(state.error.retry_after_s / SECONDS_PER_MINUTE)} min.</p>
+            <p className="mt-1 font-mono text-xs text-muted-foreground">Try again in {Math.ceil(state.error.retry_after_s / SECONDS_PER_MINUTE)} min.</p>
           )}
         </div>
       )}
 
       {state.service && (
-        <div className="grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]">
-          <div className="lg:sticky lg:top-6 lg:self-start">
-            <Trace state={state} />
-          </div>
+        <div className="space-y-5">
+          <Readout state={state} />
           <Results state={state} />
         </div>
       )}

@@ -17,6 +17,10 @@ import { source } from "@/lib/source";
 
 type Props = { params: Promise<{ slug?: string[] }> };
 
+/** Page titles in the display face (the ledger's record titles), like every heading in the prose. */
+const TITLE = "text-balance font-display text-4xl leading-[1.05] font-bold tracking-[-0.025em]";
+const DESCRIPTION = "mb-0 text-pretty";
+
 export default async function Page({ params }: Props) {
   const page = source.getPage((await params).slug);
   if (!page) notFound();
@@ -24,7 +28,7 @@ export default async function Page({ params }: Props) {
   if (page.type === "openapi") {
     return (
       <DocsPage full>
-        <DocsTitle>{page.data.title}</DocsTitle>
+        <DocsTitle className={TITLE}>{page.data.title}</DocsTitle>
         {/* the operation's own description renders inside the reference block */}
         <DocsBody>
           <OpenAPIPage {...page.data.getOpenAPIPageProps()} />
@@ -37,8 +41,8 @@ export default async function Page({ params }: Props) {
   const markdownUrl = getPageMarkdownUrl(page).url;
   return (
     <DocsPage toc={page.data.toc} full={page.data.full}>
-      <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
+      <DocsTitle className={TITLE}>{page.data.title}</DocsTitle>
+      <DocsDescription className={DESCRIPTION}>{page.data.description}</DocsDescription>
       <div className="flex flex-row items-center gap-2 border-b pb-6">
         <MarkdownCopyButton markdownUrl={markdownUrl} />
         <ViewOptionsPopover markdownUrl={markdownUrl} />

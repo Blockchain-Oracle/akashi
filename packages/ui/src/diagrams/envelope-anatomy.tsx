@@ -16,7 +16,7 @@ function Layer({
   return (
     <div
       className={cn(
-        "rounded-2xl border p-4 md:p-5",
+        "rounded-(--radius) border p-4 md:p-5",
         tone === "portal" && "border-border bg-background",
         tone === "akashi" && "border-primary/60 bg-primary/5",
         tone === "item" && "border-border bg-card",
@@ -42,7 +42,7 @@ function Layer({
 /** What an agent receives: the portal's wrapper, Akashi's envelope inside it, one typed result per input. */
 export function EnvelopeAnatomy({ className }: { className?: string }) {
   return (
-    <figure className={cn("not-prose rounded-3xl border border-border bg-card p-3 md:p-5", className)}>
+    <figure className={cn("not-prose card p-3 md:p-5", className)}>
       <Layer
         title="{ portal, data }"
         who="written by the portal"

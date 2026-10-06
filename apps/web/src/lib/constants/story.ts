@@ -1,6 +1,6 @@
 /**
- * The below-the-fold story (specs/web.md §3). Every number is sourced: the research notes in
- * context/06-research (02-user-demand-and-pain-points, sources-code-reality-check, sources-live-facts).
+ * The story below the desk (specs/ui-revamp.md §5). Every number is sourced: the research notes in
+ * context/06-research (02-user-demand-and-pain-points, sources-code-reality-check, sources-live-facts) and this repo.
  */
 
 export type Failure = {
@@ -46,6 +46,15 @@ export const FAILURES: Failure[] = [
     claim: "between three free USD→BRL feeds, and one was two days old without saying so",
     source: "measured by Akashi · 2026-09-29",
   },
+];
+
+/** The ✦ facts row under the hero: what is true today, each verifiable in this repo or on-chain. */
+export const FACTS: string[] = [
+  "3 services registered on Pocket Beta",
+  "40 / 40 · 40 / 40 citation calibration",
+  "$0.005 a check, no account",
+  "8 package registries · 7 citation indexes",
+  "every answer with its sources and its age",
 ];
 
 /** How long a number takes to count up once it scrolls into view. */

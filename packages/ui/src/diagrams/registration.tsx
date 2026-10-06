@@ -27,14 +27,14 @@ export function Registration({ className }: { className?: string }) {
   const supplier = useRef<HTMLDivElement>(null);
   const api = useRef<HTMLDivElement>(null);
   return (
-    <figure className={cn("not-prose rounded-3xl border border-border bg-card p-5 md:p-8", className)}>
+    <figure className={cn("not-prose card p-5 md:p-8", className)}>
       <div ref={box} className="relative grid gap-6 md:grid-cols-[1.4fr_1fr_1fr] md:items-center md:gap-12">
         <div className="space-y-3">
           {SERVICE_ORDER.map((key) => {
             const svc = SERVICES[key];
             const rec = ONCHAIN.services[key];
             return (
-              <div key={key} ref={recordRef[key]} className="relative z-10 rounded-2xl border border-border bg-background p-3.5">
+              <div key={key} ref={recordRef[key]} className="relative z-10 rounded-(--radius) border border-border bg-background p-3.5">
                 <div className="flex items-baseline justify-between gap-2">
                   <code className="font-mono text-sm">{svc.id}</code>
                   <span className="font-mark text-lg leading-none" aria-hidden>
@@ -51,7 +51,7 @@ export function Registration({ className }: { className?: string }) {
             );
           })}
         </div>
-        <div ref={supplier} className="relative z-10 rounded-2xl border border-primary bg-[color-mix(in_oklch,var(--primary)_6%,var(--card))] p-4 text-center">
+        <div ref={supplier} className="relative z-10 rounded-(--radius) border border-primary bg-[color-mix(in_oklch,var(--primary)_6%,var(--card))] p-4 text-center">
           <ShieldCheck className="mx-auto size-7 text-primary" strokeWidth={ICON_STROKE} />
           <div className="mt-2 font-medium text-sm">One supplier stake</div>
           <div className="text-muted-foreground text-xs">serves all three IDs</div>
@@ -59,7 +59,7 @@ export function Registration({ className }: { className?: string }) {
             <Server className="size-4" strokeWidth={ICON_STROKE} /> RelayMiner
           </div>
         </div>
-        <div ref={api} className="relative z-10 rounded-2xl border border-border bg-background p-4 text-center">
+        <div ref={api} className="relative z-10 rounded-(--radius) border border-border bg-background p-4 text-center">
           <Seal className="mx-auto size-10" label={null} />
           <div className="mt-2 font-medium text-sm">Akashi API</div>
           <div className="font-mono text-muted-foreground text-xs">/cite · /code · /now</div>
