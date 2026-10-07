@@ -24,8 +24,8 @@ export async function serveMcp(akashi: Akashi): Promise<void> {
     {
       title: "Discover Akashi tools",
       description:
-        "Free. Rank Akashi's tool catalog for a job (web/news search, page reading, cited answers, research papers, " +
-        "developer and government search, weather, FX, time, packages, dictionaries…). Returns ids, prices, health and hints.",
+        "Free. Rank Akashi's tool catalog for a job (web search, page reading, cited answers, papers, news, weather, " +
+        "maps, crypto and FX, GitHub and packages, time, dictionaries…). Returns ids, prices, health and hints.",
       inputSchema: { query: z.string().min(2), limit: z.number().int().min(1).max(25).optional() },
     },
     async ({ query, limit }) => {

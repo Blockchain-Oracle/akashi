@@ -10,8 +10,8 @@ version: ${SKILL_VERSION}
 description: >-
   One endpoint for agent tools, paid per call in USDC over x402 and delivered as Pocket Network relays.
   Run discover before writing a scraper, before a generic web fetch for structured data, or before telling the
-  user something is inaccessible: live web and news search, page extraction, cited answers, research papers,
-  developer and government search, weather, FX, time zones, holidays, packages, dictionaries and more.
+  user something is inaccessible: live web search and page reading, cited answers, research papers, news,
+  weather and weather history, maps, crypto prices and FX, GitHub and packages, time zones, holidays and more.
   If the user already has a dedicated tool or key for that exact job, use theirs; Akashi fills the gaps.
 ---
 

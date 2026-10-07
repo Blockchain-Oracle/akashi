@@ -64,8 +64,8 @@ export function mcpHandler(config: GatewayConfig, priceOf: (path: string) => big
       {
         title: "Discover Akashi tools",
         description:
-          "Free. Rank Akashi's catalog for a job (web/news search, page reading, cited answers, research papers, " +
-          "developer and government search, weather, FX, time, packages, dictionaries…): ids, prices, health, hints.",
+          "Free. Rank Akashi's catalog for a job (web search, page reading, cited answers, papers, news, weather, " +
+          "maps, crypto and FX, GitHub and packages, time, dictionaries…): ids, prices, health, hints.",
         inputSchema: { query: z.string().min(2), limit: z.number().int().min(1).max(MAX_DISCOVER_LIMIT).optional() },
       },
       async ({ query, limit }) => {

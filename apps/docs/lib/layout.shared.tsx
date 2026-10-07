@@ -21,7 +21,7 @@ export function baseOptions(): BaseLayoutProps {
     links: [
       { text: "Agent chat", url: `${site.app}/agent`, external: true },
       { text: "Tools", url: `${site.app}/tools`, external: true },
-      { text: "useakashi.xyz", url: site.app, external: true },
+      { text: "Open the app", url: site.app, external: true },
     ],
   };
 }
