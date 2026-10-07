@@ -35,9 +35,11 @@ export default async function ProviderPage({ params }: Props) {
         <Link href="/tools" className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-3.5" aria-hidden /> Back to all tools
         </Link>
-        <p className="mt-8 inline-flex rounded-full border border-line px-3 py-1 font-mono text-[0.6875rem] tracking-[0.12em] text-muted-foreground uppercase">
-          {endpoints.length} endpoint{endpoints.length === 1 ? "" : "s"}
-        </p>
+        <div className="mt-8">
+          <p className="inline-flex rounded-full border border-line px-3 py-1 font-mono text-[0.6875rem] tracking-[0.12em] text-muted-foreground uppercase">
+            {endpoints.length} endpoint{endpoints.length === 1 ? "" : "s"}
+          </p>
+        </div>
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <ProviderLogo id={provider.id} name={provider.displayName} size="lg" />
           <h1 className="display text-[clamp(2.4rem,5vw,3.4rem)]">{provider.displayName}</h1>

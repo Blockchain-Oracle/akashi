@@ -57,3 +57,68 @@
     animation: none;
   }
 }
+
+/* The tools line's running label (21st serafimcloud/tool-group, via the user's KeeperHub Copilot v2). */
+@keyframes tool-shimmer {
+  from {
+    background-position: 100% center;
+  }
+  to {
+    background-position: 0% center;
+  }
+}
+.tool-shimmer {
+  display: inline-block;
+  background-size: 250% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(90deg, var(--ak-muted) 0%, var(--ak-muted) 40%, var(--ak-ink) 50%, var(--ak-muted) 60%, var(--ak-muted) 100%);
+  background-repeat: no-repeat;
+  animation: tool-shimmer 2s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tool-shimmer {
+    animation: none;
+    color: var(--ak-ink);
+  }
+}
+
+/* Assistant prose (Streamdown output) in Monid paint. */
+.prose-akashi p {
+  margin: 0.5em 0;
+}
+.prose-akashi a {
+  color: var(--ak-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-akashi ul,
+.prose-akashi ol {
+  margin: 0.5em 0;
+  padding-left: 1.25em;
+}
+.prose-akashi ul {
+  list-style: disc;
+}
+.prose-akashi ol {
+  list-style: decimal;
+}
+.prose-akashi code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--ak-bg-muted);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+}
+.prose-akashi strong {
+  font-weight: 600;
+}
+.prose-akashi h1,
+.prose-akashi h2,
+.prose-akashi h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0.8em 0 0.3em;
+}

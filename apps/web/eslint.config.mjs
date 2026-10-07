@@ -31,5 +31,5 @@ export default defineConfig([
     files: ["src/lib/constants/**"],
     rules: { "@typescript-eslint/no-magic-numbers": "off" },
   },
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
+  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "public/**"]),
 ]);

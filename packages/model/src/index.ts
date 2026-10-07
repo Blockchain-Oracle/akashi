@@ -27,9 +27,19 @@ interface DirectProvider {
   create: (apiKey: string) => Factory;
 }
 
+/** Groq speaks the OpenAI chat-completions dialect (not the Responses API), so it goes through `.chat()`. */
+const GROQ_BASE_URL = "https://api.groq.com/openai/v1";
+/** When no model credential is set but Groq's is (the tool router already holds one), the chat still runs. */
+export const GROQ_FALLBACK_MODEL = "groq/openai/gpt-oss-20b";
+
 const DIRECT: Record<string, DirectProvider> = {
   anthropic: { keyEnv: "ANTHROPIC_API_KEY", create: (apiKey) => createAnthropic({ apiKey }) },
   openai: { keyEnv: "OPENAI_API_KEY", create: (apiKey) => createOpenAI({ apiKey }) },
+  groq: {
+    keyEnv: "GROQ_API_KEY",
+    create: (apiKey) => (modelId) =>
+      createOpenAI({ apiKey, baseURL: GROQ_BASE_URL, headers: { "user-agent": "Akashi/1.0" } }).chat(modelId),
+  },
 };
 
 export interface ResolvedModel {
@@ -76,6 +86,12 @@ export function resolveModel(override?: string, env: NodeJS.ProcessEnv = process
   if (env.AI_GATEWAY_API_KEY?.trim()) {
     // A bare `creator/model` string is a LanguageModel: the SDK routes it through the Gateway.
     return { model: spec, via: "gateway", providerName, modelId };
+  }
+
+  const groqKey = env.GROQ_API_KEY?.trim();
+  if (groqKey && spec !== GROQ_FALLBACK_MODEL) {
+    const fallback = split(GROQ_FALLBACK_MODEL);
+    return { model: DIRECT.groq!.create(groqKey)(fallback.modelId), via: "direct", ...fallback };
   }
 
   return null;

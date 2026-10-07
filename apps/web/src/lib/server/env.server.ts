@@ -17,6 +17,11 @@ const schema = z.object({
   /** The public x402 gateway, called server-side by demo (free) runs that the demo wallet pays for. */
   AKASHI_GATEWAY_URL: z.url().default(LOCAL_GATEWAY_URL),
   REDIS_URL: optionalText,
+  /** The chat history Redis (AOF, noeviction); without it chats live in process memory (dev). */
+  CHAT_REDIS_URL: optionalText,
+  /** HMAC key for the session cookie. */
+  SIWE_SECRET: optionalText,
+  GROQ_API_KEY: optionalText,
   IP_HASH_SALT: optionalText,
   DEMO_WALLET_PRIVATE_KEY: z.string().regex(PRIVATE_KEY, "a 0x-prefixed 32-byte hex key").optional(),
   AI_MODEL: optionalText,

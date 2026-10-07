@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Menu } from "lucide-react";
 import Link from "next/link";
 
 import { Logo } from "@/components/brand/Logo";
@@ -34,6 +34,18 @@ export function SiteHeader({ active }: { active?: string }) {
           >
             <GitHubMark className="size-[18px]" />
           </a>
+          <details className="relative md:hidden">
+            <summary className="flex size-9 cursor-pointer list-none items-center justify-center rounded-md text-ink-2 hover:bg-muted [&::-webkit-details-marker]:hidden" aria-label="Menu">
+              <Menu className="size-5" aria-hidden />
+            </summary>
+            <nav aria-label="Main" className="absolute right-0 mt-2 w-44 rounded-md border border-line bg-background p-1.5 shadow-card-hover">
+              {NAV.map((item) => (
+                <Link key={item.label} href={item.href} className="block rounded-sm px-3 py-2 text-sm hover:bg-muted">
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </details>
           <a
             href={docsPage("quickstart")}
             className="inline-flex h-9 items-center gap-1.5 rounded-md bg-muted px-3.5 text-sm font-medium text-foreground transition-colors hover:bg-line"

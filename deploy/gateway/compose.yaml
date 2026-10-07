@@ -17,10 +17,10 @@ services:
     restart: unless-stopped
   pocket-ap:
     image: ghcr.io/pokt-network/pocket-ap:v0.1.2
-    command: ["serve", "--config", "/config/pocket-ap.yaml"]
+    command: ["serve", "-config", "/etc/pocket-ap/config.yaml"]
     environment:
       POCKET_APP_PRIVATE_KEY: ${POCKET_APP_PRIVATE_KEY}   # Coolify secret env; the tool-router app key
-    volumes: ["./pocket-ap.yaml:/config/pocket-ap.yaml:ro"]
+    volumes: ["./pocket-ap.yaml:/etc/pocket-ap/config.yaml:ro"]
     expose: ["8550"]
     mem_limit: 128m
     restart: unless-stopped

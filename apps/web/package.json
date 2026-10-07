@@ -10,9 +10,18 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@ai-sdk/react": "catalog:",
     "@akashi/brand": "workspace:*",
+    "@akashi/model": "workspace:*",
+    "@rainbow-me/rainbowkit": "catalog:",
+    "@tanstack/react-query": "catalog:",
+    "@x402/core": "catalog:",
+    "@x402/evm": "catalog:",
+    "@x402/fetch": "catalog:",
+    "ai": "catalog:",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
+    "ioredis": "catalog:",
     "lucide-react": "catalog:",
     "motion": "catalog:",
     "next": "catalog:",
@@ -21,8 +30,11 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "server-only": "catalog:",
+    "streamdown": "catalog:",
     "tailwind-merge": "catalog:",
     "tw-animate-css": "catalog:",
+    "viem": "catalog:",
+    "wagmi": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

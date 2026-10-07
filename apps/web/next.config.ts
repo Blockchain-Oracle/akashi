@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
   // Next 16 writes AGENTS.md and CLAUDE.md on `next dev`; this repository carries no AI-tool files.
   agentRules: false,
   poweredByHeader: false,
+  // wagmi → @base-org/account → @coinbase/cdp-sdk lazily imports Solana x402 support we never use (Base only).
+  turbopack: { resolveAlias: { "@x402/svm/exact/client": "./src/lib/stubs/empty.ts" } },
   // One route file serves both spellings (macOS file systems are case-insensitive, so app/skill.md cannot coexist).
   rewrites: async () => [{ source: "/skill.md", destination: "/SKILL.md" }],
   redirects: async () => [
