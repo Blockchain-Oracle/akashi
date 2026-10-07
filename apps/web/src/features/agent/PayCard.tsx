@@ -143,7 +143,7 @@ export function PayCard({ input, onDone }: { input: Record<string, unknown>; onD
               type="button"
               onClick={pay}
               disabled={phase === "signing" || phase === "switching" || short}
-              className="inline-flex h-9 items-center gap-2 rounded-md bg-brand px-4 text-sm font-medium text-white hover:bg-brand-hover active:bg-brand-press disabled:opacity-60"
+              className="inline-flex h-9 items-center gap-2 rounded-md bg-brand px-4 text-sm font-medium text-primary-foreground hover:bg-brand-hover active:bg-brand-press disabled:opacity-60"
             >
               {phase === "signing" || phase === "switching" ? (
                 <Loader2 className="size-4 animate-spin" aria-hidden />

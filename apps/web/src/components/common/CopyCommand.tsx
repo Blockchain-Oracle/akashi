@@ -31,7 +31,7 @@ export function CopyCommand({ command, className, wrap = false }: { command: str
       <button
         type="button"
         onClick={copy}
-        className="inline-flex size-8 shrink-0 items-center justify-center rounded-sm bg-brand text-white transition-colors hover:bg-brand-hover active:bg-brand-press"
+        className="inline-flex size-8 shrink-0 items-center justify-center rounded-sm bg-brand text-primary-foreground transition-colors hover:bg-brand-hover active:bg-brand-press"
         aria-label={copied ? "Copied" : "Copy command"}
       >
         {copied ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}

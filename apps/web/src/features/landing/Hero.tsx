@@ -26,7 +26,7 @@ export function Hero({ catalog }: { catalog: Catalog }) {
           <span>Give this to your agent</span>
           <span className="flex items-center gap-2" aria-label={AGENT_MARKS.map((m) => m.label).join(", ")}>
             {AGENT_MARKS.map((mark) => (
-              <Image key={mark.src} src={mark.src} alt="" width={20} height={20} className="opacity-70" />
+              <Image key={mark.src} src={mark.src} alt="" width={20} height={20} className="opacity-70 dark:invert" />
             ))}
           </span>
         </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 import { Logo } from "@/components/brand/Logo";
+import { ThemeToggle } from "@/components/shell/ThemeToggle";
 import { CHAT_ID_SIZE } from "@/lib/constants/agent";
 import { DOCS_URL } from "@/lib/constants/site";
 
@@ -76,7 +77,10 @@ export function AgentApp({ endpoints, initialChatId, initialInput }: {
                 <a href={DOCS_URL} className="hover:text-foreground">Docs</a>
               </nav>
             </div>
-            <ConnectWallet />
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <ConnectWallet />
+            </div>
           </header>
           <div className="flex min-h-0 flex-1">
             <Sidebar

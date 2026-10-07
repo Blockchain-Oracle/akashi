@@ -11,7 +11,7 @@ export function SiteFooter({ toolCount }: { toolCount: number }) {
         <div className="max-w-sm space-y-6 text-sm text-on-dark-muted">
           <p>
             Akashi connects your agent to {toolCount} tools &amp; APIs. One integration. Your agent discovers,
-            compares and pays for tools at runtime, and every run travels over Pocket Network.
+            compares and pays for tools at runtime, and every paid run travels over Pocket Network.
           </p>
           <p className="text-xs">© 2026 Akashi · Built for the Pocket Network Agentic Services Hackathon</p>
         </div>

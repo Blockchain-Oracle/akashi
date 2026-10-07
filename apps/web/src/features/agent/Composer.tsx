@@ -79,7 +79,7 @@ export function Composer({
             type="button"
             onClick={onSend}
             disabled={!canSend}
-            className="flex size-8 items-center justify-center rounded-md bg-brand text-white hover:bg-brand-hover disabled:bg-line-default"
+            className="flex size-8 items-center justify-center rounded-md bg-brand text-primary-foreground hover:bg-brand-hover disabled:bg-line-default"
             aria-label="Send"
           >
             <ArrowUp className="size-4" aria-hidden />

@@ -9,7 +9,7 @@ export const rainbowKitTheme: Theme = {
   colors: {
     ...base.colors,
     accentColor: "var(--ak-accent)",
-    accentColorForeground: "#ffffff",
+    accentColorForeground: "var(--primary-foreground)",
     actionButtonBorder: "var(--ak-line)",
     actionButtonSecondaryBackground: "var(--ak-bg-muted)",
     closeButton: "var(--ak-ink-2)",

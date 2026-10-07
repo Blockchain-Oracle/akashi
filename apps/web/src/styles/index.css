@@ -2,6 +2,40 @@
 @import "tw-animate-css";
 @import "@akashi/brand/paint.css";
 
+/*
+ * Dark mode: `.dark` on <html>, set before the first paint by the script in app/layout.tsx (the visitor's choice,
+ * else the system's). The palette matches the docs' dark theme (apps/docs/app/global.css): a near-black page,
+ * #1e1e1e panels, light text, and the accent's light tint for links and filled buttons, which then carry dark text
+ * (--primary-foreground). The "dark" surfaces (footer, terminal, dark buttons, your chat bubble) turn raised
+ * graphite so they still stand off the page.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+.dark {
+  color-scheme: dark;
+  --ak-accent: #8fb4ff;
+  --ak-accent-hover: #a9c5ff;
+  --ak-accent-press: #7aa3f5;
+  --ak-bg: #121212;
+  --ak-bg-muted: #1e1e1e;
+  --ak-bg-subtle: #181818;
+  --ak-dark: #262626;
+  --ak-dark-2: #303030;
+  --ak-ink: #fafafa;
+  --ak-ink-2: #d4d4d4;
+  --ak-muted: #adadad;
+  --ak-line: #2b2b2b;
+  --ak-line-default: #3a3a3a;
+  --ak-line-strong: #737373;
+  --ak-success: #34d399;
+  --primary-foreground: #121212;
+  --destructive: #ff7a66;
+  --shadow-window: 0 24px 48px -16px rgb(0 0 0 / 0.6), 0 2px 6px rgb(0 0 0 / 0.4);
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-card-hover: 0 6px 18px -6px rgb(0 0 0 / 0.6);
+  --shadow-pill: 0 4px 14px -4px rgb(0 0 0 / 0.6);
+}
+
 @layer base {
   * {
     border-color: var(--border);

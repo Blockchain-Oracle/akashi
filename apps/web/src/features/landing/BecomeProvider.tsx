@@ -13,7 +13,7 @@ export function BecomeProvider() {
         </p>
         <a
           href={`${REPO_URL}/blob/main/packages/tools/CONNECTORS.md`}
-          className="mt-8 inline-flex h-11 items-center gap-2 rounded-md bg-brand px-5 text-[0.9375rem] font-medium text-white transition-colors hover:bg-brand-hover active:bg-brand-press"
+          className="mt-8 inline-flex h-11 items-center gap-2 rounded-md bg-brand px-5 text-[0.9375rem] font-medium text-primary-foreground transition-colors hover:bg-brand-hover active:bg-brand-press"
         >
           <GitHubMark className="size-4" /> Contribute on GitHub →
         </a>

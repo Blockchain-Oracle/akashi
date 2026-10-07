@@ -16,7 +16,7 @@ export function PocketFlow() {
     <section className="border-y border-line bg-subtle">
       <div className="mx-auto max-w-[1200px] px-4 py-24 sm:px-6">
         <p className="font-mono text-[0.6875rem] tracking-[0.12em] text-brand uppercase">Native to Pocket Network</p>
-        <h2 className="display mt-3 max-w-[760px] text-[clamp(2rem,4.4vw,3.1rem)]">Every run is a Pocket relay.</h2>
+        <h2 className="display mt-3 max-w-[760px] text-[clamp(2rem,4.4vw,3.1rem)]">Every paid run is a Pocket relay.</h2>
         <p className="mt-4 max-w-[640px] text-lg text-muted-foreground">
           Payment is the credential. The gateway checks the x402 payment, sends the run as a signed relay to
           Akashi&apos;s supplier, and settles only when a result comes back.

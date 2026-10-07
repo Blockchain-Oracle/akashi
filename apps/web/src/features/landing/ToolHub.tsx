@@ -61,7 +61,7 @@ export function ToolHub({ catalog }: { catalog: Catalog }) {
         <li>
           <Link
             href="/tools"
-            className="flex h-full min-h-[64px] items-center justify-center rounded-md bg-brand px-4 py-3.5 text-[0.9375rem] font-medium text-white transition-colors hover:bg-brand-hover"
+            className="flex h-full min-h-[64px] items-center justify-center rounded-md bg-brand px-4 py-3.5 text-[0.9375rem] font-medium text-primary-foreground transition-colors hover:bg-brand-hover"
           >
             See all {total} tools
           </Link>

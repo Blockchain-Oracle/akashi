@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { Logo } from "@/components/brand/Logo";
 import { GitHubMark } from "@/components/common/GitHubMark";
+import { ThemeToggle } from "@/components/shell/ThemeToggle";
 import { NAV, REPO_URL, docsPage } from "@/lib/constants/site";
 
 /** Monid's header: wordmark left, four links centred, icon links + a quiet "Get started" pill right. */
@@ -27,6 +28,7 @@ export function SiteHeader({ active }: { active?: string }) {
           ))}
         </nav>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <a
             href={REPO_URL}
             className="hidden size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"

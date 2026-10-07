@@ -10,7 +10,7 @@ export default function NotFound() {
         <p className="font-mono text-xs tracking-[0.12em] text-muted-foreground uppercase">404</p>
         <h1 className="display mt-4 text-5xl">Nothing here.</h1>
         <p className="mt-4 text-lg text-muted-foreground">That page is not part of the catalog.</p>
-        <Link href="/tools" className="mt-8 rounded-md bg-brand px-5 py-2.5 font-medium text-white hover:bg-brand-hover">
+        <Link href="/tools" className="mt-8 rounded-md bg-brand px-5 py-2.5 font-medium text-primary-foreground hover:bg-brand-hover">
           Browse the tools
         </Link>
       </main>

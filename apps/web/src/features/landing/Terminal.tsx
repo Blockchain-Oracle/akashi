@@ -42,7 +42,7 @@ export function Terminal() {
           </span>
           <span className="font-mono text-xs text-on-dark-muted">{TERMINAL_SCRIPT.path}</span>
         </div>
-        <span className="rounded-sm bg-brand px-2 py-0.5 font-mono text-[0.6875rem] text-white">
+        <span className="rounded-sm bg-brand px-2 py-0.5 font-mono text-[0.6875rem] text-primary-foreground">
           wallet · ${TERMINAL_SCRIPT.balance}
         </span>
       </div>
