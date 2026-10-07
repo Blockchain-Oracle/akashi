@@ -36,6 +36,7 @@
 ## Supplier
 | stake tx | amount | endpoint | activation height | updates |
 |---|---|---|---|---|
+| E8997D51009D84EE42FFB9B69F0905C55AD4762ABD02F60645634784B97D4915 (h 712494, 2026-10-07, operator-signed) | 60,000 POKT | https://relay.84.46.247.92.sslip.io (REST, temporary host) | 712501 | re-stake on relay.useakashi.xyz when the domain exists (gas only) |
 
 ## App stakes
 | service | app addr | stake tx | amount | delegations |
@@ -59,6 +60,7 @@
 | private key `akashi-deploy-key` | 7izaxr1xhppq74ashloilmoc | deploy key (GitHub id 164816962, read-only) | – | – | – | – |
 
 | app `akashi-gateway` | mwivqpuwa5rpwtrxpwjc1j0w | Docker Image `ghcr.io/blockchain-oracle/akashi-gateway:main` | temp `https://mwivqpuwa5rpwtrxpwjc1j0w.84.46.247.92.sslip.io` (→ api.useakashi.xyz) | – | 192m | env AKASHI_API_URL=http://api.internal:8000, POCKET_AP_URL=http://pocket-ap.internal:8550, AKASHI_PAY_TO, DEMO_WALLET_PRIVATE_KEY (secret) |
+| app `akashi-relayminer` | 8sf3farw1wl5gjnrm50fd95s | Docker Compose `/deploy/pocket/compose.yaml` (redis 8.10.1 noeviction, miner + relayer v0.1.0), connected to the coolify network | relayer `https://relay.84.46.247.92.sslip.io` | – | 256m each | configs at /opt/pocket/config (sync-config.sh), key at /opt/pocket/secrets |
 | app `akashi-pocket-ap` | 0nfqgxdf8cdwb43mecpycxhd | Dockerfile `/deploy/gateway/pocket-ap.Dockerfile` (internal, no domain) | – | `pocket-ap.internal` | 128m | env POCKET_APP_PRIVATE_KEY (secret: tool-router app key) |
 | stopped 2026-10-07 | hxw9imsx4dn8k7llok6igo8a (akashi-nli), jrsfoxtd9twkyj1lqpmmu8jh (akashi-ts-introspect) | retired services; also stopped at the user's request: kawase-voice, logos-kit-preview-net (server overload) | | | | |
 
