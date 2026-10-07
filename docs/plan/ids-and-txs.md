@@ -48,7 +48,9 @@
 | service | session end | #relays | MsgCreateClaim tx | settled? | proof tx | chosen Test Tx ✓ |
 |---|---|---|---|---|---|---|
 | tool-router | 712520 (session dfd96816…7683c) | 1 (800 uPOKT claimed) | AC215AB4282193BDE42DD2EA99E419C0E489F17594371D64988A89F3F9A3E244 (h 712535, code 0, EventClaimCreated) | **settled 2026-10-07 16:14:50 UTC** (1 relay, 800 uPOKT) | 6729C253844DF7CF7FEF9BDBD169F09D517067F2C09BF945D7659A4703E06560 (h 712544, code 0, EventProofSubmitted; required: 800 > 100 uPOKT threshold) | ✓ (first settled claim) |
-| tool-router | 712540 | 4+ (paid runs 16:05 UTC) | claimed (in flight 16:15) | – | – | |
+| tool-router | 712540 | 12 (9,600 uPOKT) | (from the miner log) | **settled 16:24:57 UTC** | – | |
+| tool-router | 712560 | 5 (4,000 uPOKT) | – | **settled 16:35:05 UTC** (served while the app was unbonding; the claim still settled) | – | |
+| tool-router | 712580 | – | claimed, PENDING_VALIDATION 16:37 | – | – | |
 
 ### Paid runs (x402 on Base Sepolia → Pocket relay) — each one is a USDC transfer payer → payTo
 | when (UTC) | endpoint | price | settlement tx (sepolia.basescan.org) | via |
