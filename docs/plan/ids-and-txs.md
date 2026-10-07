@@ -58,6 +58,10 @@
 | api scheduled tasks | – | gdelt-ingest `2,17,32,47 * * * *` · jobs-ingest `20 */6 * * *` (akashi-task) |
 | private key `akashi-deploy-key` | 7izaxr1xhppq74ashloilmoc | deploy key (GitHub id 164816962, read-only) | – | – | – | – |
 
+| app `akashi-gateway` | mwivqpuwa5rpwtrxpwjc1j0w | Docker Image `ghcr.io/blockchain-oracle/akashi-gateway:main` | temp `https://mwivqpuwa5rpwtrxpwjc1j0w.84.46.247.92.sslip.io` (→ api.useakashi.xyz) | – | 192m | env AKASHI_API_URL=http://api.internal:8000, POCKET_AP_URL=http://pocket-ap.internal:8550, AKASHI_PAY_TO, DEMO_WALLET_PRIVATE_KEY (secret) |
+| app `akashi-pocket-ap` | 0nfqgxdf8cdwb43mecpycxhd | Dockerfile `/deploy/gateway/pocket-ap.Dockerfile` (internal, no domain) | – | `pocket-ap.internal` | 128m | env POCKET_APP_PRIVATE_KEY (secret: tool-router app key) |
+| stopped 2026-10-07 | hxw9imsx4dn8k7llok6igo8a (akashi-nli), jrsfoxtd9twkyj1lqpmmu8jh (akashi-ts-introspect) | retired services; also stopped at the user's request: kawase-voice, logos-kit-preview-net (server overload) | | | | |
+
 ## DNS / TLS
 | host | A record | cert checked |
 |---|---|---|
