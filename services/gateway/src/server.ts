@@ -21,6 +21,7 @@ import {
   HTTP_NOT_FOUND,
   HTTP_OK,
   HTTP_PAYLOAD_TOO_LARGE,
+  HTTP_UNPROCESSABLE,
   MAX_BODY_BYTES,
   RUN_PREFIX,
   SERVICE_ID,
@@ -117,7 +118,9 @@ app.post(`${RUN_PREFIX}/:provider/:slug`, async (c, next) => {
   if (!endpointsByPath.has(path)) return next();
   const body = await c.req.raw.clone().text();
   const checked = await forwardRead(config, "POST", path.replace(RUN_PREFIX, VALIDATE_PREFIX), body || "{}");
-  return checked.status === HTTP_OK ? next() : relay(c, checked);
+  // Only a verdict on the input blocks (400 bad JSON, 422 bad fields); anything else (an older api without
+  // /v1/validate, a hiccup) falls through to the normal paid path, where the api validates again anyway.
+  return checked.status === HTTP_BAD_REQUEST || checked.status === HTTP_UNPROCESSABLE ? relay(c, checked) : next();
 });
 
 // Payment runs before the handler: unpaid → 402 with the price; paid → handler → settle only if status < 400.
