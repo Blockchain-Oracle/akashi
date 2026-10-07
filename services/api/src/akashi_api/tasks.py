@@ -31,7 +31,7 @@ _ARGC = 2  # program name + task name
 
 async def probe() -> dict[str, Any]:
     load()
-    keyless = [e for e in catalog.endpoints() if e.available and not e.provider.auth.envs]
+    keyless = [e for e in catalog.endpoints() if e.available and e.keyless]
     failed: list[str] = []
     for endpoint in keyless:
         try:

@@ -54,6 +54,9 @@ Rules:
   credentials, applies rate limits and the deadline, records the source and maps errors (404 → "not found"
   answer, 429 → rate limited, other 4xx/5xx → provider error). `ctx.call("<id>", {...})` runs another endpoint
   (composites). `ctx.note("…")` adds a note for the agent.
+- **Composites declare what they call**: `@tool(..., requires=(SERPER, JINA, GROQ))`. The endpoint is then
+  unavailable unless those keys are set (never half-run), and the health probe skips it (it would spend keyed
+  credits every 10 minutes).
 - **Not found is an answer**: raise `ToolNotFoundResult("…")` when the thing does not exist (the run returns
   200, `found: false`, and is not billed).
 - **Price**: `LOCAL` ($0.001) keyless or local compute · `STANDARD` ($0.005) keyed, cheap · `PREMIUM` ($0.01)

@@ -38,6 +38,7 @@ class Endpoint:
     see_also: tuple[str, ...] = ()  # endpoint ids worth trying next or instead
     deadline_s: float = RUN_DEADLINE_DEFAULT_S
     cache_ttl_s: int | None = None
+    requires: tuple[Provider, ...] = ()  # other providers a composite calls (ctx.call): their keys gate this one too
 
     @property
     def id(self) -> str:
@@ -49,7 +50,12 @@ class Endpoint:
 
     @property
     def available(self) -> bool:
-        return self.provider.available
+        return self.provider.available and all(p.available for p in self.requires)
+
+    @property
+    def keyless(self) -> bool:
+        """Runs without any of our provider keys, directly or through a composite's calls (free to probe)."""
+        return not any(p.auth.envs for p in (self.provider, *self.requires))
 
     def summary_doc(self) -> dict[str, Any]:
         return {
@@ -104,6 +110,7 @@ def tool(
     see_also: tuple[str, ...] = (),
     deadline_s: float = RUN_DEADLINE_DEFAULT_S,
     cache_ttl_s: int | None = None,
+    requires: tuple[Provider, ...] = (),
 ) -> Callable[[Handler], Handler]:
     """Register `async def handler(inp: SomeInput, ctx: RunContext) -> SomeOutput` as `<provider>/<slug>`."""
     if deadline_s > RUN_DEADLINE_MAX_S:
@@ -132,6 +139,7 @@ def tool(
             see_also=see_also,
             deadline_s=deadline_s,
             cache_ttl_s=cache_ttl_s,
+            requires=requires,
         )
         if endpoint.id in REGISTRY:
             raise ValueError(f"duplicate endpoint id {endpoint.id}")

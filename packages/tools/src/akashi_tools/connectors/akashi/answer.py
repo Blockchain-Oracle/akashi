@@ -16,8 +16,11 @@ from pydantic import Field
 
 from akashi_tools.connectors.akashi.provider import AKASHI
 from akashi_tools.connectors.groq.chat import UNTRUSTED_TEXT_RULE, Model, complete
+from akashi_tools.connectors.groq.provider import GROQ
+from akashi_tools.connectors.jina.provider import JINA
 from akashi_tools.connectors.jina.web import PageOutput
 from akashi_tools.connectors.serper.common import TimeRange
+from akashi_tools.connectors.serper.provider import SERPER
 from akashi_tools.connectors.serper.web import SearchOutput
 from akashi_tools.constants import TTL_SEARCH_S
 from akashi_tools.framework import (
@@ -156,6 +159,7 @@ def _renumber(text: str, count: int) -> tuple[str, list[int]]:
     render=Render.answer,
     price=PREMIUM,
     example={"question": "Who invented the transistor, and when?"},
+    requires=(SERPER, JINA, GROQ),
     see_also=("serper/search", "jina/search", "firecrawl/ask-page", "groq/summarize"),
     cache_ttl_s=TTL_SEARCH_S,
 )
