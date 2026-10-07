@@ -17,7 +17,7 @@ services:
     image: ghcr.io/pokt-network/pocket-relay-miner:v0.1.0
     command: ["miner", "--config", "/config/config.yaml"]
     volumes:
-      - ./miner-config.yaml:/config/config.yaml:ro
+      - /opt/pocket/config/miner-config.yaml:/config/config.yaml:ro   # deploy/pocket/sync-config.sh puts it there
       - /opt/pocket/secrets/supplier-keys.yaml:/keys/supplier-keys.yaml:ro   # uid 1000, 0400; never in git
     mem_limit: 256m
     environment: { GOMEMLIMIT: "230MiB", GOMAXPROCS: "1" }
@@ -30,7 +30,7 @@ services:
     image: ghcr.io/pokt-network/pocket-relay-miner:v0.1.0   # SAME tag as the miner, always
     command: ["relayer", "--config", "/config/config.yaml"]
     volumes:
-      - ./relayer-config.yaml:/config/config.yaml:ro
+      - /opt/pocket/config/relayer-config.yaml:/config/config.yaml:ro
       - /opt/pocket/secrets/supplier-keys.yaml:/keys/supplier-keys.yaml:ro
     expose: ["8080"]
     mem_limit: 256m
