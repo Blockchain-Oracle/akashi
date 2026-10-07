@@ -33,8 +33,44 @@
   --color-fd-ring: var(--ring);
 }
 
-/* Page titles and prose headings in the display face. */
-.prose :is(h1, h2, h3) {
+/* The nav's one button is the green pill (HTTPie's "Go to App"), whichever colour Fumadocs gives its primary. */
+header a.bg-fd-primary,
+nav a.bg-fd-primary {
+  background: var(--go);
+  color: var(--go-foreground);
+  border-radius: var(--radius-chip);
+  font-weight: 600;
+}
+header a.bg-fd-primary:hover,
+nav a.bg-fd-primary:hover {
+  background: var(--go-2);
+}
+
+/* The search field (HTTPie's docs sidebar leads with search): a cream pill with a visible border, taller. */
+[data-search-full] {
+  border-radius: var(--radius-chip);
+  background: var(--card);
+  border: var(--hairline) solid var(--border-2);
+  min-height: 2.5rem;
+  padding-inline: 0.9rem;
+  color: var(--muted-foreground);
+}
+[data-search-full]:hover {
+  border-color: var(--faint-foreground);
+  color: var(--foreground);
+}
+
+/* The breadcrumb above a title: mono, tracked, uppercase (HTTPie's "HTTPIE › CLI › DOCS"). */
+.docs-crumb {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* Prose headings in the grotesque; the page title is the Anton `.title`. */
+.prose :is(h2, h3) {
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: -0.025em;

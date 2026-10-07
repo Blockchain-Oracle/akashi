@@ -1,70 +1,49 @@
-import { EnvelopeAnatomy } from "@akashi/ui/diagrams/envelope-anatomy";
-import { PlainSteps } from "@akashi/ui/diagrams/plain-steps";
 import { Registration } from "@akashi/ui/diagrams/registration";
 import { RequestPath } from "@akashi/ui/diagrams/request-path";
 import { ArrowRight } from "lucide-react";
 
-import { Failures } from "@/features/story/Failures";
-import { PriceReceipt } from "@/features/story/PriceReceipt";
-import { Section } from "@/features/story/Section";
-import { ServiceCards } from "@/features/story/ServiceCards";
-import { docsPage } from "@/lib/constants/site";
+import { AGENT_PATH, docsPage } from "@/lib/constants/site";
 import { ICON_STROKE } from "@/lib/constants/ui";
 
-/** Below the desk (specs/ui-revamp.md §5): why it matters, how it works, how it runs on Pocket, what it costs. */
+import { BlueBand } from "./BlueBand";
+import { Bubbles } from "./Bubbles";
+import { Failures } from "./Failures";
+import { Section } from "./Section";
+import { ServiceSections } from "./ServiceSections";
+import { SourceCircles } from "./SourceCircles";
+
+/** Below the desk, in HTTPie's section grammar (specs/ui-v3-httpie.md §4): the problem, the three services, Pocket, the band, the proof. */
 export function Story() {
   return (
     <div>
-      <Section
-        id="why"
-        tone="band"
-        eyebrow="Why"
-        title="Agents are wrong fluently."
-        lead="Four measured failures, each with its source. An agent cannot tell these from the truth; Akashi can."
-      >
-        <Failures />
+      <Section id="said" eyebrow="Said with confidence" title="Agents are wrong fluently." lead="Six things assistants have said, each read against the record. An agent cannot tell these from the truth; Akashi can.">
+        <Bubbles />
       </Section>
 
-      <Section id="how" eyebrow="How it works" title="Check first, then answer." lead="Four steps, a few hundred milliseconds, half a cent.">
-        <PlainSteps />
-      </Section>
+      <ServiceSections />
 
-      <Section
-        id="pocket"
-        tone="console"
-        eyebrow="On Pocket Network"
-        title="Every check is a relay."
-        lead="Agents pay the Agentic Portal; Pocket carries the call to Akashi and settles it on-chain."
-      >
+      <Section id="pocket" tone="blob" eyebrow="On Pocket Network" title="Every check is a relay." lead="Agents pay the Agentic Portal half a cent in USDC; Pocket carries the call to Akashi and settles it on-chain. No account, no API key.">
         <RequestPath />
       </Section>
 
-      <Section
-        id="services"
-        tone="band"
-        eyebrow="Three Pocket services"
-        title="Sources, code and live facts."
-        lead="One API, three capability-named services, each registered on Beta with its own card and price."
-      >
-        <ServiceCards />
+      <BlueBand />
+
+      <Section id="measured" eyebrow="Measured, not promised" title="Why it matters." lead="Four measured failures, each with its source, and what is true of Akashi today.">
+        <Failures />
       </Section>
 
-      <Section id="answer" eyebrow="What comes back" title="Every answer carries its proof." lead="A typed envelope: the verdict, the record found, every source asked, and when it was assembled.">
-        <EnvelopeAnatomy />
+      <Section id="record" tone="band" eyebrow="Read from the record" title="Checked against the originals." lead="Every answer names the sources it read, their licence and their age. These are them.">
+        <SourceCircles />
       </Section>
 
-      <Section id="price" tone="band" eyebrow="Price" title="Half a cent a check." lead="The portal quotes, takes payment and settles. Akashi never sees a wallet." split>
-        <PriceReceipt />
-      </Section>
-
-      <Section id="onchain" eyebrow="On-chain" title="Registered on Pocket Beta.">
+      <Section id="onchain" eyebrow="On-chain" title="Registered on Pocket Beta." align="left">
         <Registration />
         <div className="mt-8 flex flex-wrap gap-3">
-          <a href={docsPage("pocket/how-a-call-flows")} className="btn btn-marker">
-            How it runs on Pocket <ArrowRight className="size-4" strokeWidth={ICON_STROKE} aria-hidden />
+          <a href={AGENT_PATH} className="btn btn-go">
+            Talk to the agent <ArrowRight className="size-4" strokeWidth={ICON_STROKE} aria-hidden />
           </a>
-          <a href={docsPage()} className="btn btn-ink">
-            What is Akashi?
+          <a href={docsPage("pocket/how-a-call-flows")} className="btn btn-ink">
+            How it runs on Pocket
           </a>
         </div>
       </Section>

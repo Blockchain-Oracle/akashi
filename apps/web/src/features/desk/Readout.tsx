@@ -5,7 +5,8 @@ import { LoaderCircle } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
 import { TONE_FILL, TONE_TEXT, toneOf } from "@/components/evidence/tones";
-import { SERVICES } from "@/lib/constants/services";
+import { Window } from "@akashi/ui/window";
+import { SERVICE_TONE, SERVICES, TONE_TILE } from "@/lib/constants/services";
 import { MS_PER_SECOND, SPRING_POP } from "@/lib/constants/ui";
 import { cn } from "@/lib/utils";
 
@@ -35,14 +36,14 @@ function Row({ it }: { it: DeskItem }) {
         </AnimatePresence>
       </span>
       <span className={cn("truncate", done ? "text-foreground" : "text-muted-foreground")}>{it.label}</span>
-      <span className={cn("tabular-nums", done ? "text-primary" : "text-muted-foreground")}>
+      <span className={cn("tabular-nums", done ? "text-go" : "text-muted-foreground")}>
         {it.ms !== undefined ? `${(it.ms / MS_PER_SECOND).toFixed(SECONDS_DECIMALS)} s` : "· · ·"}
       </span>
     </li>
   );
 }
 
-/** The run's reading on the Deep-Midnight card: where it was routed, each item as it lands, the verdicts in one bar. */
+/** The run's reading, in a second terminal window: where it was routed, each item as it lands, the verdicts in a bar. */
 export function Readout({ state }: { state: DeskState }) {
   if (!state.service) return null;
   const svc = SERVICES[state.service];
@@ -51,50 +52,52 @@ export function Readout({ state }: { state: DeskState }) {
   const landed = state.items.filter((it) => it.status !== "pending").length;
   const running = state.phase === "running";
   return (
-    <section aria-label="Readout" aria-live="polite" className="console readout rounded-(--radius-lg) px-5 py-4 font-mono text-[13px] shadow-2 sm:px-6">
-      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
-        <span className="flex items-center gap-2.5">
-          <span className="grid size-7 place-items-center rounded-(--radius-sm) bg-primary font-mark text-sm leading-none text-primary-foreground" aria-hidden>
-            {svc.kanji}
-          </span>
-          <span className="text-muted-foreground">routed →</span>
-          <span className="font-semibold text-primary">{svc.id}</span>
-        </span>
-        <span className="text-muted-foreground tabular-nums">
-          {running ? `${landed} / ${state.items.length} landed` : `${state.items.length} checked · ${state.elapsedMs ?? 0} ms`}
-        </span>
-      </div>
-
-      <ol aria-label="Progress" className="mt-3 divide-y divide-border border-y border-border">
-        {state.items.map((it) => (
-          <Row key={it.index} it={it} />
-        ))}
-      </ol>
-
-      {total > 0 && (
-        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
-          <div
-            role="img"
-            aria-label={counts.map(([w, n]) => `${n} ${w.replaceAll("_", " ")}`).join(", ")}
-            className="flex h-2 min-w-32 flex-1 gap-px overflow-hidden rounded-chip bg-muted"
-          >
-            {counts.map(([word, n]) => (
-              <motion.div key={word} layout className={TONE_FILL[toneOf(word)]} style={{ flexGrow: n }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
+    <section aria-label="Readout" aria-live="polite">
+      <Window
+        title={
+          <>
+            <span className={cn("grid size-5 place-items-center rounded-(--radius-xs) font-mark text-[11px] leading-none", TONE_TILE[SERVICE_TONE[state.service]])} aria-hidden>
+              {svc.kanji}
+            </span>
+            <span>readout · routed → </span>
+            <span className="font-semibold text-foreground">{svc.id}</span>
+          </>
+        }
+        right={running ? `${landed} / ${state.items.length} landed` : `${state.items.length} checked · ${state.elapsedMs ?? 0} ms`}
+      >
+        <div className="px-5 py-3 font-mono text-[13px] sm:px-6">
+          <ol aria-label="Progress" className="divide-y divide-border">
+            {state.items.map((it) => (
+              <Row key={it.index} it={it} />
             ))}
-          </div>
-          <ul className="flex flex-wrap items-center gap-x-4 gap-y-1">
-            {counts.map(([word, n]) => {
-              const tone = toneOf(word);
-              return (
-                <li key={word} className={cn("inline-flex items-center gap-1.5 font-medium", TONE_TEXT[tone])}>
-                  <VerdictGlyph tone={tone} className="size-4" />
-                  <span className="tabular-nums">{n}</span> {word.replaceAll("_", " ")}
-                </li>
-              );
-            })}
-          </ul>
+          </ol>
+
+          {total > 0 && (
+            <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-3">
+              <div
+                role="img"
+                aria-label={counts.map(([w, n]) => `${n} ${w.replaceAll("_", " ")}`).join(", ")}
+                className="flex h-2 min-w-32 flex-1 gap-px overflow-hidden rounded-chip bg-muted"
+              >
+                {counts.map(([word, n]) => (
+                  <motion.div key={word} layout className={TONE_FILL[toneOf(word)]} style={{ flexGrow: n }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
+                ))}
+              </div>
+              <ul className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                {counts.map(([word, n]) => {
+                  const tone = toneOf(word);
+                  return (
+                    <li key={word} className={cn("inline-flex items-center gap-1.5 font-medium", TONE_TEXT[tone])}>
+                      <VerdictGlyph tone={tone} className="size-4" />
+                      <span className="tabular-nums">{n}</span> {word.replaceAll("_", " ")}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
         </div>
-      )}
+      </Window>
     </section>
   );
 }

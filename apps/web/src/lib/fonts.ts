@@ -2,15 +2,15 @@ import localFont from "next/font/local";
 import { Shippori_Mincho_B1 } from "next/font/google";
 
 /**
- * The four brand faces (tokens/theme.css v3), exposed as the CSS variables the tokens expect.
- * The three Latin faces are self-hosted from packages/brand/assets/fonts (variable woff2, latin subset) so a build
- * never depends on fonts.gstatic.com (the 2026-10-06 image build failed on a fetch timeout). Shippori stays on Google:
- * its CJK subsets are served as unicode-range slices and nothing is preloaded.
+ * The brand faces (tokens/theme.css v4), exposed as the CSS variables the tokens expect.
+ * Anton (the title face: uppercase H1s and page titles only), Instrument Sans (everything else) and Geist Mono (data)
+ * are self-hosted from packages/brand/assets/fonts (woff2, latin subset) so a build never depends on
+ * fonts.gstatic.com. Shippori stays on Google: its CJK subsets are served as unicode-range slices, nothing preloaded.
  */
-const gabarito = localFont({
-  src: "../../../../packages/brand/assets/fonts/gabarito-latin.woff2",
-  weight: "400 900",
-  variable: "--font-gabarito",
+const anton = localFont({
+  src: "../../../../packages/brand/assets/fonts/anton-latin.woff2",
+  weight: "400",
+  variable: "--font-anton",
   display: "swap",
 });
 const instrument = localFont({
@@ -27,4 +27,4 @@ const geistMono = localFont({
 });
 const shippori = Shippori_Mincho_B1({ weight: "800", variable: "--font-shippori", display: "swap", preload: false });
 
-export const fontVariables = [gabarito, instrument, geistMono, shippori].map((f) => f.variable).join(" ");
+export const fontVariables = [anton, instrument, geistMono, shippori].map((f) => f.variable).join(" ");

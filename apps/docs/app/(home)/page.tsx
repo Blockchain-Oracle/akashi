@@ -1,6 +1,7 @@
-import { BRAND, SERVICE_ORDER, SERVICES } from "@akashi/brand";
+import { BRAND, SERVICE_ORDER, SERVICES, type ServiceKey } from "@akashi/brand";
 import { ClaimCheck } from "@akashi/ui/diagrams/claim-check";
 import { ONCHAIN } from "@akashi/ui/onchain";
+import { Window } from "@akashi/ui/window";
 import Link from "next/link";
 
 import { Footer } from "@/components/landing/footer";
@@ -9,11 +10,18 @@ import { site } from "@/lib/site";
 
 export const revalidate = 60; // the live status pill
 
-const PROMISE = {
+const PROMISE: Record<ServiceKey, string> = {
   cite: "Real, retracted or invented",
   code: "Packages and symbols that exist",
   now: "Current facts, sources compared",
-} as const;
+};
+
+/** Each service's accent (D-034), as full class names so Tailwind can read them. */
+const TILE: Record<ServiceKey, string> = {
+  cite: "bg-agent text-agent-foreground",
+  code: "bg-net-band text-net-band-foreground",
+  now: "bg-go text-go-foreground",
+};
 
 /** Where to start: three columns of links under mono heads. */
 const START: { title: string; links: { label: string; href: string; note?: string }[] }[] = [
@@ -45,11 +53,12 @@ const START: { title: string; links: { label: string; href: string; note?: strin
 
 const EXAMPLE_CITATION = "Varghese v. China Southern Airlines Co., 925 F.3d 1339 (11th Cir. 2019)";
 
+/** The docs landing, in the HTTPie grammar: an Anton title, the trio of buttons, start-here cards, one terminal window. */
 export default function HomePage() {
   return (
     <main className="flex flex-1 flex-col">
-      <section className="mx-auto w-full max-w-6xl px-6 pt-16 pb-14 md:pt-24">
-        <div className="flex flex-wrap items-center gap-2.5">
+      <section className="mx-auto w-full max-w-6xl px-6 pt-14 pb-12 text-center md:pt-20">
+        <div className="flex flex-wrap items-center justify-center gap-2.5">
           <span className="pill pill-plain">
             <span className="font-mark text-sm leading-none" aria-hidden>
               {BRAND.kanji}
@@ -58,15 +67,22 @@ export default function HomePage() {
           </span>
           <NetworkStatus />
         </div>
-        <h1 className="mt-7 max-w-3xl font-display text-5xl leading-[1.0] font-extrabold tracking-[-0.03em] text-balance md:text-7xl">
-          Check first, then answer.
-        </h1>
-        <p className="mt-6 max-w-xl text-lg text-pretty text-fd-muted-foreground md:text-xl">
+        <div className="relative mx-auto mt-8 inline-block">
+          <h1 className="title text-6xl sm:text-7xl md:text-[7rem]">
+            Check first.
+            <br />
+            Then answer.
+          </h1>
+          <span className="bubble bubble-agent bubble-tail-bl mt-5 inline-block px-4 py-2 text-base font-semibold lg:absolute lg:-top-8 lg:right-0 lg:mt-0 lg:translate-x-1/3 lg:-rotate-3 lg:whitespace-nowrap">
+            docs for humans and agents
+          </span>
+        </div>
+        <p className="mx-auto mt-6 max-w-2xl text-lg text-pretty text-fd-muted-foreground md:text-xl">
           Three verification services an AI agent calls on Pocket Network before it cites a source, installs a package
           or states today&apos;s rate. Plain words first, types second.
         </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/docs" className="btn btn-marker">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Link href="/docs" className="btn btn-go">
             What is Akashi?
           </Link>
           <Link href="/docs/pocket/from-an-agent" className="btn btn-ink">
@@ -87,7 +103,7 @@ export default function HomePage() {
                 {col.links.map((l) => (
                   <li key={l.href}>
                     <Link href={l.href} className="group flex items-baseline gap-3 py-2.5 text-[15px] font-medium">
-                      <span className="group-hover:text-link">{l.label}</span>
+                      <span className="group-hover:text-net">{l.label}</span>
                       <span className="leader" aria-hidden />
                       <span className="shrink-0 font-mono text-[11px] font-normal text-fd-muted-foreground">{l.note}</span>
                     </Link>
@@ -99,31 +115,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-16 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-start md:py-24">
+      <section className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-16 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-center md:py-24">
         <div>
-          <span className="eyebrow-bar" aria-hidden />
-          <p className="label mt-4">Quickstart · one call</p>
+          <p className="label">Quickstart · one call</p>
           <h2 className="mt-3 font-display text-4xl leading-[1.05] font-bold tracking-[-0.025em] text-balance md:text-5xl">One POST, one verdict.</h2>
           <p className="mt-4 max-w-md text-lg text-pretty text-fd-muted-foreground">
             Every response is a JSON object: a verdict word per input, the record it matched, every source asked and when it
             was assembled. Errors come back the same way, as 4xx, never 5xx.
           </p>
         </div>
-        <div className="console overflow-hidden rounded-(--radius-lg) shadow-2">
-          <div className="flex items-center justify-between border-b border-border bg-band px-4 py-2.5 font-mono text-xs text-muted-foreground">
-            <span>POST {SERVICES.cite.prefix}/v1/verify</span>
-            <span className="text-primary">citation-verify · {ONCHAIN.services.cite.cupr.toLocaleString("en-US")} CU</span>
-          </div>
-          <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-6" tabIndex={0}>
-            <code>
-              {`curl -s -X POST ${site.api}${SERVICES.cite.prefix}/v1/verify \\
+        <div className="relative isolate">
+          <span aria-hidden className="blob blob-agent -top-8 -right-8 h-40 w-48" />
+          <Window title={<span>POST {SERVICES.cite.prefix}/v1/verify</span>} right={`${SERVICES.cite.id} · ${ONCHAIN.services.cite.cupr.toLocaleString("en-US")} CU`} className="text-left">
+            <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-6" tabIndex={0}>
+              <code>
+                {`curl -s -X POST ${site.api}${SERVICES.cite.prefix}/v1/verify \\
   -H 'content-type: application/json' \\
   -d '{"citations":["${EXAMPLE_CITATION}"]}'`}
-            </code>
-          </pre>
-          <div className="border-t border-border px-4 py-2 font-mono text-xs text-muted-foreground">returns</div>
-          <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-6" tabIndex={0}>
-            <code>{`{
+              </code>
+            </pre>
+            <div className="border-t border-border px-4 py-2 font-mono text-xs text-muted-foreground">returns</div>
+            <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-6 text-go" tabIndex={0}>
+              <code>{`{
   "status": "complete",
   "summary": { "not_found": 1 },
   "results": [{
@@ -132,31 +145,30 @@ export default function HomePage() {
   }],
   "sources": [{ "status": "ok", "licence": "CC0" }]
 }`}</code>
-          </pre>
+            </pre>
+          </Window>
         </div>
       </section>
 
       <section className="bg-band">
-        <div className="mx-auto w-full max-w-6xl px-6 py-16 md:py-24">
-          <span className="eyebrow-bar" aria-hidden />
-          <p className="label mt-4">What a check looks like</p>
-          <h2 className="mt-3 max-w-2xl font-display text-4xl leading-[1.05] font-bold tracking-[-0.025em] text-balance md:text-5xl">
+        <div className="mx-auto w-full max-w-6xl px-6 py-16 text-center md:py-24">
+          <p className="label">What a check looks like</p>
+          <h2 className="mx-auto mt-3 max-w-2xl font-display text-4xl leading-[1.05] font-bold tracking-[-0.025em] text-balance md:text-5xl">
             An AI says it. Akashi reads the record.
           </h2>
-          <ClaimCheck className="mt-10" />
+          <ClaimCheck className="mt-10 text-left" />
         </div>
       </section>
 
       <section className="mx-auto w-full max-w-6xl px-6 py-16 md:py-24">
-        <span className="eyebrow-bar" aria-hidden />
-        <p className="label mt-4">Three checks, three Pocket services</p>
+        <p className="label text-center">Three checks, three Pocket services</p>
         <ul className="mt-8 grid gap-4 md:grid-cols-3">
           {SERVICE_ORDER.map((key) => (
             <li key={key} className="card card-hover flex flex-col p-6">
-              <span className="grid size-12 place-items-center rounded-(--radius) bg-marker font-mark text-2xl leading-none text-marker-foreground" aria-hidden>
+              <span className={`grid size-12 place-items-center rounded-(--radius) font-mark text-2xl leading-none ${TILE[key]}`} aria-hidden>
                 {SERVICES[key].kanji}
               </span>
-              <Link href={`/docs/services/${key}`} className="mt-5 font-display text-2xl leading-tight font-bold tracking-[-0.02em] hover:text-link">
+              <Link href={`/docs/services/${key}`} className="mt-5 font-display text-2xl leading-tight font-bold tracking-[-0.02em] hover:text-net">
                 {SERVICES[key].name}
               </Link>
               <p className="mt-2 text-[15px] text-fd-muted-foreground">{PROMISE[key]}</p>

@@ -17,8 +17,9 @@ import { source } from "@/lib/source";
 
 type Props = { params: Promise<{ slug?: string[] }> };
 
-/** Page titles in the display face (the ledger's record titles), like every heading in the prose. */
-const TITLE = "text-balance font-display text-4xl leading-[1.05] font-bold tracking-[-0.025em]";
+/** Page titles in the title face (HTTPie's "HTTPIE CLI DOCS"): Anton, uppercase; the prose headings stay in the grotesque. */
+const TITLE = "title text-5xl md:text-6xl";
+const BREADCRUMB = { includeRoot: true, includeSeparator: true, className: "docs-crumb" } as const;
 const DESCRIPTION = "mb-0 text-pretty";
 
 export default async function Page({ params }: Props) {
@@ -27,7 +28,7 @@ export default async function Page({ params }: Props) {
 
   if (page.type === "openapi") {
     return (
-      <DocsPage full>
+      <DocsPage full breadcrumb={BREADCRUMB}>
         <DocsTitle className={TITLE}>{page.data.title}</DocsTitle>
         {/* the operation's own description renders inside the reference block */}
         <DocsBody>
@@ -40,7 +41,7 @@ export default async function Page({ params }: Props) {
   const MDX = page.data.body;
   const markdownUrl = getPageMarkdownUrl(page).url;
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
+    <DocsPage toc={page.data.toc} full={page.data.full} breadcrumb={BREADCRUMB}>
       <DocsTitle className={TITLE}>{page.data.title}</DocsTitle>
       <DocsDescription className={DESCRIPTION}>{page.data.description}</DocsDescription>
       <div className="flex flex-row items-center gap-2 border-b pb-6">

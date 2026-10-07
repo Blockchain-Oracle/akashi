@@ -21,4 +21,22 @@ export const ENDPOINTS = Object.fromEntries(
   ]),
 ) as Record<ServiceKey, string[]>;
 
+/** Each service's accent (D-034): 典 citations pink (the agent's voice), 符 code blue (Pocket), 今 live facts green (go). */
+export type ServiceTone = "agent" | "net" | "go";
+export const SERVICE_TONE: Record<ServiceKey, ServiceTone> = { cite: "agent", code: "net", now: "go" };
+
+/** The kanji tile in a service's accent (full class names, so Tailwind can read them). */
+export const TONE_TILE: Record<ServiceTone, string> = {
+  agent: "bg-agent text-agent-foreground",
+  net: "bg-net-band text-net-band-foreground",
+  go: "bg-go text-go-foreground",
+};
+
+/** A soft tint of the accent, for chips and wells. */
+export const TONE_SOFT: Record<ServiceTone, string> = {
+  agent: "bg-agent-soft",
+  net: "bg-net-soft",
+  go: "bg-go-soft",
+};
+
 export { SERVICE_ORDER, SERVICES, type ServiceKey };

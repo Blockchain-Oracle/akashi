@@ -1,4 +1,4 @@
-# STATUS — updated 2026-10-06 by Claude
+# STATUS — updated 2026-10-06 (evening) by Claude
 
 > **Read order for a fresh session** (never trust memory over this file):
 > 1. this file
@@ -23,7 +23,7 @@
 >
 > **Tick each checkbox in the same commit as its artifact.** Record every tx and deploy in `acceptance.md` / `ids-and-txs.md`.
 
-Current stage: **UI revamp v2 "The Highlighter" (cross-cutting S7/S8/S10) — built, deploying**. See D-028…D-031 and `specs/ui-revamp.md`.
+Current stage: **S13 — UI v3 "Said with confidence" (HTTPie direction) + agent chat + wallet + paid calls** (`stage-13-ui-v3.md`, `specs/ui-v3-httpie.md`, D-033…D-038). The v2 "Highlighter" (D-028…D-031) was built and deployed earlier today, then superseded by the user's HTTPie brief. **Fact (2026-10-06): Akashi is not listed on either Agentic Portal; paid calls run through Akashi's own x402 seller until PNF lists us.**
 Last commit: see `git log -1`
 In-flight step: push → GHCR images → `coolify deploy` web + docs → verify on the sslip hosts → acceptance row.
 Done today (2026-10-06): a first pass ("the ledger": grey, serif, 2 px) was built and rejected by the user; the user's reference (cdrkit.xyz) set the energy → Refero research (Superthread, Val Town, Aaply, PostHog, Convex) → v2: tokens v3 (`packages/brand/tokens/theme.css`: cool white canvas, midnight ink, lemon marker, cobalt links, Deep-Midnight `.console`, radii 10/16/20, three shadows; `.card .well .pill .btn .eyebrow-bar .label .key`), fonts Gabarito / Instrument Sans / Geist Mono · web: hero (pills, marker stroke, lemon + black CTAs, ✦ facts), the desk as a code card, exhibits as chips, Deep-Midnight readout, evidence cards with pill verdicts, sources card, story bands (stat cards, lemon-badged steps, the Pocket band, service cards, envelope, receipt, registration), header with lemon Docs CTA, footer, not-found/error · docs: landing rewritten, Fumadocs re-tokened, Gabarito titles · packages/ui diagrams on `.card` · `.21st/design.json` v3 + `DESIGN.md` · lint/typecheck/build green (web + docs), 21st review 0 findings · checked in the browser at 375 / ~600 px, light + dark: desk, exhibits, readout, evidence, story, docs landing and pages.

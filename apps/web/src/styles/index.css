@@ -5,18 +5,18 @@
 @source "../../../../packages/ui/src";
 
 /*
- * The desk (features/desk/DeskInput.tsx): a code card with the product-mockup shadow. A lemon ring while it has focus;
- * the footer strip runs a sweep while a check is in flight.
+ * The desk (features/desk/DeskInput.tsx): a terminal window. A green ring while it has focus; the strip runs a sweep
+ * while a check is in flight.
  */
-.desk-card {
+.desk-window {
   transition:
     box-shadow var(--duration-state) var(--ease-seal),
     border-color var(--duration-state) var(--ease-seal);
 }
-.desk-card:focus-within {
-  border-color: var(--marker-2);
+.desk-window:focus-within {
+  border-color: var(--go-2);
   box-shadow:
-    0 0 0 4px var(--marker-soft),
+    0 0 0 4px var(--go-soft),
     var(--shadow-3);
 }
 .sweep {
@@ -29,7 +29,7 @@
   inset-inline: 0;
   top: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--marker), transparent);
+  background: linear-gradient(90deg, transparent, var(--go), transparent);
   animation: sweep 1.4s var(--ease-seal) infinite;
 }
 @keyframes sweep {
@@ -39,11 +39,6 @@
   to {
     translate: 100% 0;
   }
-}
-
-/* The readout (features/desk/Readout.tsx): the console card with a lemon top edge, like a highlighted line. */
-.readout {
-  border-top: 3px solid var(--marker);
 }
 
 /* The pricing receipt (features/story/PriceReceipt.tsx): a torn bottom edge, a barcode. */
@@ -70,6 +65,6 @@
   .sweep::after {
     animation: none;
     translate: 0 0;
-    background: var(--marker);
+    background: var(--go);
   }
 }

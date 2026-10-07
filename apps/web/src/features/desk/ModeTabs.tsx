@@ -14,7 +14,7 @@ const MODES: { value: DeskMode; label: string; kanji?: string }[] = [
   { value: "now", label: "Now", kanji: SERVICES.now.kanji },
 ];
 
-/** Auto-detect, or force a service: a tab strip with a dark active tab (Superthread's hero tabs; 21st 26923). */
+/** Auto-detect, or force a service: a pill strip inside the window; the active pill is green (21st 26923 grammar). */
 export function ModeTabs({ value, onChange }: { value: DeskMode; onChange: (m: DeskMode) => void }) {
   return (
     <div role="radiogroup" aria-label="Which check" className="inline-flex rounded-chip bg-band p-1 text-sm">
@@ -29,10 +29,10 @@ export function ModeTabs({ value, onChange }: { value: DeskMode; onChange: (m: D
             onClick={() => onChange(m.value)}
             className={cn(
               "relative inline-flex items-center gap-1.5 rounded-chip px-3 py-1.5 font-medium transition-colors duration-(--duration-fast)",
-              active ? "text-background" : "text-muted-foreground hover:text-foreground",
+              active ? "text-go-foreground" : "text-muted-foreground hover:text-foreground",
             )}
           >
-            {active && <motion.span layoutId="desk-mode" className="absolute inset-0 rounded-chip bg-foreground" transition={SPRING_SNAPPY} />}
+            {active && <motion.span layoutId="desk-mode" className="absolute inset-0 rounded-chip bg-go" transition={SPRING_SNAPPY} />}
             {m.kanji && (
               <span className="relative font-mark text-xs leading-none" aria-hidden>
                 {m.kanji}
