@@ -94,6 +94,15 @@ Groq, Serper, Jina, OpenWeather, IPinfo. Keyless providers work without one. Pro
 
 **Gates:** `uv run ruff check . && uv run pyright` · `pnpm lint && pnpm typecheck && pnpm build`.
 
+## Operators
+
+To supply `tool-router` yourself: run the api container (`services/api/Dockerfile`, port 8000) with a Redis
+(`REDIS_URL`) and whichever provider keys you hold. Tools without a key are listed as unavailable, never half-run.
+Put an HA RelayMiner in front of it with [`deploy/pocket/compose.yaml`](deploy/pocket/compose.yaml) and the relayer
+config's `rest` backend pointing at the api root (`http://<api-host>:8000`, no path prefix). Then stake a supplier for
+`tool-router` with an https endpoint (template: [`deploy/pocket/supplier-stake.yaml`](deploy/pocket/supplier-stake.yaml)).
+The card's identity probe is `GET /v1/version` → `{"service": "tool-router"}`.
+
 ## Notes
 
 - Testnet only: Base Sepolia USDC and Pocket Beta. Some providers' terms limit reselling their API, so those stay on
