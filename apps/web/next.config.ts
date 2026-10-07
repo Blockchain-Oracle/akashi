@@ -10,13 +10,14 @@ const nextConfig: NextConfig = {
   output: "standalone",
   // The workspace packages live above apps/web: trace from the repo root so the standalone server includes them.
   outputFileTracingRoot: REPO_ROOT,
-  transpilePackages: ["@akashi/api-client", "@akashi/brand", "@akashi/model", "@akashi/ui"],
+  transpilePackages: ["@akashi/brand"],
   // Next 16 writes AGENTS.md and CLAUDE.md on `next dev`; this repository carries no AI-tool files.
   agentRules: false,
   poweredByHeader: false,
+  // One route file serves both spellings (macOS file systems are case-insensitive, so app/skill.md cannot coexist).
+  rewrites: async () => [{ source: "/skill.md", destination: "/SKILL.md" }],
   redirects: async () => [
     { source: "/docs/:path*", destination: `${DOCS_URL}/docs/:path*`, permanent: false },
-    { source: "/llms.txt", destination: `${DOCS_URL}/llms.txt`, permanent: false },
   ],
 };
 

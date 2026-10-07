@@ -1,15 +1,19 @@
-import { Seal } from "@akashi/brand/react";
 import Link from "next/link";
+
+import { SiteHeader } from "@/components/shell/SiteHeader";
 
 export default function NotFound() {
   return (
-    <main className="mx-auto grid min-h-dvh max-w-md place-content-center gap-6 px-6 text-center">
-      <Seal className="mx-auto size-16 text-muted-foreground" label={null} />
-      <p className="label text-verdict-not-found">not_found</p>
-      <h1 className="font-display text-4xl font-bold tracking-[-0.025em]">No page at this address.</h1>
-      <Link href="/" className="btn btn-marker mx-auto">
-        Back to the desk
-      </Link>
-    </main>
+    <>
+      <SiteHeader />
+      <main id="main" className="mx-auto flex max-w-[680px] flex-col items-center px-4 py-32 text-center">
+        <p className="font-mono text-xs tracking-[0.12em] text-muted-foreground uppercase">404</p>
+        <h1 className="display mt-4 text-5xl">Nothing here.</h1>
+        <p className="mt-4 text-lg text-muted-foreground">That page is not part of the catalog.</p>
+        <Link href="/tools" className="mt-8 rounded-md bg-brand px-5 py-2.5 font-medium text-white hover:bg-brand-hover">
+          Browse the tools
+        </Link>
+      </main>
+    </>
   );
 }

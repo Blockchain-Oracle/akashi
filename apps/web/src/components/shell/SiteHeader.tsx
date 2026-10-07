@@ -1,39 +1,44 @@
-import { Seal, Wordmark } from "@akashi/brand/react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-import { ThemeToggle } from "@/components/shell/ThemeToggle";
-import { DOCS_URL } from "@/lib/constants/site";
-import { ICON_STROKE } from "@/lib/constants/ui";
+import { Logo } from "@/components/brand/Logo";
+import { GitHubMark } from "@/components/common/GitHubMark";
+import { NAV, REPO_URL, docsPage } from "@/lib/constants/site";
 
-/** Anchors down the page. */
-const SECTIONS: { label: string; href: string }[] = [
-  { label: "Why", href: "#why" },
-  { label: "How", href: "#how" },
-  { label: "Services", href: "#services" },
-  { label: "Price", href: "#price" },
-  { label: "On-chain", href: "#onchain" },
-];
-
-export function SiteHeader() {
+/** Monid's header: wordmark left, four links centred, icon links + a quiet "Get started" pill right. */
+export function SiteHeader({ active }: { active?: string }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-5 sm:px-8">
-        <Link href="/" className="flex items-center gap-3 text-foreground" aria-label="Akashi home">
-          <Seal className="size-8" label={null} />
-          <Wordmark className="h-3.5 w-auto" kanji={false} />
-        </Link>
-        <nav aria-label="Sections" className="hidden items-center gap-7 text-[15px] font-medium text-muted-foreground md:flex">
-          {SECTIONS.map((s) => (
-            <a key={s.href} href={s.href} className="transition-colors duration-(--duration-fast) hover:text-foreground">
-              {s.label}
-            </a>
+    <header className="sticky top-0 z-40 border-b border-line bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
+      <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between gap-6 px-4 sm:px-6">
+        <Logo />
+        <nav aria-label="Main" className="hidden items-center gap-8 text-[0.9375rem] md:flex">
+          {NAV.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={
+                active === item.label
+                  ? "font-medium text-foreground"
+                  : "text-muted-foreground transition-colors hover:text-foreground"
+              }
+            >
+              {item.label}
+            </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <a href={DOCS_URL} className="btn btn-marker px-4 py-2 text-sm">
-            Docs <ArrowUpRight className="size-4" strokeWidth={ICON_STROKE} aria-hidden />
+        <div className="flex items-center gap-2">
+          <a
+            href={REPO_URL}
+            className="hidden size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
+            aria-label="Akashi on GitHub"
+          >
+            <GitHubMark className="size-[18px]" />
+          </a>
+          <a
+            href={docsPage("quickstart")}
+            className="inline-flex h-9 items-center gap-1.5 rounded-md bg-muted px-3.5 text-sm font-medium text-foreground transition-colors hover:bg-line"
+          >
+            Get started <ArrowRight className="size-3.5" aria-hidden />
           </a>
         </div>
       </div>

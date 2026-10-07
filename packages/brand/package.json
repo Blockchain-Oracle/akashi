@@ -10,7 +10,8 @@
     ".": "./src/index.ts",
     "./react": "./src/react.tsx",
     "./tokens.css": "./tokens/theme.css",
-    "./assets/*": "./assets/*"
+    "./assets/*": "./assets/*",
+    "./paint.css": "./tokens/paint.css"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",

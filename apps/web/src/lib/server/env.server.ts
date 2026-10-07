@@ -7,21 +7,17 @@ import { z } from "zod";
  * does not need runtime secrets. Everything optional has a feature that degrades without it.
  */
 const LOCAL_API_URL = "http://localhost:8000";
-const TEST_PORTAL_URL = "https://test.agent.pocket.network";
-const FALLBACK_SERVICE_ID = "literature-search"; // a listed service on the test portal, for paid mode before listing
+const LOCAL_GATEWAY_URL = "http://localhost:8080";
 const PRIVATE_KEY = /^0x[0-9a-fA-F]{64}$/;
 
 const optionalText = z.string().min(1).optional();
 
 const schema = z.object({
   AKASHI_API_URL: z.url().default(LOCAL_API_URL),
-  AKASHI_DEMO_SECRET: optionalText,
+  /** The public x402 gateway, called server-side by demo (free) runs that the demo wallet pays for. */
+  AKASHI_GATEWAY_URL: z.url().default(LOCAL_GATEWAY_URL),
   REDIS_URL: optionalText,
   IP_HASH_SALT: optionalText,
-  POCKET_PORTAL_URL: z.url().default(TEST_PORTAL_URL),
-  POCKET_LISTING_OVERRIDE: z.enum(["listed", "unlisted", "auto"]).default("auto"),
-  POCKET_FALLBACK_SERVICE_ID: z.string().min(1).default(FALLBACK_SERVICE_ID),
-  POCKET_FALLBACK_PATH: optionalText,
   DEMO_WALLET_PRIVATE_KEY: z.string().regex(PRIVATE_KEY, "a 0x-prefixed 32-byte hex key").optional(),
   AI_MODEL: optionalText,
   ANTHROPIC_API_KEY: optionalText,

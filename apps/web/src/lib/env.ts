@@ -7,10 +7,12 @@ import { z } from "zod";
  */
 const LOCAL_APP_URL = "http://localhost:3100";
 const LOCAL_DOCS_URL = "http://localhost:3200";
+const LOCAL_API_URL = "http://localhost:8080"; // services/gateway in dev
 
 const schema = z.object({
   NEXT_PUBLIC_APP_URL: z.url().default(LOCAL_APP_URL),
   NEXT_PUBLIC_DOCS_URL: z.url().default(LOCAL_DOCS_URL),
+  NEXT_PUBLIC_API_URL: z.url().default(LOCAL_API_URL),
   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().min(1).optional(),
   NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL: z.url().optional(),
 });
@@ -20,6 +22,7 @@ const orUnset = (value: string | undefined) => value || undefined;
 export const publicEnv = schema.parse({
   NEXT_PUBLIC_APP_URL: orUnset(process.env.NEXT_PUBLIC_APP_URL),
   NEXT_PUBLIC_DOCS_URL: orUnset(process.env.NEXT_PUBLIC_DOCS_URL),
+  NEXT_PUBLIC_API_URL: orUnset(process.env.NEXT_PUBLIC_API_URL),
   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: orUnset(process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID),
   NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL: orUnset(process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL),
 });
