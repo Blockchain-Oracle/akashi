@@ -32,3 +32,12 @@ export const HTTP_SERVER_ERROR_MIN = 500;
 export const EXPOSED_HEADERS = ["PAYMENT-REQUIRED", "PAYMENT-RESPONSE", "X-Akashi-Via", "X-Akashi-Endpoint"];
 export const VIA_HEADER = "X-Akashi-Via";
 export const ENDPOINT_HEADER = "X-Akashi-Endpoint";
+
+// Remote MCP (/mcp): runs are paid by Akashi's demo wallet so any MCP client can try a tool without a wallet.
+export const MCP_DEMO_MAX_ATOMIC_PER_CALL = 10_000n; // $0.01
+export const MCP_DEMO_PER_IP_DAILY_ATOMIC = 50_000n; // $0.05 per visitor per day
+export const MCP_DEMO_DAILY_ATOMIC = 2_000_000n; // $2 per day overall
+export const MCP_MAX_TEXT_CHARS = 12_000;
+export const DAY_MS = 86_400_000;
+export const DEFAULT_DISCOVER_LIMIT = 5;
+export const MAX_DISCOVER_LIMIT = 25;

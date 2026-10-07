@@ -26,6 +26,7 @@ import {
   SERVICE_ID,
   VIA_HEADER,
 } from "./constants.js";
+import { mcpHandler } from "./mcp.js";
 import { paymentLayer } from "./payments.js";
 import { forwardRead, forwardRun } from "./relay.js";
 import type { Forwarded } from "./relay.js";
@@ -98,6 +99,14 @@ app.post("/v1/discover", async (c) => relay(c, await forwardRead(config, "POST",
 app.post("/v1/inspect", async (c) => relay(c, await forwardRead(config, "POST", "/v1/inspect", await c.req.text())));
 app.get("/v1/endpoints/:provider/:slug", async (c) =>
   relay(c, await forwardRead(config, "GET", `/v1/endpoints/${c.req.param("provider")}/${c.req.param("slug")}`)),
+);
+
+const mcp = mcpHandler(config, (path) => {
+  const endpoint = endpointsByPath.get(path);
+  return endpoint ? BigInt(endpoint.price.atomic) : undefined;
+});
+app.all("/mcp", (c) =>
+  mcp(c.req.raw, c.req.header("x-forwarded-for")?.split(",")[0]?.trim() || c.req.header("x-real-ip") || "unknown"),
 );
 
 // Payment runs before the handler: unpaid → 402 with the price; paid → handler → settle only if status < 400.
