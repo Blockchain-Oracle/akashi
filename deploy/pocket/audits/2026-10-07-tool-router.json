@@ -1,7 +1,7 @@
 {
   "schema": "pocket-service-audit/v1",
   "network": "beta",
-  "audited_at": "2026-10-07T18:02:20.710Z",
+  "audited_at": "2026-10-07T20:08:44.877Z",
   "upokt_per_compute_unit": 0.04,
   "catalog_size": 116,
   "summary": {
@@ -32,8 +32,8 @@
         "owner": "pokt16p53au7ctwrtfdwd23pt2tv54nj9f0n8wsj805",
         "name": "Akashi Tool Router",
         "cupr": 20000,
-        "card_bytes": 2589,
-        "card_sha256": "e43498487890c9693e992203e050bcb5cb7e1c1bd8a2ae221369000846698159",
+        "card_bytes": 2679,
+        "card_sha256": "fb97f66a95763be63824f86de00a30e65652ced7bef9247a09ea1ed089d66360",
         "suppliers": [
           "pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg"
         ],
@@ -46,10 +46,10 @@
         "probe": {
           "https://relay.84.46.247.92.sslip.io": 400
         },
-        "settled_claims": 5,
-        "last_settled": "2026-10-07T17:35:48.96",
+        "settled_claims": 6,
+        "last_settled": "2026-10-07T18:26:24.815",
         "last_settled_by": "pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg",
-        "relays_in_last_claim": 2,
+        "relays_in_last_claim": 1,
         "upokt_per_relay": 800,
         "price_percentile_in_catalog": 48
       }
