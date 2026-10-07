@@ -1,7 +1,7 @@
 /** Forwarding. Paid runs go through pocket-ap (a signed Pocket relay to Akashi's supplier); reads go direct. */
 
 import type { GatewayConfig } from "./config.js";
-import { HTTP_SERVER_ERROR_MIN, READ_FORWARD_TIMEOUT_MS, RUN_FORWARD_TIMEOUT_MS } from "./constants.js";
+import { HTTP_SERVER_ERROR_MIN, NOT_SENT_CODES, READ_FORWARD_TIMEOUT_MS, RUN_FORWARD_TIMEOUT_MS } from "./constants.js";
 
 export type Via = "pocket" | "direct";
 
@@ -35,6 +35,16 @@ function relayLayerFailed(res: Response): boolean {
   return res.status >= HTTP_SERVER_ERROR_MIN && !res.headers.get("content-type")?.includes("application/json");
 }
 
+/**
+ * True only when the request provably never reached pocket-ap (refused, unknown host, connect timeout), so the tool
+ * cannot have run. A timeout after sending is not one of these: the backend may already have called the provider,
+ * so going direct would run the tool twice. That case fails closed instead (502, unsettled).
+ */
+function neverSent(error: unknown): boolean {
+  const code = (error as { cause?: { code?: unknown } } | null)?.cause?.code;
+  return typeof code === "string" && NOT_SENT_CODES.has(code);
+}
+
 export async function forwardRun(config: GatewayConfig, path: string, body: string): Promise<Forwarded> {
   if (config.pocketApUrl) {
     try {
@@ -42,7 +52,7 @@ export async function forwardRun(config: GatewayConfig, path: string, body: stri
       if (!relayLayerFailed(res) || !config.directFallback) return read(res, "pocket");
       console.warn(JSON.stringify({ event: "relay_layer_failed", status: res.status, path }));
     } catch (error) {
-      if (!config.directFallback) throw error;
+      if (!config.directFallback || !neverSent(error)) throw error;
       console.warn(JSON.stringify({ event: "relay_unreachable", path, error: String(error) }));
     }
   }

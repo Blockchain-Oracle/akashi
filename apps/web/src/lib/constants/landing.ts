@@ -47,9 +47,10 @@ export const CONNECT_WAYS = [
   { title: "CLI", body: "Install and run from your terminal.", href: docsPage("quickstart/cli") },
 ] as const;
 
-/** The live terminal demo: what an agent types, what Akashi answers (ids and prices are real catalog entries). */
+/** An example session, labelled as one: what an agent types and what Akashi answers. Tool ids, inputs and prices are
+ * real catalog entries; health and timings are typical values, not live readings. */
 export const TERMINAL_SCRIPT = {
-  path: "~/agents/research-bot",
+  path: "example session · ~/agents/research-bot",
   balance: "3.000",
   prompt: "find the latest papers on RAG hallucination and summarise what they agree on",
   steps: [
@@ -85,7 +86,7 @@ export const FAQ = [
   },
   {
     q: "Where does Pocket Network come in?",
-    a: "Every paid run is delivered as a real Pocket relay: the gateway signs it with Akashi's staked application and Akashi's supplier serves it, so runs show up as relays and claims on chain. Akashi is the tool-router service on Pocket.",
+    a: "Akashi is the tool-router service on Pocket. Paid runs travel as real Pocket relays: pocket-ap signs each one with Akashi's staked application, Akashi's own supplier serves it, and the relays are claimed and settled on chain. If the relay layer is ever down, the gateway calls the backend directly and the receipt says so (via: direct), so a receipt never claims a relay that did not happen.",
   },
   {
     q: "Which agent frameworks are supported?",
@@ -93,7 +94,7 @@ export const FAQ = [
   },
   {
     q: "What about rate limits?",
-    a: "Akashi respects each provider's published limits and spreads calls across them. Each tool reports its health (healthy, stable, degraded) and its typical run time, so your agent can pick a faster or cheaper alternative.",
+    a: "Akashi caches answers and rate-limits its calls to each provider, so a burst on a free provider may be slower or answer 429. Each tool reports its health (healthy, stable, degraded) and typical run time from Akashi's own runs, so your agent can pick a faster or cheaper alternative.",
   },
 ] as const;
 
@@ -104,6 +105,7 @@ export const FOOTER_COLUMNS = [
       { label: "Home", href: "/" },
       { label: "Tools", href: "/tools" },
       { label: "Agent", href: "/agent" },
+      { label: "Demo", href: "/demo" },
     ],
   },
   {

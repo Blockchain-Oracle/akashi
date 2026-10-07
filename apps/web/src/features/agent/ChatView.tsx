@@ -27,6 +27,7 @@ export function ChatView({
   onCreated,
   onTurnFinished,
   toolCount,
+  initialInput = "",
 }: {
   chatId: string;
   initialMessages: UIMessage[];
@@ -36,9 +37,11 @@ export function ChatView({
   onCreated: (id: string) => void;
   onTurnFinished: () => void;
   toolCount: number;
+  /** Text to start the composer with, e.g. from a tool page's "Try it in the agent". */
+  initialInput?: string;
 }) {
   const createdRef = useRef(created);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(initialInput);
   const [notice, setNotice] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 

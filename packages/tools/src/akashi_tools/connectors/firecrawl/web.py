@@ -7,13 +7,25 @@ from pydantic import Field, HttpUrl
 
 from akashi_tools.connectors.firecrawl.provider import FIRECRAWL
 from akashi_tools.constants import TTL_PAGE_S, TTL_SEARCH_S
-from akashi_tools.framework import PREMIUM, STANDARD, Category, Link, Render, RunContext, ToolInput, ToolOutput, tool
+from akashi_tools.framework import (
+    PREMIUM,
+    STANDARD,
+    Category,
+    Link,
+    Render,
+    RunContext,
+    ToolInput,
+    ToolNotFoundResult,
+    ToolOutput,
+    tool,
+)
 
 SEARCH_LIMIT_MAX = 10  # one 2-credit block (2 credits per 10 results)
 SEARCH_LIMIT_DEFAULT = 5
 CONTENT_CHARS_PER_RESULT = 4_000  # with_content: keep each page short enough for several to fit
 MAP_LIMIT_MAX = 200
 MAP_LIMIT_DEFAULT = 50
+HTTP_CLIENT_ERROR_MIN = 400  # the site itself answered 4xx/5xx: there is no page to return
 PAGE_CACHE_MAX_AGE_MS = 86_400_000  # accept Firecrawl's own cached copy up to a day old (500% faster, same price)
 QUESTION_MAX_CHARS = 500
 
@@ -131,6 +143,10 @@ async def scrape(inp: ScrapeInput, ctx: RunContext) -> PageOutput:
             "maxAge": PAGE_CACHE_MAX_AGE_MS}
     data = (await ctx.post_json(FIRECRAWL, "/v2/scrape", json=body)).get("data") or {}
     meta = data.get("metadata") or {}
+    status = meta.get("statusCode")
+    # An error page or an empty render is not a page: answer not found, which is never billed.
+    if not data.get("markdown") or (isinstance(status, int) and status >= HTTP_CLIENT_ERROR_MIN):
+        raise ToolNotFoundResult(f"{inp.url} returned no readable page (HTTP {status or 'unknown'})")
     return PageOutput(
         url=meta.get("sourceURL") or meta.get("url") or str(inp.url),
         title=_first(meta.get("title") or meta.get("ogTitle")),
@@ -214,4 +230,7 @@ async def ask_page(inp: AskPageInput, ctx: RunContext) -> AskPageOutput:
     body = {"url": str(inp.url), "formats": [{"type": "question", "question": inp.question}],
             "maxAge": PAGE_CACHE_MAX_AGE_MS}
     data = (await ctx.post_json(FIRECRAWL, "/v2/scrape", json=body)).get("data") or {}
-    return AskPageOutput(url=str(inp.url), question=inp.question, answer=str(data.get("answer") or ""))
+    answer = str(data.get("answer") or "").strip()
+    if not answer:
+        raise ToolNotFoundResult(f"{inp.url} could not be read to answer the question")
+    return AskPageOutput(url=str(inp.url), question=inp.question, answer=answer)

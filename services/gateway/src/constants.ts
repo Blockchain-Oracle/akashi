@@ -4,8 +4,10 @@ export const SERVICE_NAME = "Akashi";
 export const SERVICE_ID = "tool-router"; // the Pocket service every paid run is relayed to
 export const RUN_PREFIX = "/v1/run";
 export const VALIDATE_PREFIX = "/v1/validate";
+// The OpenAPI document the on-chain card links to, served by the backend and published here over https
+export const SPEC_PATH = "/specs/tool-router.openapi.json";
 
-// x402 on Base Sepolia (context/05-external-libs/x402.md): exact scheme, testnet USDC, the public facilitator.
+// x402 on Base Sepolia: the exact scheme, testnet USDC, the public facilitator.
 export const DEFAULT_NETWORK = "eip155:84532" as const;
 export const DEFAULT_FACILITATOR_URL = "https://x402.org/facilitator";
 export const PAYMENT_TIMEOUT_S = 60; // the signed authorization stays valid this long (portal uses 60 s too)
@@ -18,10 +20,13 @@ export const SETTLE_RACE_MARKERS = ["replacement transaction underpriced", "nonc
 
 // A run must answer within Pocket's ~10 s gateway window; the API's own per-endpoint deadline is ≤ 9 s.
 export const RUN_FORWARD_TIMEOUT_MS = 9_500;
+// Node fetch error codes meaning the connection was never made (relay.ts: only these may fall back to direct)
+export const NOT_SENT_CODES = new Set(["ECONNREFUSED", "ENOTFOUND", "EAI_AGAIN", "UND_ERR_CONNECT_TIMEOUT"]);
 export const READ_FORWARD_TIMEOUT_MS = 4_000;
 export const CATALOG_FETCH_TIMEOUT_MS = 5_000;
 export const CATALOG_RETRY_DELAY_MS = 2_000;
 export const CATALOG_RETRY_ATTEMPTS = 30; // ~1 minute: the api container may still be starting
+export const ANY_ORIGIN = "*";
 export const MAX_BODY_BYTES = 65_536; // Pocket portal/relay request cap (≈ 64 KiB)
 // The api may deploy without the gateway: re-read its catalog this often and rebuild the paid route table on change.
 export const CATALOG_REFRESH_MS = 60_000;

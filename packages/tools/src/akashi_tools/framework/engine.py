@@ -105,7 +105,12 @@ async def run(endpoint_id: str, payload: Any, *, fresh: bool = False) -> dict[st
     try:
         async with asyncio.timeout(deadline.remaining()):
             output = await endpoint.handler(inp, ctx)
-        ok = True
+        try:
+            data = endpoint.output_model.model_validate(output).model_dump(mode="json", exclude_none=True)
+        except ValidationError as exc:
+            log.error("tool_output_contract", endpoint=endpoint.id, errors=exc.error_count())
+            raise OutputContractError(f"{endpoint.id} produced output outside its declared schema") from exc
+        ok = True  # only a valid answer counts as a healthy run
     except ToolNotFoundResult as nf:
         ok = True
         return _envelope(endpoint, deadline, data={"found": False, "message": nf.message},
@@ -120,11 +125,6 @@ async def run(endpoint_id: str, payload: Any, *, fresh: bool = False) -> dict[st
         raise OutputContractError(f"{endpoint.id} failed while reading the provider's answer") from exc
     finally:
         await health.record(endpoint.id, ok, round((time.monotonic() - started) * _MS_PER_S))
-    try:
-        data = endpoint.output_model.model_validate(output).model_dump(mode="json", exclude_none=True)
-    except ValidationError as exc:
-        log.error("tool_output_contract", endpoint=endpoint.id, errors=exc.error_count())
-        raise OutputContractError(f"{endpoint.id} produced output outside its declared schema") from exc
     data, cut = fit(data)
     if cut:
         ctx.note("Long fields were trimmed to keep the answer under Akashi's size cap.")

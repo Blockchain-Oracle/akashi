@@ -6,9 +6,12 @@ import { HTTP_PAYMENT_REQUIRED, paymentFailure } from "@/lib/agent/payment-error
 import type { RunResult } from "@/lib/agent/schemas";
 import type { CatalogEndpoint } from "@/lib/catalog/types";
 import { GATEWAY_URL } from "@/lib/constants/site";
-import { NETWORK_ID, PAY_FETCH_TIMEOUT_MS, WALLET_MAX_ATOMIC_PER_CALL } from "@/lib/constants/wallet";
+import { ONCHAIN } from "@/lib/constants/onchain";
+import { NETWORK_ID, PAY_FETCH_TIMEOUT_MS, USDC_ADDRESS, WALLET_MAX_ATOMIC_PER_CALL } from "@/lib/constants/wallet";
 
 type TypedData = Parameters<WalletClient["signTypedData"]>[0];
+
+const sameAddress = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 
 /**
  * Pay for one run from the visitor's wallet: the gateway answers 402, the wallet signs an EIP-3009 USDC
@@ -23,9 +26,24 @@ export async function payRun(params: {
 }): Promise<RunResult> {
   const { wallet, address, endpoint, input } = params;
   const started = Date.now();
-  const withinCap = <R extends { amount: string }>(_version: number, options: R[]): R => {
-    const ok = options.find((o) => BigInt(o.amount) <= WALLET_MAX_ATOMIC_PER_CALL);
-    if (!ok) throw new Error("This tool asks for more than the $0.01 per-call cap; nothing was signed.");
+  // Sign only what the visitor approved: Base Sepolia USDC, to Akashi's pay-to address, at most the displayed price
+  // (and never above the per-call cap). A stale catalog or a tampered 402 throws here, before any signature.
+  const approvedAtomic = BigInt(endpoint.price.atomic);
+  let signedAtomic: string | undefined;
+  const withinCap = <R extends { amount: string; network: string; asset: string; payTo: string }>(
+    _version: number,
+    options: R[],
+  ): R => {
+    const ok = options.find(
+      (o) =>
+        o.network === NETWORK_ID &&
+        sameAddress(o.asset, USDC_ADDRESS) &&
+        sameAddress(o.payTo, ONCHAIN.payTo) &&
+        BigInt(o.amount) <= approvedAtomic &&
+        BigInt(o.amount) <= WALLET_MAX_ATOMIC_PER_CALL,
+    );
+    if (!ok) throw new Error("The payment asked for does not match the price shown; nothing was signed.");
+    signedAtomic = ok.amount;
     return ok;
   };
   const signer = {
@@ -62,7 +80,7 @@ export async function payRun(params: {
       paid: Boolean(settle?.success),
       payer: "wallet",
       network: settle?.network ?? NETWORK_ID,
-      amountAtomic: endpoint.price.atomic,
+      amountAtomic: signedAtomic ?? endpoint.price.atomic,
       priceUsd: endpoint.price.usd,
       transaction: settle?.transaction || undefined,
       payerAddress: settle?.payer ?? address,

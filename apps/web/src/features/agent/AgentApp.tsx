@@ -31,7 +31,11 @@ async function loadChat(id: string): Promise<Opened | null> {
 }
 
 /** /agent: wallet providers, the history rail, and one conversation at a time (remounted per chat id). */
-export function AgentApp({ endpoints, initialChatId }: { endpoints: Record<string, EndpointMeta>; initialChatId?: string }) {
+export function AgentApp({ endpoints, initialChatId, initialInput }: {
+  endpoints: Record<string, EndpointMeta>;
+  initialChatId?: string;
+  initialInput?: string;
+}) {
   const [opened, setOpened] = useState<Opened>(() => ({ id: initialChatId ?? newChatId(), messages: [], created: false }));
   const [groups, setGroups] = useState<HistoryGroup[]>([]);
   const mode = useSyncExternalStore(subscribeMode, currentMode, serverMode);
@@ -107,6 +111,7 @@ export function AgentApp({ endpoints, initialChatId }: { endpoints: Record<strin
               }}
               onTurnFinished={() => void refresh()}
               toolCount={Object.keys(endpoints).length}
+              initialInput={opened.created ? "" : initialInput}
             />
           </div>
         </div>

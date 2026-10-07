@@ -25,6 +25,7 @@ import {
   MAX_BODY_BYTES,
   RUN_PREFIX,
   SERVICE_ID,
+  SPEC_PATH,
   VALIDATE_PREFIX,
   VIA_HEADER,
 } from "./constants.js";
@@ -92,6 +93,8 @@ app.get("/", (c) => c.json(identity()));
 app.get("/v1/version", (c) => c.json(identity()));
 app.get("/v1/health", (c) => c.json({ status: "ok" }));
 app.get("/v1/catalog", (c) => c.json(catalog));
+// The OpenAPI document the on-chain service card links to (A8: every spec URL resolves over https).
+app.get(SPEC_PATH, async (c) => relay(c, await forwardRead(config, "GET", SPEC_PATH)));
 
 app.get("/.well-known/x402", (c) =>
   c.json({ version: 1, resources: [...endpointsByPath.keys()].map((path) => `${config.publicBaseUrl}${path}`) }),

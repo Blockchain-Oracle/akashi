@@ -1,6 +1,6 @@
 /** Runtime configuration from the environment. Fails fast on anything a paid route cannot work without. */
 
-import { DEFAULT_FACILITATOR_URL, DEFAULT_NETWORK } from "./constants.js";
+import { ANY_ORIGIN, DEFAULT_FACILITATOR_URL, DEFAULT_NETWORK } from "./constants.js";
 
 const DEFAULT_PORT = 8080;
 const ADDRESS = /^0x[0-9a-fA-F]{40}$/;
@@ -23,7 +23,13 @@ export interface GatewayConfig {
   network: `${string}:${string}`;
   facilitatorUrl: string;
   publicBaseUrl: string;
-  corsOrigins: string[];
+  corsOrigins: string | string[]; // "*" or an allowlist
+}
+
+/** Hono's cors() reads an array as an allowlist, so a bare "*" must stay a string to mean any origin. */
+function corsOrigins(value: string): string | string[] {
+  const origins = value.split(",").map((o) => o.trim()).filter(Boolean);
+  return origins.length === 0 || origins.includes(ANY_ORIGIN) ? ANY_ORIGIN : origins;
 }
 
 export function readConfig(): GatewayConfig {
@@ -38,6 +44,6 @@ export function readConfig(): GatewayConfig {
     network: (process.env.X402_NETWORK ?? DEFAULT_NETWORK) as `${string}:${string}`,
     facilitatorUrl: process.env.X402_FACILITATOR_URL ?? DEFAULT_FACILITATOR_URL,
     publicBaseUrl: (process.env.AKASHI_PUBLIC_URL ?? `http://localhost:${DEFAULT_PORT}`).replace(/\/$/, ""),
-    corsOrigins: (process.env.AKASHI_CORS_ORIGINS ?? "*").split(",").map((o) => o.trim()),
+    corsOrigins: corsOrigins(process.env.AKASHI_CORS_ORIGINS ?? ANY_ORIGIN),
   };
 }

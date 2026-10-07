@@ -1,4 +1,4 @@
-/** Base Sepolia USDC (context/05-external-libs/x402.md; the 402's own `asset` is what is signed). */
+/** Base Sepolia USDC: the only asset the wallet signs for (checked against the 402's own `asset`). */
 export const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e" as const;
 export const USDC_DECIMALS = 6;
 export const USDC_FAUCET_URL = "https://faucet.circle.com";

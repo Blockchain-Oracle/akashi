@@ -10,7 +10,7 @@ import type { GatewayConfig } from "./config.js";
 import { PAYMENT_TIMEOUT_S, SERVICE_NAME } from "./constants.js";
 import { SerialFacilitator } from "./serial-facilitator.js";
 
-/** Exact `POST /v1/run/<provider>/<slug>` keys only: no wildcard, so no path can run unpaid (D-038). */
+/** Exact `POST /v1/run/<provider>/<slug>` keys only: no wildcard, so no path can run unpaid. */
 export function runRoutes(catalog: Catalog, config: GatewayConfig): Record<string, RouteConfig> {
   const routes: Record<string, RouteConfig> = {};
   for (const endpoint of catalog.endpoints) {
