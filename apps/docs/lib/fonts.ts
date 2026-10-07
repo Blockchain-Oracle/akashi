@@ -1,26 +1,26 @@
 import localFont from "next/font/local";
-import { Shippori_Mincho_B1 } from "next/font/google";
 
-/** The brand faces, as the CSS variables tokens/theme.css expects (same set and files as apps/web). */
-const gabarito = localFont({
-  src: "../../../packages/brand/assets/fonts/gabarito-latin.woff2",
-  weight: "400 900",
-  variable: "--font-gabarito",
-  display: "swap",
-});
-const instrument = localFont({
-  src: "../../../packages/brand/assets/fonts/instrument-sans-latin.woff2",
-  weight: "400 700",
-  variable: "--font-instrument",
-  display: "swap",
-});
-const geistMono = localFont({
-  src: "../../../packages/brand/assets/fonts/geist-mono-latin.woff2",
+/**
+ * The paint's three faces (packages/brand/tokens/paint.css: Outfit display, Inter body, JetBrains Mono data),
+ * self-hosted from packages/brand/assets/fonts, the same files and variables as apps/web.
+ */
+const outfit = localFont({
+  src: "../../../packages/brand/assets/fonts/outfit-latin.woff2",
   weight: "100 900",
-  variable: "--font-geist-mono",
+  variable: "--font-outfit",
   display: "swap",
 });
-// Kanji index only (典 符 今): CJK is served in unicode-range slices, so nothing is preloaded.
-const shippori = Shippori_Mincho_B1({ weight: "800", variable: "--font-shippori", preload: false });
+const inter = localFont({
+  src: "../../../packages/brand/assets/fonts/inter-latin.woff2",
+  weight: "100 900",
+  variable: "--font-inter",
+  display: "swap",
+});
+const jetbrains = localFont({
+  src: "../../../packages/brand/assets/fonts/jetbrains-mono-latin.woff2",
+  weight: "100 800",
+  variable: "--font-jetbrains",
+  display: "swap",
+});
 
-export const fontVariables = [gabarito, instrument, geistMono, shippori].map((f) => f.variable).join(" ");
+export const fontVariables = [outfit, inter, jetbrains].map((f) => f.variable).join(" ");

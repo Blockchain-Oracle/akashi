@@ -1,0 +1,87 @@
+---
+title: run
+description: Run a tool with its input, paying its price in USDC on Base Sepolia over x402. Failed runs are not charged.
+---
+
+```bash
+node akashi.mjs run <provider/endpoint> --input '<json>'
+node akashi.mjs run <provider/endpoint> --file input.json
+```
+
+| Flag | Meaning |
+| --- | --- |
+| `--input '<json>'` | The tool's input as a JSON object |
+| `--file <path>` | Read the input from a file instead (takes precedence over `--input`) |
+
+With neither flag, the input is `{}`. The input must be valid JSON; the CLI parses it before sending.
+
+`run` needs `AKASHI_PRIVATE_KEY`. Without it, it fails with "No wallet: set AKASHI_PRIVATE_KEY…" and signs nothing.
+
+## What happens
+
+<Steps>
+<Step>
+
+The CLI posts the input to `/v1/run/<provider/endpoint>`. The gateway answers `402` with the price.
+
+</Step>
+<Step>
+
+The CLI picks the requirement on `eip155:84532` whose amount is within `AKASHI_MAX_ATOMIC_PER_CALL`, checks it against `AKASHI_MAX_TOTAL_ATOMIC`, signs it and retries. If a cap would be passed, it stops: "nothing was signed".
+
+</Step>
+<Step>
+
+The gateway runs the tool. On `200` it settles the payment; on any other status it does not.
+
+</Step>
+</Steps>
+
+## Output
+
+```json
+{
+  "status": 200,
+  "body": {
+    "service": "tool-router",
+    "endpoint": "wikipedia/summary",
+    "provider": "wikipedia",
+    "status": "ok",
+    "found": true,
+    "billable": true,
+    "cached": false,
+    "as_of": "2026-10-07T12:07:17+00:00",
+    "elapsed_ms": 1418,
+    "price": { "usd": "0.001", "atomic": "1000", "tier": "local", "network": "eip155:84532" },
+    "render": "page",
+    "notes": [],
+    "sources": [{ "name": "wikipedia", "status": "ok", "url": "https://en.wikipedia.org/api/rest_v1/page/summary/Alan_Turing", "licence": "CC BY-SA 4.0" }],
+    "data": { "title": "Alan Turing", "description": "English computer scientist (1912–1954)", "markdown": "Alan Mathison Turing was…" }
+  },
+  "receipt": { "paid": true, "transaction": "0x…", "payer": "0x…", "network": "eip155:84532", "via": "pocket" },
+  "ms": 1960
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `status` | The HTTP status of the run |
+| `body` | The [run envelope](/docs/api#the-run-envelope) on success, an [error](/docs/api#errors) otherwise (raw text if the body was not JSON) |
+| `receipt.paid` | `true` only when the gateway settled the payment |
+| `receipt.transaction` | The Base Sepolia settlement transaction, from the `PAYMENT-RESPONSE` header |
+| `receipt.payer` | The paying address |
+| `receipt.network` | `eip155:84532` |
+| `receipt.via` | `pocket` or `direct`, from the `X-Akashi-Via` header |
+| `ms` | Wall time of the whole call, including the payment round trip |
+
+The exit code is 1 when `status` is 400 or above.
+
+## Examples
+
+```bash
+node akashi.mjs run openweather/current --input '{"city":"Lagos"}'
+node akashi.mjs run frankfurter/convert --input '{"amount": 250, "base": "GBP", "quote": "NGN"}'
+node akashi.mjs run akashi/answer --input '{"question": "Who invented the transistor, and when?"}'
+```
+
+If your shell makes quoting hard, write the input to a file and use `--file`.

@@ -1,0 +1,71 @@
+---
+title: For humans (CLI)
+description: One file, akashi.mjs. Find a tool, read its contract and run it from a terminal, paying per call in test USDC.
+---
+
+## 1. Download
+
+The CLI is a single file. It needs Node.js 20 or later and nothing else.
+
+```bash
+curl -fsSLO https://useakashi.xyz/akashi.mjs
+node akashi.mjs
+```
+
+With no command it prints its help.
+
+## 2. Find and read a tool (free)
+
+```bash
+node akashi.mjs discover "weather in Lagos"
+node akashi.mjs inspect openweather/current
+```
+
+`discover` prints ranked candidates. `inspect` prints the tool's description, input JSON Schema, output schema, price and example. Output is JSON, so you can pipe it to `jq`.
+
+## 3. Add a wallet
+
+Runs are paid in test USDC on Base Sepolia. Use a new key that holds nothing else.
+
+```bash
+export AKASHI_PRIVATE_KEY=0x$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
+node akashi.mjs wallet
+```
+
+`wallet` prints the address, the network and the spend caps. Send test USDC to that address from [faucet.circle.com](https://faucet.circle.com) (pick Base Sepolia). No ETH is needed.
+
+## 4. Run a tool (paid)
+
+```bash
+node akashi.mjs run openweather/current --input '{"city":"Lagos"}'
+```
+
+For a larger input, put it in a file:
+
+```bash
+echo '{"query": "solid-state battery startups", "limit": 5}' > in.json
+node akashi.mjs run firecrawl/search --file in.json
+```
+
+The CLI prints the HTTP status, the result and a receipt:
+
+```json
+{
+  "status": 200,
+  "body": { "service": "tool-router", "endpoint": "openweather/current", "found": true, "data": { "…": "…" } },
+  "receipt": {
+    "paid": true,
+    "transaction": "0x…",
+    "payer": "0x…",
+    "network": "eip155:84532",
+    "via": "pocket"
+  },
+  "ms": 2140
+}
+```
+
+`receipt.transaction` is the settlement on Base Sepolia: open `https://sepolia.basescan.org/tx/<transaction>`. `receipt.via` says how the run reached the backend: `pocket` (a Pocket relay) or `direct`. If the run failed, `paid` is `false` and the exit code is 1.
+
+## Next
+
+The [CLI reference](/docs/cli) covers every command, flag and environment variable. To use the same file from an AI agent, see [For AI agents (MCP)](/docs/quickstart/mcp).

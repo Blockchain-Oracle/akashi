@@ -1,15 +1,13 @@
 import { z } from "zod";
 
-/** Public settings for the docs app (NEXT_PUBLIC_* are inlined at build; an empty string counts as unset). */
-const LOCAL_DOCS_URL = "http://localhost:3200";
-const LOCAL_APP_URL = "http://localhost:3100";
-const LOCAL_API_URL = "http://localhost:8000";
+import { LOCAL_DOCS_URL, PRODUCTION_API_URL, PRODUCTION_APP_URL } from "@/lib/constants/urls";
 
+/** Public settings for the docs app (NEXT_PUBLIC_* are inlined at build; an empty string counts as unset). */
 const env = z
   .object({
     NEXT_PUBLIC_DOCS_URL: z.url().default(LOCAL_DOCS_URL),
-    NEXT_PUBLIC_APP_URL: z.url().default(LOCAL_APP_URL),
-    NEXT_PUBLIC_API_URL: z.url().default(LOCAL_API_URL),
+    NEXT_PUBLIC_APP_URL: z.url().default(PRODUCTION_APP_URL),
+    NEXT_PUBLIC_API_URL: z.url().default(PRODUCTION_API_URL),
   })
   .parse({
     NEXT_PUBLIC_DOCS_URL: process.env.NEXT_PUBLIC_DOCS_URL || undefined,
@@ -17,10 +15,13 @@ const env = z
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || undefined,
   });
 
+const trim = (url: string) => url.replace(/\/$/, "");
+
 export const site = {
-  docs: env.NEXT_PUBLIC_DOCS_URL,
-  app: env.NEXT_PUBLIC_APP_URL,
-  api: env.NEXT_PUBLIC_API_URL,
-  repo: "https://github.com/Blockchain-Oracle/akashi",
-  themeStorageKey: "akashi-docs-theme",
+  docs: trim(env.NEXT_PUBLIC_DOCS_URL),
+  /** The Akashi site: SKILL.md, llms.txt, akashi.mjs and the agent chat live here. */
+  app: trim(env.NEXT_PUBLIC_APP_URL),
+  /** The public gateway agents call (free reads and x402-paid runs). */
+  api: trim(env.NEXT_PUBLIC_API_URL),
+  themeStorageKey: "akashi-docs-theme-v2",
 } as const;

@@ -1,0 +1,47 @@
+---
+title: mcp
+description: Serve Akashi to an AI agent as a local MCP server over stdio, with three tools and the CLI's spend caps.
+---
+
+```bash
+node akashi.mjs mcp
+```
+
+The server speaks MCP over stdio, so an MCP client starts it as a command. Setup for Claude Code, Claude Desktop, Cursor and Codex is in [For AI agents (MCP)](/docs/quickstart/mcp).
+
+## Tools
+
+### `akashi_discover`
+
+Free. Ranks the catalog for a job.
+
+| Input | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `query` | string | yes | At least 2 characters |
+| `limit` | integer | no | 1 to 25; default 5 |
+
+### `akashi_inspect`
+
+Free. One tool's contract: description, input JSON Schema, output schema, price and example.
+
+| Input | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `id` | string | yes | e.g. `firecrawl/search` |
+
+### `akashi_run`
+
+Paid. Runs one tool and pays its price from `AKASHI_PRIVATE_KEY`, within the spend caps. Its description asks the agent to inspect first and to tell the user the cost.
+
+| Input | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `id` | string | yes | e.g. `openweather/current` |
+| `input` | object | yes | The tool's input |
+
+The result is the same object [`run`](/docs/cli/run#output) prints, plus `sessionSpentAtomic`: the atomic units signed so far in this session.
+
+## Behaviour
+
+- Results are JSON text. A result longer than 12,000 characters is cut and ends with `…[truncated]`.
+- A call that cannot complete (no key, a cap reached, a network error, or a free read that fails, such as `akashi_inspect` on an unknown id) comes back as an MCP tool error with the message. A run that reaches the gateway returns its `status` and `body`, whatever the status.
+- The session total resets when the client restarts the server.
+- The key stays on your machine. The server signs payments locally and sends only the signed payment.

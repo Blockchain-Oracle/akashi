@@ -1,0 +1,73 @@
+---
+title: How it runs on Pocket
+description: Akashi is one registered Pocket Network service. A paid run travels as a real Pocket relay, from Akashi's staked application to Akashi's supplier, and the claims and proofs settle on Pocket Beta.
+---
+
+## One service
+
+Akashi is a single Pocket Network service, `tool-router` ("Akashi Tool Router"), registered on Pocket Beta. Every tool in the catalog is a path on that one service, so adding a tool needs no new on-chain registration.
+
+| Record | Value |
+| --- | --- |
+| Service id | `tool-router` |
+| Network | Pocket Beta |
+| Compute units per relay | 20,000 |
+| Registration | tx [`A96AAAB2…AFE67F7`](https://explorer.pocket.network/beta/tx/A96AAAB2B2BA81723ABB3C74BF10C7B79A7D55F07992D7F2F365B51D2AFE67F7), height 711952 |
+| Service owner | `pokt16p53au7ctwrtfdwd23pt2tv54nj9f0n8wsj805` |
+| Supplier operator | `pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg` |
+| Application stake | tx [`113EFC51…6BCC0E1E8E0CF5DE85835BBC`](https://explorer.pocket.network/beta/tx/113EFC5118886B6F65EF23B2028F8ECCBAA6C0986BCC0E1E8E0CF5DE85835BBC) |
+
+## The path of a paid run
+
+<Steps>
+<Step>
+
+**Gateway.** Your request reaches the public gateway at `https://api.useakashi.xyz`. Without a payment it answers `402`. With one, it verifies the x402 signature.
+
+</Step>
+<Step>
+
+**Pocket relay.** The gateway forwards the run through `pocket-ap`, which signs it with Akashi's staked application. It travels as a real Pocket relay.
+
+</Step>
+<Step>
+
+**Supplier.** Akashi's supplier, a RelayMiner, receives the relay and passes it to the `tool-router` backend.
+
+</Step>
+<Step>
+
+**Backend.** The backend validates the input against the tool's schema, calls the upstream tool within the run deadline, trims oversized output and returns the [run envelope](/docs/api#the-run-envelope).
+
+</Step>
+<Step>
+
+**Settlement.** The answer travels back the same way. On a `2xx`, the gateway settles your USDC payment on Base Sepolia. On Pocket, the supplier's claims and proofs for the relays settle on Pocket Beta.
+
+</Step>
+</Steps>
+
+```text
+agent ──x402──▶ gateway ──relay (pocket-ap, Akashi's application)──▶ RelayMiner (Akashi's supplier) ──▶ tool-router backend ──▶ upstream tool
+```
+
+Two payments are involved, and they are separate. You pay Akashi per run in USDC over x402. Akashi's application pays for the relay on Pocket Network.
+
+## Free reads do not use a relay
+
+`discover`, `inspect`, `GET /v1/catalog` and `GET /v1/endpoints/{provider}/{endpoint}` are answered by the backend directly through the gateway. They are free, so there is nothing to relay or settle.
+
+## The direct fallback
+
+If the relay hop is down (pocket-ap unreachable, no session, or the supplier not answering), the gateway calls the backend directly instead of failing the run. It never presents that as a relay. Every run response says which way it went in the `X-Akashi-Via` header:
+
+| `X-Akashi-Via` | Meaning |
+| --- | --- |
+| `pocket` | The run went through a Pocket relay to Akashi's supplier |
+| `direct` | The gateway called the backend directly |
+
+The CLI shows the same value as `receipt.via`. `GET /v1/version` reports how the gateway is configured: `"relay": "pocket"` or `"relay": "direct"`.
+
+## Limits the relay sets
+
+Pocket gateways expect an answer in about 10 seconds and cap request bodies near 64 KiB. Akashi stays inside both: request bodies are limited to 64 KiB, every run finishes in under 9 seconds (each tool has its own deadline), and output is trimmed near 60 KB. See [Limits](/docs/api#limits).

@@ -1,0 +1,28 @@
+---
+title: wallet
+description: Show the address that pays for runs, the network, the spend caps and the gateway in use. Free; signs nothing.
+---
+
+```bash
+node akashi.mjs wallet
+```
+
+```json
+{
+  "address": "0x…",
+  "network": "Base Sepolia (eip155:84532)",
+  "maxAtomicPerCall": "10000",
+  "maxTotalAtomic": "100000",
+  "api": "https://api.useakashi.xyz"
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `address` | The address of `AKASHI_PRIVATE_KEY`, or `null` when no key is set |
+| `network` | Where runs are paid |
+| `maxAtomicPerCall` | `AKASHI_MAX_ATOMIC_PER_CALL`, in USDC atomic units |
+| `maxTotalAtomic` | `AKASHI_MAX_TOTAL_ATOMIC`, in USDC atomic units |
+| `api` | The gateway (`AKASHI_API_URL`) |
+
+Use it to find the address to fund: send test USDC on Base Sepolia to it from [faucet.circle.com](https://faucet.circle.com). `wallet` does not read the balance; check it on [sepolia.basescan.org](https://sepolia.basescan.org).

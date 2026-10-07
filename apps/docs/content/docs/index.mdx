@@ -1,40 +1,79 @@
 ---
-title: What is Akashi?
-description: A fact-checker that AI agents can call before they answer.
+title: Introduction
+description: Akashi gives an AI agent one endpoint for tools on Pocket Network. Finding and reading a tool is free. Each run costs a fixed price, paid in USDC over x402.
 ---
 
-AI assistants answer confidently, even when they are wrong. They cite court cases that never existed, suggest
-software that was never published, and quote prices from last year.
+Akashi is an OpenRouter for agent tools. One Pocket Network service, `tool-router` (Akashi Tool Router), sits in front of a catalog of tools: web and news search, page extraction, cited answers, research papers, developer and government search, weather, FX, time zones, holidays, packages, dictionaries and more.
 
-**Akashi checks these things against the original records before the AI answers.** It says what it found, where
-it looked, and how current it is.
-
-<ClaimCheck />
-
-## Why it matters
-
-- In 2023, lawyers in New York were fined for filing a brief with court cases that ChatGPT had invented.
-- AI coding tools suggest packages that do not exist, and attackers publish malware under those exact names.
-- An AI only knows the world up to its training date. Rates, prices and holidays change every day.
+Your agent finds a tool, reads its contract and runs it. It pays per run in test USDC on Base Sepolia, with the x402 protocol. It needs no Akashi account and no provider API keys: a wallet with test USDC is enough.
 
 ## How it works
 
-<PlainSteps />
+Three verbs. The first two are free.
 
-## Where Pocket Network fits
+<Steps>
+<Step>
 
-Akashi runs on **Pocket Network**, a network where AI agents pay for services one call at a time: no account, no
-subscription. Pocket delivers the question and takes the payment. Akashi does the checking.
+**Discover** (free). Describe the job in plain words. Akashi ranks the catalog and returns candidates, each with its id, price, health (status, p50 and p95 run time) and hints on what to call next.
 
-## The three checks
+</Step>
+<Step>
+
+**Inspect** (free). Read one tool's contract: what it does and what it will not do, its input JSON Schema, its output schema, its price and a working example.
+
+</Step>
+<Step>
+
+**Run** (paid per call). Send the tool's input as the JSON body. The first answer is `402 Payment Required` with the exact price. An x402 client signs the payment and retries. A `200` means the run succeeded and the payment settled. A failed run is never charged.
+
+</Step>
+</Steps>
+
+```bash title="Discover, then inspect (no wallet needed)"
+curl -s -X POST https://api.useakashi.xyz/v1/discover \
+  -H 'content-type: application/json' \
+  -d '{"query": "weather in Lagos", "limit": 3}'
+
+curl -s -X POST https://api.useakashi.xyz/v1/inspect \
+  -H 'content-type: application/json' \
+  -d '{"id": "openweather/current"}'
+```
+
+```bash title="Run (pays $0.005 from AKASHI_PRIVATE_KEY)"
+node akashi.mjs run openweather/current --input '{"city":"Lagos"}'
+```
+
+## What happens to a run
+
+The public gateway at `https://api.useakashi.xyz` checks the payment. It then sends the run through Pocket Network as a real relay, signed with Akashi's staked application. Akashi's supplier (a RelayMiner) passes it to the `tool-router` backend, which calls the upstream tool. The gateway settles the payment only when the run succeeds. See [How it runs on Pocket](/docs/pocket).
+
+## The tools
+
+Each tool has an id of the form `provider/endpoint`, such as `firecrawl/search` or `openweather/current`. Prices are $0.001, $0.005 or $0.01 per call. Browse them in [Tools](/docs/tools), or ask `discover`.
+
+## Ways to connect
 
 <Cards>
-  <Card title="典 Is this source real?" href="/docs/services/cite" description="Court cases, research papers and web pages" />
-  <Card title="符 Does this code exist?" href="/docs/services/code" description="Packages and functions an AI suggests" />
-  <Card title="今 Is this still true today?" href="/docs/services/now" description="Time, holidays, exchange rates, weather, news" />
+  <Card title="Skill" href="/docs/quickstart/skill">
+    Tell your agent `set up https://useakashi.xyz/SKILL.md`.
+  </Card>
+  <Card title="MCP" href="/docs/quickstart/mcp">
+    A local MCP server with three tools. Your key stays on your machine.
+  </Card>
+  <Card title="CLI" href="/docs/quickstart/cli">
+    One file, `akashi.mjs`. Discover, inspect and run from a terminal.
+  </Card>
+  <Card title="HTTP" href="/docs/quickstart/http">
+    Call the gateway from your own code with `@x402/fetch`.
+  </Card>
+  <Card title="Agent chat" href="/docs/quickstart/agent-chat">
+    Try it in the browser, with demo credit or your own wallet.
+  </Card>
 </Cards>
 
-<Cards>
-  <Card title="Words, explained" href="/docs/glossary" description="Agent, Pocket, verdict, relay: in plain English" />
-  <Card title="How it runs on Pocket" href="/docs/pocket/how-a-call-flows" description="The technical path of one call" />
-</Cards>
+## Next steps
+
+- [Pricing and payments](/docs/pricing): the three prices, the x402 handshake, and when you are not charged.
+- [For judges](/docs/judges): test the whole path end to end, with the on-chain ids.
+- [API reference](/docs/api): base URL, the result envelope, errors and limits.
+- Machine-readable: [`https://useakashi.xyz/llms.txt`](https://useakashi.xyz/llms.txt) and [`https://useakashi.xyz/SKILL.md`](https://useakashi.xyz/SKILL.md).

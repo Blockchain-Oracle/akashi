@@ -1,0 +1,23 @@
+---
+title: catalog
+description: Print every provider and tool as JSON, with input and output schemas and prices. Free.
+---
+
+```bash
+node akashi.mjs catalog
+```
+
+It calls [`GET /v1/catalog`](/docs/api/catalog#catalog) and prints the response: `service`, `title`, `catalogVersion`, `network`, `categories`, `providers`, `endpoints` and `hash`. Each endpoint has the same fields as [`inspect`](/docs/cli/inspect).
+
+## Examples
+
+```bash
+# every tool id with its price
+node akashi.mjs catalog | jq -r '.endpoints[] | "\(.id)\t$\(.price.usd)"'
+
+# the tools in one category
+node akashi.mjs catalog | jq -r '.endpoints[] | select(.categories | index("weather")) | .id'
+
+# the catalog version, to notice changes
+node akashi.mjs catalog | jq -r .hash
+```

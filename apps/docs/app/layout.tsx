@@ -1,6 +1,5 @@
 import "./global.css";
 
-import { BRAND } from "@akashi/brand";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata } from "next";
 
@@ -9,15 +8,17 @@ import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.docs),
-  title: { default: `${BRAND.name} ${BRAND.kanji} Docs`, template: `%s · ${BRAND.name} Docs` },
-  description: "How to call Akashi's verification services (citations, code, live facts) through Pocket Network.",
+  title: { default: "Akashi Docs", template: "%s · Akashi Docs" },
+  description:
+    "Akashi is one endpoint for agent tools on Pocket Network: discover and inspect for free, run any tool for a fixed price per call in USDC over x402.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={fontVariables} suppressHydrationWarning>
       <body className="flex min-h-dvh flex-col">
-        <RootProvider theme={{ defaultTheme: "light", enableSystem: false, storageKey: site.themeStorageKey }}>
+        {/* Dark first, like Monid's docs; the toggle still offers light. */}
+        <RootProvider theme={{ defaultTheme: "dark", enableSystem: false, storageKey: site.themeStorageKey }}>
           {children}
         </RootProvider>
       </body>

@@ -1,22 +1,18 @@
 {
-  "title": "Akashi Docs",
+  "title": "Akashi",
   "pages": [
-    "---Start here---",
+    "---Guide---",
     "index",
-    "glossary",
+    "quickstart",
+    "pricing",
+    "pocket",
     "judges",
-    "---Akashi on Pocket---",
-    "...pocket",
-    "---Services---",
-    "services/cite",
-    "services/code",
-    "services/now",
-    "---Types---",
-    "...contract",
-    "---More---",
-    "...data",
-    "changelog",
+    "---CLI reference---",
+    "...cli",
     "---API reference---",
-    "...reference"
+    "...api",
+    "---Tools---",
+    "...tools",
+    "become-a-provider"
   ]
 }

@@ -1,0 +1,79 @@
+---
+title: Pricing and payments
+description: Discover and inspect are free. Each run has a fixed price of $0.001, $0.005 or $0.01, paid in USDC on Base Sepolia over x402, and only a successful run is charged.
+---
+
+## Prices
+
+| Tier | Price per call | Atomic units | Used for |
+| --- | --- | --- | --- |
+| `local` | $0.001 | `1000` | Keyless or local tools: Wikipedia, arXiv, package registries, time zones |
+| `standard` | $0.005 | `5000` | Standard keyed tools: Google results, page reads, weather, text AI |
+| `premium` | $0.01 | `10000` | Live search with page content, cited answers |
+
+Every tool shows its price in `discover`, `inspect` and the catalog as `price: {usd, atomic, tier, network}`. USDC has 6 decimals, so `1000` atomic units are $0.001. The list of tools per tier is in [Tools](/docs/tools#how-prices-work).
+
+`discover`, `inspect`, `GET /v1/catalog`, `GET /v1/version` and `GET /v1/health` are free and need no wallet.
+
+## Payment
+
+| Setting | Value |
+| --- | --- |
+| Protocol | x402 v2, scheme `exact` |
+| Network | `eip155:84532` (Base Sepolia, a testnet) |
+| Asset | USDC, `0x036CbD53842c5426634e7929541eC2318f3dCF7e` |
+| Pay to | [`0x8164dabAfc824322221654ED421715FdaA66948D`](https://sepolia.basescan.org/address/0x8164dabAfc824322221654ED421715FdaA66948D) |
+| Authorization lifetime | 60 seconds (`maxTimeoutSeconds`) |
+| Test funds | [faucet.circle.com](https://faucet.circle.com), Base Sepolia. No ETH needed. |
+
+### The handshake
+
+<Steps>
+<Step>
+
+`POST /v1/run/{provider}/{endpoint}` without a payment answers `402 Payment Required`. The `PAYMENT-REQUIRED` header (base64 JSON) carries the scheme, network, asset, exact `amount` and `payTo`.
+
+</Step>
+<Step>
+
+Your x402 client signs that requirement and sends the same request again with a `PAYMENT-SIGNATURE` header.
+
+</Step>
+<Step>
+
+The gateway verifies the signature and runs the tool.
+
+</Step>
+<Step>
+
+If the run returns `200`, the gateway settles the payment. The `PAYMENT-RESPONSE` header carries the settlement, including the Base Sepolia transaction hash (view it on `https://sepolia.basescan.org/tx/<hash>`).
+
+</Step>
+</Steps>
+
+## When you are not charged
+
+Settlement happens only after a `2xx` answer. Any other status cancels it, so the signed authorization is never submitted:
+
+| Outcome | Status | Code |
+| --- | --- | --- |
+| The lookup found nothing (`found: false`) | 404 | (an envelope, not an error) |
+| The input does not match the tool's schema | 422 | `invalid_input` |
+| The body is not JSON | 400 | `invalid_json` |
+| The provider failed or answered something unreadable | 502 | `provider_error`, `output_contract` |
+| The provider rate-limited Akashi | 429 | `provider_rate_limited` |
+| The tool did not finish in time | 504 | `deadline_exceeded` |
+| The tool is not configured on this server | 503 | `tool_unavailable` |
+| The gateway could not reach the tool router | 502 | `relay_failed`, `gateway_error` |
+
+An id that is not in the catalog answers `404 unknown_endpoint` before any payment is asked for.
+
+A result served from cache (`cached: true`) is a successful run and costs the tool's normal price.
+
+## Capping what you spend
+
+Price each call before you pay: the `402` states the exact amount. The clients enforce caps before they sign:
+
+- **CLI and MCP:** `AKASHI_MAX_ATOMIC_PER_CALL` (default `10000`, $0.01) and `AKASHI_MAX_TOTAL_ATOMIC` per process or MCP session (default `100000`, $0.10). See [CLI overview](/docs/cli#environment).
+- **Your own code:** a `paymentRequirementsSelector` that refuses amounts above your limit, as in [From code (HTTP)](/docs/quickstart/http).
+- **Agent chat:** at most $0.01 per call from your wallet; the demo credit has its own daily limit.

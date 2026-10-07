@@ -1,76 +1,92 @@
 @import "tailwindcss";
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
-@import "fumadocs-openapi/css/preset.css";
-@import "@akashi/brand/tokens.css";
-@import "@akashi/ui/diagrams.css";
+@import "@akashi/brand/paint.css";
 @source "../node_modules/fumadocs-ui/dist";
-@source "../node_modules/fumadocs-openapi/dist";
-@source "../../../packages/ui/src";
 
 /*
- * Stock Fumadocs layout and components on the Akashi tokens (v3 "The Highlighter"). The theme variables point at the
- * brand; Fumadocs' primary is the cobalt link colour (its text links and active nav need a readable hue, not lemon);
- * the radii are the brand's (via @theme in tokens.css); headings take the display face.
+ * Stock Fumadocs layout on Akashi's paint (Monid's palette). Dark first: near-black page, #1e1e1e panels, white and
+ * grey text, the accent's readable tint for links and the active page. Light keeps Monid's own accent (#0016d7).
+ * Every colour is a paint token; the two dark-only values below (hover surface, rule) have no light counterpart.
  */
-:root,
-:root.dark {
-  --color-fd-background: var(--background);
-  --color-fd-foreground: var(--foreground);
-  --color-fd-muted: var(--muted);
-  --color-fd-muted-foreground: var(--muted-foreground);
-  --color-fd-card: var(--card);
-  --color-fd-card-foreground: var(--card-foreground);
-  --color-fd-popover: var(--popover);
-  --color-fd-popover-foreground: var(--popover-foreground);
-  --color-fd-border: var(--border);
-  --color-fd-primary: var(--link);
-  --color-fd-primary-foreground: oklch(1 0 0);
-  --color-fd-secondary: var(--secondary);
-  --color-fd-secondary-foreground: var(--secondary-foreground);
-  --color-fd-accent: var(--accent);
-  --color-fd-accent-foreground: var(--accent-foreground);
-  --color-fd-ring: var(--ring);
+:root {
+  --docs-dark-hover: #262626;
+  --docs-dark-line: #2b2b2b;
+
+  --color-fd-background: var(--ak-bg);
+  --color-fd-foreground: var(--ak-ink);
+  --color-fd-muted: var(--ak-bg-muted);
+  --color-fd-muted-foreground: var(--ak-muted);
+  --color-fd-card: var(--ak-bg-subtle);
+  --color-fd-card-foreground: var(--ak-ink);
+  --color-fd-popover: var(--ak-bg);
+  --color-fd-popover-foreground: var(--ak-ink);
+  --color-fd-border: var(--ak-line);
+  --color-fd-primary: var(--ak-accent);
+  --color-fd-primary-foreground: #ffffff;
+  --color-fd-secondary: var(--ak-bg-muted);
+  --color-fd-secondary-foreground: var(--ak-ink);
+  --color-fd-accent: var(--ak-bg-muted);
+  --color-fd-accent-foreground: var(--ak-ink);
+  --color-fd-ring: var(--ak-accent);
 }
 
-/* Page titles and prose headings in the display face. */
-.prose :is(h1, h2, h3) {
+.dark {
+  color-scheme: dark;
+  /* the seal's check stroke reads var(--primary) */
+  --primary: var(--ak-accent-on-dark);
+  --background: var(--ak-dark);
+  --foreground: var(--ak-bg-subtle);
+
+  --color-fd-background: var(--ak-dark);
+  --color-fd-foreground: var(--ak-bg-subtle);
+  --color-fd-muted: var(--ak-dark-2);
+  --color-fd-muted-foreground: var(--ak-on-dark-muted);
+  --color-fd-card: var(--ak-dark-2);
+  --color-fd-card-foreground: var(--ak-bg-subtle);
+  --color-fd-popover: var(--ak-dark-2);
+  --color-fd-popover-foreground: var(--ak-bg-subtle);
+  --color-fd-border: var(--docs-dark-line);
+  --color-fd-primary: var(--ak-accent-on-dark);
+  --color-fd-primary-foreground: var(--ak-dark);
+  --color-fd-secondary: var(--ak-dark-2);
+  --color-fd-secondary-foreground: var(--ak-bg-subtle);
+  --color-fd-accent: var(--docs-dark-hover);
+  --color-fd-accent-foreground: var(--ak-bg-subtle);
+  --color-fd-ring: var(--ak-accent-on-dark);
+}
+
+/* neutral.css tints the dark sidebar with its own greys; keep it on the paint */
+.dark #nd-sidebar {
+  --color-fd-muted: var(--ak-dark-2);
+  --color-fd-secondary: var(--ak-dark-2);
+  --color-fd-muted-foreground: var(--ak-on-dark-muted);
+}
+
+body {
+  background-color: var(--color-fd-background);
+  color: var(--color-fd-foreground);
+}
+
+/* Prose: Outfit 600 headings, accent links, mono data. */
+.prose {
+  --tw-prose-links: var(--color-fd-primary);
+}
+.prose :is(h1, h2, h3, h4) {
   font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
-.prose h2 {
-  font-size: 1.8rem;
-  line-height: 1.15;
-}
-.prose h3 {
-  font-size: 1.3rem;
-  line-height: 1.25;
-}
-
-/* Inline code and tables read as data. */
 .prose :not(pre) > code {
   font-family: var(--font-mono);
   font-size: 0.85em;
   border-radius: var(--radius-sm);
 }
 .prose table {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
 }
 .prose th {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--muted-foreground);
-  font-weight: 500;
-}
-
-/* Shiki dual themes in code blocks. */
-.shiki span {
-  color: var(--shiki-light);
-}
-.dark .shiki span {
-  color: var(--shiki-dark);
+  font-weight: 600;
+  color: var(--color-fd-muted-foreground);
 }

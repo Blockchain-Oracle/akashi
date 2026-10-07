@@ -70,7 +70,7 @@ registerExactEvmScheme(client, {
 });
 const pay = wrapFetchWithPayment(fetch, client);
 const res = await pay("${GATEWAY_URL}/v1/run/wikipedia/summary", {
-  method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ title: "Pocket Network" }),
+  method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ title: "Alan Turing" }),
 });
 console.log(await res.json());
 \`\`\`

@@ -1,23 +1,27 @@
-import { Seal, Wordmark } from "@akashi/brand/react";
+import { Seal } from "@akashi/brand/react";
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 
+import { docsRoute } from "@/lib/shared";
 import { site } from "@/lib/site";
 
-/** Shared by the landing page (HomeLayout) and the docs (DocsLayout). */
+/** "Akashi" in Outfit with the 証 seal (as apps/web's Logo), then "Docs" in the body face. */
+function Logo() {
+  return (
+    <span className="inline-flex items-center gap-1.5 font-display text-lg font-semibold tracking-[-0.03em] text-fd-foreground">
+      <span>Akashi</span>
+      <Seal className="size-[1.15em] text-fd-primary" label={null} />
+      <span className="ml-1 font-sans text-sm font-normal tracking-normal text-fd-muted-foreground">Docs</span>
+    </span>
+  );
+}
+
 export function baseOptions(): BaseLayoutProps {
   return {
-    nav: {
-      title: (
-        <span className="inline-flex items-center gap-2.5 text-fd-foreground">
-          <Seal className="size-6" label={null} />
-          <Wordmark className="h-2.5 w-auto" kanji={false} />
-        </span>
-      ),
-    },
+    nav: { title: <Logo />, url: docsRoute },
     links: [
-      { text: "Docs", url: "/docs", active: "nested-url" },
-      { text: "API reference", url: "/docs/reference", active: "nested-url" },
-      { text: "Open the desk ↗", url: site.app, external: true },
+      { text: "Agent chat", url: `${site.app}/agent`, external: true },
+      { text: "Tools", url: `${site.app}/tools`, external: true },
+      { text: "useakashi.xyz", url: site.app, external: true },
     ],
   };
 }

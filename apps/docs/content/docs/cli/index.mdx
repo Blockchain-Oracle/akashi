@@ -1,0 +1,47 @@
+---
+title: CLI overview
+description: akashi.mjs is one file that discovers, inspects and runs Akashi tools, and serves them to AI agents as a local MCP server.
+---
+
+## Install
+
+```bash
+curl -fsSLO https://useakashi.xyz/akashi.mjs
+node akashi.mjs --version
+```
+
+It needs Node.js 20 or later. The file bundles its dependencies, so there is nothing else to install. The examples call it as `node akashi.mjs`; you can also `chmod +x akashi.mjs` and run `./akashi.mjs`.
+
+## Commands
+
+| Command | Cost | What it does |
+| --- | --- | --- |
+| [`discover "<what you need>" [--limit N]`](/docs/cli/discover) | free | Rank tools for a job |
+| [`inspect <provider/endpoint>`](/docs/cli/inspect) | free | A tool's description, input schema, output schema, price and example |
+| [`run <provider/endpoint> --input '<json>'`](/docs/cli/run) | the tool's price | Run a tool, paying in USDC on Base Sepolia |
+| [`run <provider/endpoint> --file input.json`](/docs/cli/run) | the tool's price | The same, with the input read from a file |
+| [`catalog`](/docs/cli/catalog) | free | Every tool as JSON |
+| [`wallet`](/docs/cli/wallet) | free | The paying address, network and spend caps |
+| [`mcp`](/docs/cli/mcp) | per run | A local MCP server over stdio |
+| `version`, `--version` | free | Print the CLI version |
+
+Any other command, or none, prints the help.
+
+## Environment
+
+| Variable | Default | Used by | Meaning |
+| --- | --- | --- | --- |
+| `AKASHI_PRIVATE_KEY` | (none) | `run`, `mcp`, `wallet` | A Base Sepolia private key holding test USDC: 64 hex characters, with or without `0x` |
+| `AKASHI_API_URL` | `https://api.useakashi.xyz` | all | The gateway to call |
+| `AKASHI_MAX_ATOMIC_PER_CALL` | `10000` ($0.01) | `run`, `mcp` | Never sign a run priced above this |
+| `AKASHI_MAX_TOTAL_ATOMIC` | `100000` ($0.10) | `run`, `mcp` | Never sign more than this in one process (one `run`, or one MCP session) |
+
+The caps are whole numbers of USDC atomic units (1 USDC = 1000000). The key is read from the environment only; the CLI never writes it to a file.
+
+## Output and exit codes
+
+Every command prints JSON to stdout, formatted with two-space indentation, so it pipes into `jq`. Errors go to stderr as `akashi: <message>` with exit code 1. `run` also exits with 1 when the run's HTTP status is 400 or above, after printing the result.
+
+## Request timeout
+
+Each HTTP request times out after 20 seconds.

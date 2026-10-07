@@ -3,20 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3200",
-    "build": "next build",
+    "dev": "node scripts/generate-tools.mjs && next dev --port 3200",
+    "build": "node scripts/generate-tools.mjs && next build",
     "start": "next start --port 3200",
     "lint": "eslint .",
-    "typecheck": "next typegen && tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "tools:generate": "node scripts/generate-tools.mjs",
+    "catalog:snapshot": "node scripts/snapshot-catalog.mjs"
   },
   "dependencies": {
-    "@akashi/api-client": "workspace:*",
     "@akashi/brand": "workspace:*",
-    "@akashi/ui": "workspace:*",
     "clsx": "catalog:",
     "fumadocs-core": "catalog:",
     "fumadocs-mdx": "catalog:",
-    "fumadocs-openapi": "catalog:",
     "fumadocs-ui": "catalog:",
     "lucide-react": "catalog:",
     "motion": "catalog:",

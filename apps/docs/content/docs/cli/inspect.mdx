@@ -1,0 +1,37 @@
+---
+title: inspect
+description: One tool's full contract, its description, input JSON Schema, output schema, price and a working example. Free.
+---
+
+```bash
+node akashi.mjs inspect <provider/endpoint>
+```
+
+It calls [`POST /v1/inspect`](/docs/api/inspect) with `{id}` and prints the response. An unknown id fails with `unknown_endpoint` and exit code 1.
+
+## Example
+
+```bash
+node akashi.mjs inspect openweather/current
+```
+
+The result has every `discover` field except `score` and `health`, plus:
+
+| Field | Meaning |
+| --- | --- |
+| `description` | What the tool does, what it will not do, and what to call instead |
+| `notes` | Extra notes for the agent |
+| `seeAlso` | Related tool ids |
+| `deadlineMs` | The run deadline for this tool |
+| `cacheTtlS` | How long a result is cached, in seconds (`null`: not cached) |
+| `terms` | How the provider's terms classify the data |
+| `input` | The input JSON Schema. Unknown fields are rejected. |
+| `output` | The JSON Schema of `data` in a successful run |
+| `example` | A valid input; it is also the tool's live probe |
+
+Read `input` before a run. Copy `example` as a starting point:
+
+```bash
+node akashi.mjs inspect openweather/current | jq -c .example
+# {"city":"Lagos,NG","units":"metric"}
+```
