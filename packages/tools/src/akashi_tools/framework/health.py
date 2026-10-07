@@ -3,6 +3,7 @@
 Samples live in Redis (shared by the api and the probe task) and fall back to process memory without it.
 """
 
+import asyncio
 import statistics
 import time
 from collections import deque
@@ -20,6 +21,8 @@ from akashi_tools.constants import (
     HEALTH_P50,
     HEALTH_P95,
     HEALTH_RECENT_S,
+    HEALTH_REDIS_CONNECT_S,
+    HEALTH_REDIS_TIMEOUT_S,
     HEALTH_SAMPLES,
     HEALTH_STABLE_MIN_RUNS,
     HEALTH_STABLE_RATE,
@@ -93,17 +96,32 @@ class HealthStore:
         self._memory: dict[str, deque[Sample]] = {}
         self._redis: Redis | None = None
         self._configured = False
+        self._pending: set[asyncio.Task[None]] = set()
 
     def _client(self) -> Redis | None:
         if not self._configured:
             url = get_settings().redis_url
-            self._redis = Redis.from_url(url) if url else None
+            self._redis = (
+                Redis.from_url(
+                    url, socket_connect_timeout=HEALTH_REDIS_CONNECT_S, socket_timeout=HEALTH_REDIS_TIMEOUT_S
+                )
+                if url
+                else None
+            )
             self._configured = True
         return self._redis
 
     async def record(self, endpoint_id: str, ok: bool, latency_ms: int) -> None:
+        """Memory now; Redis in the background, so a run never waits on bookkeeping."""
         sample = (time.time(), ok, latency_ms)
         self._memory.setdefault(endpoint_id, deque(maxlen=HEALTH_SAMPLES)).appendleft(sample)
+        if self._client() is None:
+            return
+        task = asyncio.create_task(self._persist(endpoint_id, sample))
+        self._pending.add(task)
+        task.add_done_callback(self._pending.discard)
+
+    async def _persist(self, endpoint_id: str, sample: Sample) -> None:
         redis = self._client()
         if redis is None:
             return
@@ -132,6 +150,8 @@ class HealthStore:
         return {i: verdict(s, now) for i, s in samples.items()}
 
     async def close(self) -> None:
+        if self._pending:
+            await asyncio.gather(*self._pending, return_exceptions=True)
         if self._redis is not None:
             await self._redis.aclose()
 

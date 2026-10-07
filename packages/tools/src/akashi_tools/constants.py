@@ -48,6 +48,10 @@ HEALTH_OUTAGE_STREAK: Final = 5  # this many failures in a row → outage
 HEALTH_P50: Final = 0.5
 HEALTH_P95: Final = 0.95
 HEALTH_KEY_PREFIX: Final = "ak:tools:health"
+# Health is bookkeeping: a slow Redis must never hold a run's response (2026-10-07: a connect timeout under load
+# delayed a paid run past the gateway's deadline). Writes go to a background task with these socket timeouts.
+HEALTH_REDIS_CONNECT_S: Final = 0.3
+HEALTH_REDIS_TIMEOUT_S: Final = 0.5
 
 # Cache TTLs (seconds), chosen per data's real rate of change
 TTL_SEARCH_S: Final = 600
