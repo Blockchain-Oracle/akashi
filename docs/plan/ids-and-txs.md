@@ -46,6 +46,15 @@
 ## Relays and claims
 | service | session end | #relays | MsgCreateClaim tx | settled? | proof tx | chosen Test Tx ✓ |
 |---|---|---|---|---|---|---|
+| tool-router | 712520 (session dfd96816…7683c) | 1 (800 uPOKT claimed) | AC215AB4282193BDE42DD2EA99E419C0E489F17594371D64988A89F3F9A3E244 (h 712535, code 0, EventClaimCreated) | **settled 2026-10-07 16:14:50 UTC** (1 relay, 800 uPOKT) | 6729C253844DF7CF7FEF9BDBD169F09D517067F2C09BF945D7659A4703E06560 (h 712544, code 0, EventProofSubmitted; required: 800 > 100 uPOKT threshold) | ✓ (first settled claim) |
+| tool-router | 712540 | 4+ (paid runs 16:05 UTC) | claimed (in flight 16:15) | – | – | |
+
+### Paid runs (x402 on Base Sepolia → Pocket relay) — each one is a USDC transfer payer → payTo
+| when (UTC) | endpoint | price | settlement tx (sepolia.basescan.org) | via |
+|---|---|---|---|---|
+| 2026-10-07 15:57 | wikipedia/summary | $0.001 | 0xb544a3a445ed90c0a4d23794c63f6524723ea986628f5abac15b286c63c0a32b (block 47810180, 0.001 USDC F2A2…9ebA → 8164…948D) | pocket (first relayed paid run) |
+| 2026-10-07 16:05 | wikipedia/summary · npm/package · akashi/time · hackernews/search | $0.001–0.005 | 0x1feff0ad…69bd6 · 0x9a3ebb72…a1b737 · 0x5ce353e5…aa1f · 0x074e852c…f7ce | pocket |
+| 2026-10-07 16:05 | frankfurter/latest (no such id) · datamuse/words (bad input) | – | none: 404 and a 422 pre-check, never charged | – |
 
 ## Coolify
 | resource | uuid | type | domain | alias | mem | last deploy |
@@ -58,10 +67,11 @@
 | api volume | jgoe0grdxfpxqcvm3dvkqxpm | `qbjpovbitgqrjgafdcrigqmd-akashi-api-data` → /data (news.db, jobs.db, toplists) |
 | api scheduled tasks | – | gdelt-ingest `2,17,32,47 * * * *` · jobs-ingest `20 */6 * * *` (akashi-task) |
 | private key `akashi-deploy-key` | 7izaxr1xhppq74ashloilmoc | deploy key (GitHub id 164816962, read-only) | – | – | – | – |
-
 | app `akashi-gateway` | mwivqpuwa5rpwtrxpwjc1j0w | Docker Image `ghcr.io/blockchain-oracle/akashi-gateway:main` | temp `https://mwivqpuwa5rpwtrxpwjc1j0w.84.46.247.92.sslip.io` (→ api.useakashi.xyz) | – | 192m | env AKASHI_API_URL=http://api.internal:8000, POCKET_AP_URL=http://pocket-ap.internal:8550, AKASHI_PAY_TO, DEMO_WALLET_PRIVATE_KEY (secret) |
 | app `akashi-relayminer` | 8sf3farw1wl5gjnrm50fd95s | Docker Compose `/deploy/pocket/compose.yaml` (redis 8.10.1 noeviction, miner + relayer v0.1.0), connected to the coolify network | relayer `https://relay.84.46.247.92.sslip.io` | – | 256m each | configs at /opt/pocket/config (sync-config.sh), key at /opt/pocket/secrets |
 | app `akashi-pocket-ap` | 0nfqgxdf8cdwb43mecpycxhd | Dockerfile `/deploy/gateway/pocket-ap.Dockerfile` (internal, no domain) | – | `pocket-ap.internal` | 128m | env POCKET_APP_PRIVATE_KEY (secret: tool-router app key) |
+| app `akashi-web` | uaydz8sozk7g4fgbqr49rj2a | Docker Image `ghcr.io/blockchain-oracle/akashi-web:main` (private; server's ghcr login) | temp `http://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io` | – | 320m | env AKASHI_API_URL=http://api.internal:8000 |
+| app `akashi-docs` | k7ds7ucqsnaxw5lorj8a9buu | Docker Image `ghcr.io/blockchain-oracle/akashi-docs:main` (private) | temp `http://k7ds7ucqsnaxw5lorj8a9buu.84.46.247.92.sslip.io` | – | 192m | GitHub vars NEXT_PUBLIC_APP_URL / NEXT_PUBLIC_DOCS_URL = the two temp URLs (baked at build) |
 | stopped 2026-10-07 | hxw9imsx4dn8k7llok6igo8a (akashi-nli), jrsfoxtd9twkyj1lqpmmu8jh (akashi-ts-introspect) | retired services; also stopped at the user's request: kawase-voice, logos-kit-preview-net (server overload) | | | | |
 
 ## DNS / TLS
@@ -71,6 +81,7 @@
 ## Audit runs
 | date | file | A1..A9 per id | notes |
 |---|---|---|---|
+| 2026-10-07 16:15 UTC | audits/2026-10-07-tool-router.json | tool-router: PASS ×9 | operator pokt1qnrj…, endpoint https://relay.84.46.247.92.sslip.io (temporary), card sha256 596f2bd8… |
 
 ## Organizer comms
 | date | channel | asked | answer |
@@ -79,5 +90,3 @@
 ## Submission
 | service | submitted (date) | fields snapshot |
 |---|---|---|
-| app `akashi-web` | uaydz8sozk7g4fgbqr49rj2a | Docker Image `ghcr.io/blockchain-oracle/akashi-web:main` (private; server's ghcr login) | temp `http://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io` | – | 320m | env AKASHI_API_URL=http://api.internal:8000 |
-| app `akashi-docs` | k7ds7ucqsnaxw5lorj8a9buu | Docker Image `ghcr.io/blockchain-oracle/akashi-docs:main` (private) | temp `http://k7ds7ucqsnaxw5lorj8a9buu.84.46.247.92.sslip.io` | – | 192m | GitHub vars NEXT_PUBLIC_APP_URL / NEXT_PUBLIC_DOCS_URL = the two temp URLs (baked at build) |

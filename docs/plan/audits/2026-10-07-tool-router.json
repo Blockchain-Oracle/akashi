@@ -1,0 +1,36 @@
+{
+  "schema": "pocket-service-audit/v1",
+  "network": "beta",
+  "audited_at": "2026-10-07T16:15:55.522Z",
+  "upokt_per_compute_unit": 0.04,
+  "catalog_size": 116,
+  "summary": { "PASS": 1, "WARN": 0, "FAIL": 0 },
+  "findings_shared_by_all": [],
+  "services": [
+    {
+      "id": "tool-router",
+      "verdict": "PASS",
+      "rules": { "A1": "PASS", "A2": "PASS", "A3": "PASS", "A4": "PASS", "A5": "PASS", "A6": "PASS", "A7": "PASS", "A8": "PASS", "A9": "PASS" },
+      "findings": [],
+      "facts": {
+        "operator_expected": "pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg",
+        "registered_on_other_network": false,
+        "owner": "pokt16p53au7ctwrtfdwd23pt2tv54nj9f0n8wsj805",
+        "name": "Akashi Tool Router",
+        "cupr": 20000,
+        "card_bytes": 2596,
+        "card_sha256": "596f2bd80a5469dbf931fa02e019cb5ad9861624e5a267e0c4b1d1990cf16491",
+        "suppliers": ["pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg"],
+        "endpoints": [{ "url": "https://relay.84.46.247.92.sslip.io", "rpc_type": "REST" }],
+        "probe": { "https://relay.84.46.247.92.sslip.io": 400 },
+        "settled_claims": 1,
+        "last_settled": "2026-10-07T16:14:50.519",
+        "last_settled_by": "pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg",
+        "relays_in_last_claim": 1,
+        "upokt_per_relay": 800,
+        "price_percentile_in_catalog": 48
+      }
+    }
+  ],
+  "acceptance_rules": "pocket://references/acceptance.md"
+}
