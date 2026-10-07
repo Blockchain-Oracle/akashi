@@ -10,6 +10,11 @@ import { PocketFlow } from "@/features/landing/PocketFlow";
 import { Steps } from "@/features/landing/Steps";
 import { getCatalog } from "@/lib/catalog/catalog.server";
 
+// Rendered per request: the catalog comes from the live api (its fetch is cached for CATALOG_REVALIDATE_S), never
+// from whatever the api answered at image build time.
+export const dynamic = "force-dynamic";
+
+
 export default async function Home() {
   const catalog = await getCatalog();
   return (

@@ -1,7 +1,7 @@
 import { getCatalog } from "@/lib/catalog/catalog.server";
 import { CATALOG_REVALIDATE_S, DOCS_URL, GATEWAY_URL, SITE_URL } from "@/lib/constants/site";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 /** llms.txt: what Akashi is and every tool, one line each (generated from the live catalog). */
 export async function GET() {

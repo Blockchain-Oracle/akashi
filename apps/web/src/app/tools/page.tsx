@@ -5,6 +5,11 @@ import { SiteHeader } from "@/components/shell/SiteHeader";
 import { ToolsBrowser } from "@/features/tools/ToolsBrowser";
 import { getCatalog } from "@/lib/catalog/catalog.server";
 
+// Rendered per request: the catalog comes from the live api (its fetch is cached for CATALOG_REVALIDATE_S), never
+// from whatever the api answered at image build time.
+export const dynamic = "force-dynamic";
+
+
 export const metadata: Metadata = { title: "Tools", description: "Every tool your agent can call through Akashi." };
 
 export default async function ToolsPage() {
