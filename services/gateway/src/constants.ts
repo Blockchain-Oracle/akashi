@@ -3,6 +3,7 @@
 export const SERVICE_NAME = "Akashi";
 export const SERVICE_ID = "tool-router"; // the Pocket service every paid run is relayed to
 export const RUN_PREFIX = "/v1/run";
+export const VALIDATE_PREFIX = "/v1/validate";
 
 // x402 on Base Sepolia (context/05-external-libs/x402.md): exact scheme, testnet USDC, the public facilitator.
 export const DEFAULT_NETWORK = "eip155:84532" as const;

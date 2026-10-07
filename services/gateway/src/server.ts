@@ -24,6 +24,7 @@ import {
   MAX_BODY_BYTES,
   RUN_PREFIX,
   SERVICE_ID,
+  VALIDATE_PREFIX,
   VIA_HEADER,
 } from "./constants.js";
 import { mcpHandler } from "./mcp.js";
@@ -108,6 +109,16 @@ const mcp = mcpHandler(config, (path) => {
 app.all("/mcp", (c) =>
   mcp(c.req.raw, c.req.header("x-forwarded-for")?.split(",")[0]?.trim() || c.req.header("x-real-ip") || "unknown"),
 );
+
+// Before any 402: an input that cannot run is rejected for free (nobody signs for a 422).
+app.post(`${RUN_PREFIX}/:provider/:slug`, async (c, next) => {
+  if (c.req.header("payment-signature") || c.req.header("x-payment")) return next();
+  const path = `${RUN_PREFIX}/${c.req.param("provider")}/${c.req.param("slug")}`;
+  if (!endpointsByPath.has(path)) return next();
+  const body = await c.req.raw.clone().text();
+  const checked = await forwardRead(config, "POST", path.replace(RUN_PREFIX, VALIDATE_PREFIX), body || "{}");
+  return checked.status === HTTP_OK ? next() : relay(c, checked);
+});
 
 // Payment runs before the handler: unpaid → 402 with the price; paid → handler → settle only if status < 400.
 app.use(`${RUN_PREFIX}/*`, (c, next) => payments(c, next));

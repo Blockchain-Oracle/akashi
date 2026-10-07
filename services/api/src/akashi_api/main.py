@@ -26,7 +26,7 @@ from akashi_tools.constants import (
 )
 from akashi_tools.framework import catalog
 from akashi_tools.framework.discover import discover
-from akashi_tools.framework.engine import run
+from akashi_tools.framework.engine import resolve, run, validate_input
 from akashi_tools.framework.errors import ToolError, UnknownEndpoint
 
 _HTTP_BAD_REQUEST = 400
@@ -118,6 +118,17 @@ async def post_inspect(body: InspectBody) -> dict[str, Any]:
 @app.get("/v1/endpoints/{provider}/{slug}", include_in_schema=False)
 async def get_endpoint(provider: str, slug: str) -> dict[str, Any]:
     return await post_inspect(InspectBody(id=f"{provider}/{slug}"))
+
+
+@app.post("/v1/validate/{provider}/{slug}", summary="Check an input against an endpoint's schema (free, runs nothing)")
+async def post_validate(provider: str, slug: str, request: Request) -> Any:
+    raw = await request.body()
+    try:
+        payload = orjson.loads(raw) if raw.strip() else {}
+    except orjson.JSONDecodeError:
+        return _error(_HTTP_BAD_REQUEST, "invalid_json", "Request body is not valid JSON.")
+    validate_input(resolve(f"{provider}/{slug}"), payload)
+    return {"valid": True}
 
 
 @app.post("/v1/run/{provider}/{slug}", summary="Run one endpoint with its input as the JSON body")

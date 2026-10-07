@@ -50,7 +50,7 @@ def resolve(endpoint_id: str) -> Endpoint:
     return endpoint
 
 
-def _validate(endpoint: Endpoint, payload: Any) -> Any:
+def validate_input(endpoint: Endpoint, payload: Any) -> Any:
     try:
         return endpoint.input_model.model_validate(payload if payload is not None else {})
     except ValidationError as exc:
@@ -88,7 +88,7 @@ def _envelope(endpoint: Endpoint, deadline: Deadline, *, data: Any, sources: lis
 
 async def run(endpoint_id: str, payload: Any) -> dict[str, Any]:
     endpoint = resolve(endpoint_id)
-    inp = _validate(endpoint, payload)
+    inp = validate_input(endpoint, payload)
     deadline = Deadline(min(endpoint.deadline_s, RUN_DEADLINE_MAX_S))
     set_deadline(deadline)
     canonical = orjson.dumps(inp.model_dump(mode="json"), option=orjson.OPT_SORT_KEYS)
