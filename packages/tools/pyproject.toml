@@ -1,25 +1,26 @@
 [project]
-name = "akashi-api"
-version = "0.2.0"
+name = "akashi-tools"
+version = "0.1.0"
+description = "Akashi tool router: connector framework (providers, endpoints, engine, catalog, discover, health) and connectors"
 requires-python = ">=3.13,<3.14"
 dependencies = [
     "akashi-core",
     "akashi-now",
-    "akashi-tools",
-    "uvicorn[standard]>=0.54",
+    "defusedxml>=0.7.1",
+    "python-dotenv>=1.1",
+    "redis>=6.4",
 ]
 
 [project.scripts]
-akashi-task = "akashi_api.tasks:main"
+akashi-tools = "akashi_tools.cli:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/akashi_api"]
+packages = ["src/akashi_tools"]
 
 [tool.uv.sources]
 akashi-core = { workspace = true }
 akashi-now = { workspace = true }
-akashi-tools = { workspace = true }

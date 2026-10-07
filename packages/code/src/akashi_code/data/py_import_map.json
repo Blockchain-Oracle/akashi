@@ -1,8 +1,0 @@
-{
-  "PIL": "pillow", "cv2": "opencv-python", "sklearn": "scikit-learn", "yaml": "PyYAML", "bs4": "beautifulsoup4",
-  "dateutil": "python-dateutil", "dotenv": "python-dotenv", "jwt": "PyJWT", "google.protobuf": "protobuf",
-  "Crypto": "pycryptodome", "OpenSSL": "pyOpenSSL", "magic": "python-magic", "serial": "pyserial",
-  "attr": "attrs", "docx": "python-docx", "pptx": "python-pptx", "fitz": "PyMuPDF", "skimage": "scikit-image",
-  "Levenshtein": "python-Levenshtein", "zmq": "pyzmq", "git": "GitPython", "slugify": "python-slugify",
-  "multipart": "python-multipart", "websocket": "websocket-client", "jose": "python-jose", "ldap": "python-ldap"
-}

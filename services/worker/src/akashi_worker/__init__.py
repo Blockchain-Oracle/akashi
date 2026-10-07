@@ -1,1 +1,0 @@
-"""akashi_worker service."""

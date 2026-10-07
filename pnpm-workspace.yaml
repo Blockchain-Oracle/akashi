@@ -4,7 +4,6 @@ packages:
   - "packages/brand"
   - "packages/model"
   - "packages/ui"
-  - "services/ts-introspect"
 
 # Supply chain: never resolve a release younger than 7 days, transitive ones included (minutes). A brand-new
 # mdast-util-to-markdown 2.1.3 (2026-09-27) crashed every docs page with emphasis in fumadocs' stringifier.
@@ -20,8 +19,7 @@ allowBuilds:
   unrs-resolver: true
 
 # One version of each shared dependency across apps and packages (`"catalog:"` in a manifest).
-# Next 16.3.4 + React 19.2.8 is the pair already proven in the user's stocklana build; TypeScript stays on 5.9
-# (services/ts-introspect pins its own compiler for the introspection API and does not use the catalog).
+# Next 16.3.4 + React 19.2.8 is the pair already proven in the user's stocklana build; TypeScript stays on 5.9.
 # Supply chain: every pin is the newest release at least a week old when chosen (2026-09-30), not the latest.
 catalog:
   next: 16.3.4
