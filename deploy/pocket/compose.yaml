@@ -22,9 +22,10 @@ services:
     mem_limit: 256m
     environment: { GOMEMLIMIT: "230MiB", GOMAXPROCS: "1" }
     depends_on: { redis: { condition: service_healthy } }
-    healthcheck: { test: ["CMD", "curl", "-fsS", "http://localhost:9092/health"], interval: 10s, timeout: 3s,
-                   retries: 30, start_period: 30s }
-    restart: on-failure
+    # Measured 2026-10-07 on the shared box: healthy after ~35 s, slower under load, so a generous start period.
+    healthcheck: { test: ["CMD", "curl", "-fsS", "http://localhost:9092/health"], interval: 10s, timeout: 5s,
+                   retries: 30, start_period: 180s }
+    restart: unless-stopped
   relayer:
     image: ghcr.io/pokt-network/pocket-relay-miner:v0.1.0   # SAME tag as the miner, always
     command: ["relayer", "--config", "/config/config.yaml"]
@@ -34,7 +35,9 @@ services:
     expose: ["8080"]
     mem_limit: 256m
     environment: { GOMEMLIMIT: "230MiB", GOMAXPROCS: "2" }
-    depends_on: { redis: { condition: service_healthy }, miner: { condition: service_healthy } }
+    # Started, not healthy: the relayer's own /ready stays 503 until the miner publishes its manifest, and a strict
+    # healthy gate failed the whole Coolify deploy when the miner warmed up slowly under load.
+    depends_on: { redis: { condition: service_healthy }, miner: { condition: service_started } }
     # /health, not /ready: Traefik drops an unhealthy container, and /ready stays 503 until the miner publishes
     healthcheck: { test: ["CMD", "curl", "-fsS", "http://localhost:8081/health"], interval: 10s, timeout: 3s,
                    retries: 30, start_period: 20s }

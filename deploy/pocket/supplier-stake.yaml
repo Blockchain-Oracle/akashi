@@ -8,5 +8,7 @@ default_rev_share_percent:
 services:
   - service_id: tool-router
     endpoints:
-      - publicly_exposed_url: https://relay.useakashi.xyz
+      # Temporary host until useakashi.xyz is registered (sslip.io resolves to the box; Coolify issues the TLS cert).
+      # Moving to relay.useakashi.xyz = edit this URL and re-run stake-supplier (gas only).
+      - publicly_exposed_url: https://relay.84.46.247.92.sslip.io
         rpc_type: REST
