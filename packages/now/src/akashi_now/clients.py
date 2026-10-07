@@ -1,4 +1,4 @@
-"""Process-wide upstream clients for live-facts (created lazily)."""
+"""Process-wide upstream clients for Akashi's own computations (created lazily)."""
 
 from functools import cache
 

@@ -1,9 +1,7 @@
 packages:
   - "apps/*"
-  - "packages/api-client"
   - "packages/brand"
   - "packages/model"
-  - "packages/ui"
   - "services/gateway"
 
 # Supply chain: never resolve a release younger than 7 days, transitive ones included (minutes). A brand-new
@@ -25,7 +23,7 @@ allowBuilds:
   utf-8-validate: false
 
 # One version of each shared dependency across apps and packages (`"catalog:"` in a manifest).
-# Next 16.3.4 + React 19.2.8 is the pair already proven in the user's stocklana build; TypeScript stays on 5.9.
+# Next 16.3.4 + React 19.2.8 is the pair already proven in an earlier build (Stocklana); TypeScript stays on 5.9.
 # Supply chain: every pin is the newest release at least a week old when chosen (2026-09-30), not the latest.
 catalog:
   next: 16.3.4

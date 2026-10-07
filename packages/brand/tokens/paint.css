@@ -1,6 +1,6 @@
 /*
- * Akashi paint v5 — Monid's palette, type and radii, read from monid.ai's own stylesheet on 2026-10-07 (the user's
- * brief: "follow their colours exactly for now"; Akashi keeps its own name and mark). Light only, like the source;
+ * Akashi paint v5 — Monid's palette, type and radii, read from monid.ai's own stylesheet on 2026-10-07: a deliberate
+ * match for now (see THIRD_PARTY_NOTICES.md); Akashi keeps its own name and mark. Light only, like the source;
  * the footer and terminal windows are the dark surfaces.
  *
  * Source tokens (monid.ai :root): --accent #0016d7 · --accent-hover #0012b0 · --accent-press #000e8c · --bg #fff ·

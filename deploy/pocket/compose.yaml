@@ -1,8 +1,8 @@
 # HA RelayMiner for the tool-router Pocket service on Beta (Coolify "Docker Compose" resource, base /deploy/pocket).
 # Coolify's Traefik terminates TLS for https://relay.useakashi.xyz → relayer:8080 (set in the Coolify UI), so there
-# is no Caddy, no published port and no container_name here. KB fixes vs the skill template: Redis 8.10.1 with
-# noeviction (v0.1.0 refuses anything else), pinned v0.1.0 for miner AND relayer, block time 30 s (Beta), no
-# chain_id in the relayer, eager validation, memory limits (context/03-building-a-service/supplier-and-relayminer.md).
+# is no Caddy, no published port and no container_name here. Changes from the Service Builder template: Redis 8.10.1
+# with noeviction (v0.1.0 refuses anything else), pinned v0.1.0 for miner AND relayer, block time 30 s (Beta), no
+# chain_id in the relayer, eager validation, memory limits.
 # The relayer reaches the api through Coolify's shared network ("Connect to predefined network" on) at api.internal.
 services:
   # Not "redis": with the shared coolify network on, that alias also resolves to coolify-redis (password-protected),

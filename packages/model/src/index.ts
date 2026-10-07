@@ -5,8 +5,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import type { LanguageModel } from "ai";
 
 /**
- * Which model drives the /agent chat and the desk's now-question router: server only. Adapted from the user's
- * stocklana `packages/brain/src/model.ts`.
+ * Which model drives the /agent chat: server only. Adapted from Stocklana's model resolver (same author).
  *
  * One setting chooses the model, `AI_MODEL="creator/model"`, and the resolver takes whichever route the available
  * credential allows:

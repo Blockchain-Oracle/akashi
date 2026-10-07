@@ -4,7 +4,7 @@ name: images
 on:
   push:
     branches: [main]
-    paths: ["apps/**", "packages/api-client/**", "packages/brand/**", "packages/model/**", "packages/ui/**", "services/gateway/**", "pnpm-lock.yaml", "pnpm-workspace.yaml", "deploy/next-app/**", ".github/workflows/images.yml"]
+    paths: ["apps/**", "packages/brand/**", "packages/model/**", "services/gateway/**", "pnpm-lock.yaml", "pnpm-workspace.yaml", "deploy/next-app/**", ".github/workflows/images.yml"]
   workflow_dispatch:
 permissions: { contents: read, packages: write }
 concurrency: { group: images, cancel-in-progress: true }

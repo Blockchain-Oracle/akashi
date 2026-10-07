@@ -16,6 +16,9 @@ Akashi is a single Pocket Network service, `tool-router` ("Akashi Tool Router"),
 | Service owner | `pokt16p53au7ctwrtfdwd23pt2tv54nj9f0n8wsj805` |
 | Supplier operator | `pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg` |
 | Application stake | tx [`113EFC51…6BCC0E1E8E0CF5DE85835BBC`](https://explorer.pocket.network/beta/tx/113EFC5118886B6F65EF23B2028F8ECCBAA6C0986BCC0E1E8E0CF5DE85835BBC) |
+| Supplier stake | tx [`E8997D51…5AD4762ABD02F60645634784B97D4915`](https://explorer.pocket.network/beta/tx/E8997D51009D84EE42FFB9B69F0905C55AD4762ABD02F60645634784B97D4915), 60,000 POKT, endpoint `https://relay.84.46.247.92.sslip.io` (REST; a temporary host until the domain is live) |
+| First relay claim | tx [`AC215AB4…E489F17594371D64988A89F3F9A3E244`](https://explorer.pocket.network/beta/tx/AC215AB4282193BDE42DD2EA99E419C0E489F17594371D64988A89F3F9A3E244), proof [`6729C253…517067F2C09BF945D7659A4703E06560`](https://explorer.pocket.network/beta/tx/6729C253844DF7CF7FEF9BDBD169F09D517067F2C09BF945D7659A4703E06560), settled 2026-10-07 |
+| Service Audit | A1 to A9 all `PASS` ([run it live](https://mcp.pocketmcp.network/audit?network=beta&ids=tool-router&operator=pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg)) |
 
 ## The path of a paid run
 
@@ -71,3 +74,19 @@ The CLI shows the same value as `receipt.via`. `GET /v1/version` reports how the
 ## Limits the relay sets
 
 Pocket gateways expect an answer in about 10 seconds and cap request bodies near 64 KiB. Akashi stays inside both: request bodies are limited to 64 KiB, every run finishes in under 9 seconds (each tool has its own deadline), and output is trimmed near 60 KB. See [Limits](/docs/api#limits).
+
+## Pocket's tools, and what each did
+
+| Tool | What it did for Akashi |
+| --- | --- |
+| Pocket Service Builder (skill and MCP server at `mcp.pocketmcp.network`) | Checked that `tool-router` was free on both networks, read the live fees, minimum stakes and compute-unit price, validated the service card, watched sessions and claims, and runs the Service Audit. |
+| `pocketd` | Registered the service, staked the supplier for it, and staked the application that signs Akashi's relays. |
+| HA RelayMiner (relayer, miner and Redis) | Akashi's own supplier. The relayer checks each signed relay and forwards it to the `tool-router` backend; the miner builds the session trees and submits the claims and proofs. |
+| `pocket-ap` | Signs every paid run as a relay from Akashi's staked application, so the gateway never holds a Pocket key. |
+| Service card (`pocket-service-card/v1`) | The on-chain description gateways read: what the service does, its REST transport, an identity probe (`GET /v1/version` must name `tool-router`), functional probes, and the OpenAPI spec. |
+| Pocket Explorer | The public record of the [service](https://explorer.pocket.network/beta/service/tool-router), its stakes and its claims. |
+
+## Two things worth knowing if you run a supplier
+
+- **Settled claims are paid from the application's stake.** An application staked at exactly the minimum (1,000 POKT on Beta) drops below it with its first settled relay, and the network unstakes it. Akashi's application is staked with headroom (1,150 POKT, about 187,000 relays at 800 uPOKT).
+- **Name the RelayMiner's Redis uniquely.** On a host where several Docker Compose stacks share one network, a service called `redis` can resolve to another stack's Redis. Akashi's is `pocket-relay-redis`.

@@ -53,6 +53,7 @@ Expect `"scheme": "exact"`, `"network": "eip155:84532"`, `"amount": "1000"` ($0.
 
 ```bash
 curl -fsSLO https://useakashi.xyz/akashi.mjs
+export AKASHI_API_URL=$API
 export AKASHI_PRIVATE_KEY=0x$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
 node akashi.mjs wallet
 ```
@@ -83,7 +84,7 @@ node akashi.mjs run wikipedia/summary --input '{"title": "Qzxv Nonexistent Artic
 node akashi.mjs run wikipedia/summary --input '{"titel": "Alan Turing"}'
 ```
 
-`status` is `422` with `"code": "invalid_input"`, and `receipt.paid` is `false`. In both cases the client signed a payment, and the gateway did not settle it.
+`status` is `422` with `"code": "invalid_input"`, and `receipt.paid` is `false`. The typo is caught by the free input check before any payment is asked for, so nothing is signed. The lookup that found nothing was signed, and the gateway never settled it.
 
 ## 5. The agent chat
 
@@ -100,8 +101,22 @@ Open [`https://useakashi.xyz/agent`](https://useakashi.xyz/agent) and ask "Find 
 | Application stake tx | [`113EFC5118886B6F65EF23B2028F8ECCBAA6C0986BCC0E1E8E0CF5DE85835BBC`](https://explorer.pocket.network/beta/tx/113EFC5118886B6F65EF23B2028F8ECCBAA6C0986BCC0E1E8E0CF5DE85835BBC) |
 | x402 pay-to (Base Sepolia) | [`0x8164dabAfc824322221654ED421715FdaA66948D`](https://sepolia.basescan.org/address/0x8164dabAfc824322221654ED421715FdaA66948D) |
 
-<Callout title="Relay claim: pending">
-  A relay claim transaction appears only once the supplier is staked and serving relays. Until then there is no claim to show, and runs report `via: direct`. Check `X-Akashi-Via` (or `receipt.via`) on any run to see which path served it.
-</Callout>
+| Supplier stake tx | [`E8997D51009D84EE42FFB9B69F0905C55AD4762ABD02F60645634784B97D4915`](https://explorer.pocket.network/beta/tx/E8997D51009D84EE42FFB9B69F0905C55AD4762ABD02F60645634784B97D4915) (60,000 POKT, active from height 712501) |
+| First x402-paid run relayed over Pocket | [`0xb544a3a445ed90c0a4d23794c63f6524723ea986628f5abac15b286c63c0a32b`](https://sepolia.basescan.org/tx/0xb544a3a445ed90c0a4d23794c63f6524723ea986628f5abac15b286c63c0a32b) (0.001 USDC, `wikipedia/summary`) |
+| Relay claim (MsgCreateClaim) | [`AC215AB4282193BDE42DD2EA99E419C0E489F17594371D64988A89F3F9A3E244`](https://explorer.pocket.network/beta/tx/AC215AB4282193BDE42DD2EA99E419C0E489F17594371D64988A89F3F9A3E244) (height 712535) |
+| Proof (MsgSubmitProof) | [`6729C253844DF7CF7FEF9BDBD169F09D517067F2C09BF945D7659A4703E06560`](https://explorer.pocket.network/beta/tx/6729C253844DF7CF7FEF9BDBD169F09D517067F2C09BF945D7659A4703E06560) (height 712544) |
+
+The first claims settled on 2026-10-07: 1 relay (session ending 712520), then 12 and 5 relays in the next two sessions, 800 uPOKT per relay.
+
+## 7. The Service Audit
+
+Pocket's acceptance check runs rules A1 to A9 against the live network: registration, the card, the supplier, the endpoint's TLS, a settled claim, the card's probes and the price. [Run it for `tool-router`](https://mcp.pocketmcp.network/audit?network=beta&ids=tool-router&operator=pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg), or:
+
+```bash
+curl -s 'https://mcp.pocketmcp.network/api/audit?network=beta&ids=tool-router&operator=pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg' \
+  | jq '.services[0] | {verdict, rules}'
+```
+
+On 2026-10-07 it returned `PASS` on all nine rules with no findings.
 
 For how the pieces fit, see [How it runs on Pocket](/docs/pocket).

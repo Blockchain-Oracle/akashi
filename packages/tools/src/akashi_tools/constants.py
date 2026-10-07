@@ -7,7 +7,7 @@ SERVICE_TITLE: Final = "Akashi Tool Router"
 CATALOG_VERSION: Final = 1
 RUN_PATH_PREFIX: Final = "/v1/run"
 
-# Pocket gateways expect an answer in < ~10 s (context/03-building-a-service/design-rules.md); keep 1 s for the
+# Pocket gateways expect an answer in < ~10 s (Pocket's service design rules); keep 1 s for the
 # relay hop + serialisation. Endpoints may ask for less, never more.
 RUN_DEADLINE_DEFAULT_S: Final = 8.0
 RUN_DEADLINE_MAX_S: Final = 9.0
@@ -22,7 +22,7 @@ TRUNCATION_MARK: Final = " …[truncated by Akashi]"
 SHRINK_FACTOR: Final = 0.6  # each shrink pass keeps 60% of the current text budget
 MAX_SHRINK_PASSES: Final = 8
 
-# USDC has 6 decimals (context/05-external-libs/x402.md): $0.005 = 5000 atomic units.
+# USDC has 6 decimals: $0.005 = 5000 atomic units.
 USDC_DECIMALS: Final = 6
 PRICE_LOCAL_USD: Final = "0.001"  # keyless upstreams and local compute
 PRICE_STANDARD_USD: Final = "0.005"  # keyed upstream, cheap per call (Pocket portal's flat price)

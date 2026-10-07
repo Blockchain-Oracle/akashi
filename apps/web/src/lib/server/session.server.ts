@@ -7,9 +7,9 @@ import { serverEnv } from "@/lib/server/env.server";
 import { connectedRedis } from "@/lib/server/redis.server";
 
 /**
- * The httpOnly session (D-038): `akashi_sid=${id}.${sig}`, HMAC-SHA256 over the id. A guest owns `guest:{id}`; once
- * SIWE sets `sess:{id}` = {kind:"wallet", address} the same cookie owns `addr:{address}`. Minted lazily by the API
- * routes that need one (no middleware).
+ * The httpOnly session: `akashi_sid=${id}.${sig}`, HMAC-SHA256 over the id. A guest owns `guest:{id}`. A wallet
+ * session (`sess:{id}` = {kind:"wallet", address}, owning `addr:{address}`) is reserved for sign-in with Ethereum,
+ * which is not wired yet. Minted lazily by the API routes that need one (no middleware).
  */
 export type SessionKind = "guest" | "wallet";
 

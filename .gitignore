@@ -38,3 +38,18 @@ models/
 # runtime data written by the api/worker (top lists, indexes)
 /data/
 .schemathesis/
+
+# Coding assistants' working state: useful locally, not part of the product.
+.claude/
+.codex/
+.agents/
+.cursor/
+.firecrawl/
+.research/
+.21st/
+**/AGENTS.md
+**/CLAUDE.md
+
+# Notes written for and by coding assistants (plans, decision logs, research, handoffs, submission drafts).
+# They stay on the machine; the product is documented in README.md and the docs site (apps/docs).
+docs/*

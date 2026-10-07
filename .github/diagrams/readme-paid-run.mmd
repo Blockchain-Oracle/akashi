@@ -1,0 +1,20 @@
+sequenceDiagram
+  autonumber
+  participant A as Agent
+  participant G as Gateway
+  participant F as x402 facilitator
+  participant P as pocket-ap
+  participant R as RelayMiner
+  participant T as tool-router
+  A->>G: POST /v1/run/coingecko/price
+  G-->>A: 402 + PAYMENT-REQUIRED ($0.001 USDC)
+  A->>G: same request + PAYMENT-SIGNATURE
+  G->>F: verify the signed authorization
+  G->>P: forward the run
+  P->>R: signed Pocket relay
+  R->>T: run the tool (under 9 s)
+  T-->>G: envelope: data, sources, price
+  G->>F: settle, only if the run succeeded
+  F-->>G: Base Sepolia tx
+  G-->>A: 200 + PAYMENT-RESPONSE + X-Akashi-Via: pocket
+  Note over R,T: later: claim, proof and settlement on Pocket

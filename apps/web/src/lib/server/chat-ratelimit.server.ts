@@ -3,8 +3,7 @@ import "server-only";
 import { CHAT_MESSAGES_PER_IP_PER_HOUR, CHAT_WINDOW_S } from "@/lib/constants/agent";
 
 /**
- * The chat's per-IP budget: the same in-memory sliding window as the free demo's (ratelimit.server.ts), in its own
- * bucket so a busy desk does not eat the chat's turns. D-036: in-memory while the web runs as one container.
+ * The chat's per-IP budget: a sliding window kept in memory, which is enough while the web runs as one container.
  */
 const MS_PER_S = 1_000;
 const WINDOW_MS = CHAT_WINDOW_S * MS_PER_S;

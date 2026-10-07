@@ -12,7 +12,7 @@ import { useEndpoint } from "./endpoints-context";
 import { isRunning, runOutput, type ToolPart, toolName } from "./parts";
 
 /*
- * Ported from the user's KeeperHub Copilot v2 components/chat/tool-timeline.tsx (21st heygaia/tool-calls-section +
+ * Ported from KeeperHub Copilot v2 (same author) components/chat/tool-timeline.tsx (21st heygaia/tool-calls-section +
  * serafimcloud/tool-group): tilted marks and "Used N tools" behind a chevron; open, every call is a row on a
  * connector line. Changes: Monid tokens; three tools (find / inspect / run) with the run's provider mark and price.
  */

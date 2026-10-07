@@ -1,0 +1,25 @@
+flowchart TB
+  AGENT["Your agent<br/>chat · CLI · MCP · HTTP"]
+
+  subgraph AK["Akashi · Coolify"]
+    GW["Gateway<br/>x402 seller · free reads · /mcp"]
+    AP["pocket-ap<br/>signs as Akashi's staked app"]
+    API["tool-router backend<br/>80 tools · schemas · health"]
+  end
+
+  subgraph POCKET["Pocket Network Beta"]
+    RM["RelayMiner<br/>Akashi's supplier"]
+    CHAIN["Claims · proofs · settlement"]
+  end
+
+  FAC["x402 facilitator<br/>Base Sepolia USDC"]
+  UP["33 providers<br/>Firecrawl · Wikipedia · CoinGecko …"]
+
+  AGENT -->|"discover · inspect: free<br/>run: paid per call"| GW
+  GW <-->|"verify · settle on success"| FAC
+  GW -->|"paid run"| AP
+  AP -->|"signed relay"| RM
+  RM -->|"forward"| API
+  RM -.->|"session trees"| CHAIN
+  GW -.->|"free reads"| API
+  API -->|"one call, under 9 s"| UP

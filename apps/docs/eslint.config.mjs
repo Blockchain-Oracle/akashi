@@ -2,7 +2,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
-// Numbers every file needs without a name; anything else is a named constant (the user's no-magic-numbers rule).
+// Numbers every file needs without a name; anything else is a named constant (the project's no-magic-numbers rule).
 const ALLOWED_NUMBERS = [-1, 0, 1, 2];
 
 export default defineConfig([

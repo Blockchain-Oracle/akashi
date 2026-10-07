@@ -1,6 +1,6 @@
-"""live-facts constants (specs/backend.md §3.3; upstream facts verified live 2026-09-29)."""
+"""Constants for Akashi's own computations: time, holidays, FX, weather, facts, news and jobs."""
 
-from datetime import time, timedelta
+from datetime import timedelta
 from typing import Final
 
 from akashi_core.http.registry import UpstreamSpec
@@ -146,55 +146,6 @@ NEWS_INSERT_BATCH: Final = 1_000
 SECONDS_PER_HOUR: Final = 3_600
 GKG_COLUMNS: Final = 27
 GKG_DATE, GKG_DOMAIN, GKG_URL, GKG_LOCATIONS, GKG_EXTRAS = 1, 3, 4, 9, 26
-
-# --- /stocks (flagged demo: every free market-data licence forbids redistribution; D-023) ---
-STOCKS_LICENCE: Final = "demo-only; not for redistribution"
-TWELVEDATA = UpstreamSpec(
-    "twelvedata",
-    "https://api.twelvedata.com",
-    max_concurrency=2,
-    total_s=3.0,  # measured 0.4-1.2 s for a batch /quote, one 2 s+ outlier
-    rate="8/minute",  # free Basic plan: 8 credits a minute (one per symbol), 800 a day
-    retry_attempts=1,  # a retry is billed again; the official close from Massive is the fallback instead
-    licence=STOCKS_LICENCE,
-    attribution="Twelve Data",
-)
-MASSIVE = UpstreamSpec(
-    "massive",
-    "https://api.massive.com",  # formerly api.polygon.io (renamed 2025-10-30; both hosts answer)
-    max_concurrency=1,
-    total_s=3.0,  # the all-market grouped daily file: 430 KB, measured 1.65 s
-    rate="5/minute",  # free Basic plan
-    licence=STOCKS_LICENCE,
-    attribution="Massive (formerly Polygon.io)",
-)
-SEC_TICKERS = UpstreamSpec(
-    "sec", "https://www.sec.gov", max_concurrency=2, total_s=2.5, licence="public domain", attribution="SEC EDGAR"
-)
-STOCKS_MAX_SYMBOLS: Final = 5  # one batch fits the 8-credit minute with room for a second caller
-TICKER_PATTERN: Final = r"^[A-Za-z]{1,5}(?:[.\-/ ][A-Za-z]{1,2})?$"  # AAPL, BRK.B, BRK-B, GME.WS
-TICKER_MAX_CHARS: Final = 8
-TICKER_CLASS_SEPARATORS: Final = "-/ "  # written BRK-B (SEC), BRK/B, "BRK B"; Twelve Data and Massive use BRK.B
-NYSE_ZONE: Final = "America/New_York"
-NYSE_CALENDAR: Final = "NYSE"
-NYSE_REGULAR_OPEN: Final = time(9, 30)
-NYSE_REGULAR_CLOSE: Final = time(16, 0)
-NYSE_EARLY_CLOSE: Final = time(13, 0)  # every early close since 1993 (python-holidays' NYSE half_day category)
-NYSE_PRE_MARKET_OPEN: Final = time(4, 0)
-NYSE_AFTER_HOURS_SPAN: Final = timedelta(hours=4)  # 16:00-20:00, and 13:00-17:00 on early-close days
-NYSE_SESSION_SEARCH_DAYS: Final = 14  # far longer than any closure run (9/11: four trading days)
-TTL_QUOTE_LIVE: Final = timedelta(seconds=60)  # during the session, and while the close settles
-QUOTE_CLOSE_SETTLE: Final = timedelta(minutes=30)  # the closing auction prints and corrections land after the bell
-TTL_UNIVERSE_EMPTY: Final = timedelta(minutes=15)  # the day's grouped file is not published yet: ask again later
-UNIVERSE_REFRESH_BUDGET_S: Final = 10.0  # background refresh, off the request path
-TTL_SEC_TICKERS: Final = timedelta(hours=24)
-STOCK_CLOSE_AGREE_PCT: Final = 0.1  # the two feeds print the same official close (measured: identical to the cent)
-STOCK_CLOSE_MINOR_PCT: Final = 1.0
-SUGGEST_MAX: Final = 3
-SUGGEST_MAX_EDITS: Final = 1  # APPL → AAPL, MSTF → MSFT
-SUGGEST_NAME_MIN: Final = 90  # rapidfuzz WRatio of the input against company names ("APPLE" → Apple Inc.)
-SUGGEST_NAME_MIN_CHARS: Final = 4  # shorter inputs partially match thousands of names
-PRICE_DECIMALS: Final = 4
 
 # --- /jobs (local index of public ATS boards, refreshed every 6 h by a scheduled task; never fetched live) ---
 GREENHOUSE = UpstreamSpec("greenhouse", "https://boards-api.greenhouse.io", max_concurrency=4, total_s=20.0)

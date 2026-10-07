@@ -7,7 +7,7 @@ import { RedisChatStore } from "@/lib/server/chat-store-redis.server";
 import { getRedis } from "@/lib/server/redis.server";
 
 /**
- * Chat history (D-038): the server keeps the transcript, the browser sends one message at a time. Redis in
+ * Chat history: the server keeps the transcript, the browser sends one message at a time. Redis in
  * production, a Map for `pnpm dev` without Redis; the same interface either way. Owners never cross: every operation
  * checks the chat's owner before reading or writing.
  */

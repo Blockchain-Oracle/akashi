@@ -13,7 +13,7 @@ import { cookieStorage, createConfig, createStorage, http } from "wagmi";
 import { publicEnv } from "@/lib/env";
 
 /**
- * Base Sepolia only: x402 runs settle in testnet USDC there. Ported from the user's Masayume wagmi config: without
+ * Base Sepolia only: x402 runs settle in testnet USDC there. Ported from Masayume's wagmi config (same author): without
  * a WalletConnect project id only browser wallets are offered, and the sentinel id is never read by them.
  */
 const NO_WALLETCONNECT_PROJECT = "akashi-injected-only";

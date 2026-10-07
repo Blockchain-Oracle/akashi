@@ -1,4 +1,4 @@
-"""Every live-facts answer says where it came from, how old it is, and whether sources agree."""
+"""Every answer says where it came from, how old it is, and whether its sources agree."""
 
 from datetime import UTC, datetime
 from enum import StrEnum

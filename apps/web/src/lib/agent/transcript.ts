@@ -1,6 +1,6 @@
 /**
  * Pure helpers over stored UI messages (no server-only: the client reuses textOf). The server keeps the transcript and
- * the browser sends one message at a time (D-038), so merging and trimming happen here, before a write.
+ * the browser sends one message at a time, so merging and trimming happen here, before a write.
  */
 import { isToolUIPart, type UIMessage } from "ai";
 

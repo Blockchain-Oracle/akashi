@@ -58,7 +58,7 @@
   }
 }
 
-/* The tools line's running label (21st serafimcloud/tool-group, via the user's KeeperHub Copilot v2). */
+/* The tools line's running label (21st serafimcloud/tool-group, via KeeperHub Copilot v2). */
 @keyframes tool-shimmer {
   from {
     background-position: 100% center;

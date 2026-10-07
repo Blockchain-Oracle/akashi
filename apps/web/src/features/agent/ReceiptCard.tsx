@@ -7,7 +7,7 @@ import { BASESCAN_ADDRESS, BASESCAN_TX, NETWORK_LABEL } from "@/lib/constants/wa
 import { cn } from "@/lib/utils";
 
 /**
- * The run's receipt (the user's KeeperHub receipt card, in Monid paint): a PAID / NOT CHARGED stamp, what was paid
+ * The run's receipt (adapted from KeeperHub Copilot v2's receipt card, by the same author, in Monid paint): a PAID / NOT CHARGED stamp, what was paid
  * and by whom, the Base Sepolia settlement on Basescan, and how the run reached the tool (a Pocket relay).
  */
 export function ReceiptCard({ receipt, endpointId, latencyMs }: { receipt: Receipt; endpointId: string; latencyMs: number }) {

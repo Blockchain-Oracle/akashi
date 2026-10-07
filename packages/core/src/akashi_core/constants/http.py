@@ -2,11 +2,11 @@
 
 from typing import Final
 
-# Portal/relay request cap ≈ 64 KiB (context/02-agentic-portal/errors.md: 65,009 B → 402, 70,009 B → 413).
+# Portal/relay request cap ≈ 64 KiB (measured against the portal: 65,009 B → 402, 70,009 B → 413).
 MAX_REQUEST_BYTES: Final = 65_536
 
 # Gateways scan the first 2 KiB of a *successful* body for these phrases and treat a hit as a failed relay
-# (SAGE heuristic/indicators.go; context/03-building-a-service/design-rules.md §6). Case-insensitive.
+# (Pocket's SAGE heuristic, indicators.go; the service design rules). Case-insensitive.
 TIER3_PATTERNS: Final = (
     "502 bad gateway",
     "503 service unavailable",

@@ -1,1 +1,1 @@
-"""Logging and metrics."""
+"""Logging."""

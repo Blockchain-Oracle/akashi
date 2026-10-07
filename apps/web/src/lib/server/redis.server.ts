@@ -5,7 +5,7 @@ import { Redis } from "ioredis";
 import { serverEnv } from "@/lib/server/env.server";
 
 /**
- * The chat-history Redis (D-038: `akashi-chat-redis`, AOF, noeviction), one client per process. Lazy and without an
+ * The chat-history Redis (`akashi-chat-redis`, AOF, noeviction), one client per process. Lazy and without an
  * offline queue so a down Redis fails a request fast instead of piling commands up; callers connect explicitly.
  */
 const MAX_RETRIES_PER_REQUEST = 2;

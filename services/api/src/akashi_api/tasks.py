@@ -1,4 +1,4 @@
-"""`akashi-task <name>`: periodic jobs, run by Coolify scheduled tasks inside the api container (D-018).
+"""`akashi-task <name>`: periodic jobs, run by Coolify scheduled tasks inside the api container.
 
   gdelt   refresh the local GDELT news index (akashi/news)
   jobs    refresh the 89 ATS job boards (akashi/jobs)

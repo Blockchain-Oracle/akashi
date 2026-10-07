@@ -2,7 +2,7 @@
  * The seal and wordmark as React components, shared by apps/web and apps/docs. Colours come from tokens only:
  * frame, glyph and letters take the current text colour; the check is var(--primary), the mark's one colour.
  */
-import { BRAND, TONES, type VerdictGlyph, type VerdictTone } from "./index";
+import { BRAND } from "./index";
 import { SEAL, WORDMARK } from "./marks.generated";
 
 const DEFAULT_SEAL_LABEL = `${BRAND.name} ${BRAND.kanji} seal`;
@@ -49,43 +49,6 @@ export function Wordmark({ className, kanji = true }: { className?: string; kanj
           <path d={WORDMARK.kanji} fill="currentColor" />
         </>
       )}
-    </svg>
-  );
-}
-
-/** The six verdict glyphs on a 24-unit grid (specs/web.md §2), drawn in currentColor: always shown with the word. */
-const GLYPH_STROKE = 1.75;
-const GLYPH_RADIUS = 8;
-const GLYPH_CENTER = 12;
-const GLYPH_DASH = "3 3";
-
-const GLYPH_PATHS: Record<VerdictGlyph, React.ReactNode> = {
-  tick: <path d="M5 12.5l4.5 4.5L19 7.5" />,
-  "split-diamond": <path d="M12 3l9 9-9 9-9-9zM12 3v18" />,
-  "empty-circle": <circle cx={GLYPH_CENTER} cy={GLYPH_CENTER} r={GLYPH_RADIUS} />,
-  "struck-circle": (
-    <>
-      <circle cx={GLYPH_CENTER} cy={GLYPH_CENTER} r={GLYPH_RADIUS} />
-      <path d="M6.3 17.7L17.7 6.3" />
-    </>
-  ),
-  fork: <path d="M12 20v-6M12 14L6 5M12 14l6-9" />,
-  "dashed-circle": <circle cx={GLYPH_CENTER} cy={GLYPH_CENTER} r={GLYPH_RADIUS} strokeDasharray={GLYPH_DASH} />,
-};
-
-export function VerdictGlyph({ tone, className }: { tone: VerdictTone; className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={GLYPH_STROKE}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={join("shrink-0", className)}
-      aria-hidden
-    >
-      {GLYPH_PATHS[TONES[tone].glyph]}
     </svg>
   );
 }
