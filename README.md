@@ -2,11 +2,11 @@
 
 > Every tool your agent needs, one wallet, paid per call. Each run travels over Pocket Network.
 
-Akashi is a tool router for AI agents: **70 endpoints from 29 providers** (web search, page reading, research papers,
-packages, weather, FX, news, jobs, science data and more) behind one base URL and one Pocket service, `tool-router`.
-An agent **discovers** a tool and **inspects** it for free, then **runs** it for $0.001–$0.01 paid in USDC over x402.
-No account, no API key: the payment is the credential. Every paid run is delivered as a real Pocket relay through
-Akashi's own supplier, and a run that fails is never charged.
+Akashi is a tool router for AI agents: **80 endpoints from 33 providers** (web search, page reading, research papers,
+packages, weather and weather history, crypto prices, maps, FX, news, jobs, science data and more) behind one base URL
+and one Pocket service, `tool-router`. An agent **discovers** a tool and **inspects** it for free, then **runs** it
+for $0.001–$0.01 paid in USDC over x402. No account, no API key: the payment is the credential. Every paid run is
+delivered as a real Pocket relay through Akashi's own supplier, and a run that fails is never charged.
 
 Built for the Pocket Network Agentic Services Hackathon (deadline 2026-10-12).
 

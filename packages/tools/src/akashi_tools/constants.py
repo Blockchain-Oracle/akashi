@@ -58,6 +58,7 @@ TTL_SEARCH_S: Final = 600
 TTL_PAGE_S: Final = 3_600
 TTL_REFERENCE_S: Final = 86_400  # papers, packages, dictionary entries, encyclopaedia summaries
 TTL_LIVE_S: Final = 60  # weather now, FX intraday, quakes
+TTL_FORECAST_S: Final = 900  # weather models refresh about hourly; 15 min keeps "current" honest
 
 # Provider connections: a cold TLS handshake to a US API took > 1 s from the dev box (2026-10-07: Firecrawl
 # ConnectTimeout at 1.0 s, then 0.9 s for the whole call once warm); the run deadline still bounds the total.

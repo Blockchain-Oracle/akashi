@@ -52,8 +52,27 @@ SYNONYMS: dict[str, tuple[str, ...]] = {
     "hiring": ("jobs",),
     "holiday": ("holidays", "calendar"),
     "timezone": ("time", "zone"),
-    "crypto": ("defi", "token", "tvl"),
+    # crypto words point at coin prices; DeFi value locked keeps its own words (defi, tvl)
+    "crypto": ("coin", "coingecko"),
+    "cryptocurrency": ("crypto", "coin", "coingecko"),
+    "cryptocurrencies": ("crypto", "coin", "coingecko"),
+    "bitcoin": ("crypto", "coin", "btc"),
+    "btc": ("crypto", "coin", "bitcoin"),
+    "ethereum": ("crypto", "coin", "eth"),
+    "eth": ("crypto", "coin", "ethereum"),
+    "solana": ("crypto", "coin"),
+    "token": ("crypto", "coin"),
+    "defi": ("tvl", "protocol"),
+    "weeks": ("forecast", "16"),
+    "fortnight": ("forecast", "16"),
+    "surf": ("marine", "wave"),
+    "waves": ("marine", "wave"),
+    "gps": ("coordinates", "reverse"),
+    "convert": ("fx", "currency", "exchange"),
 }
+# ISO 4217 codes agents type in money questions ("100 USD in NGN"): each one means an exchange-rate lookup
+FX_CODES = ("usd", "eur", "gbp", "ngn", "jpy", "cny", "inr", "cad", "aud", "chf", "zar", "kes", "ghs", "brl", "mxn")
+SYNONYMS.update({code: ("fx", "currency", "exchange", "rates") for code in FX_CODES})
 
 _TOKEN = re.compile(r"[a-z0-9]+")
 _RANK_STATUS = {

@@ -20,7 +20,8 @@
 
 ## Where things are (2026-10-07 16:15 UTC)
 - **Pivot (user, 2026-10-07):** the three verification services are retired (still registered on chain, never served).
-  Akashi is now one Pocket service, `tool-router`, in front of ~70 tool endpoints from ~30 providers.
+  Akashi is now one Pocket service, `tool-router`, in front of 80 tool endpoints from 33 providers (Open-Meteo, OpenStreetMap, CoinGecko and
+  Google News added 2026-10-07 under D-039).
 - **Live end to end on temporary sslip.io hosts** (the domain is not a blocker, user 2026-10-07): agent → gateway (x402)
   → pocket-ap → RelayMiner → api. First relayed paid run 15:57 UTC; every id and tx is in `ids-and-txs.md`.
 - **On chain (Beta):** `tool-router` registered (A96AAAB2…, h711952) · app stake (113EFC51…, h712014; re-staked 1,150 POKT 9986F963…, h712567) · supplier stake
@@ -43,8 +44,7 @@
 ## Blockers (user)
 1. Namecheap top-up ($2) → register useakashi.xyz → DNS @, api, docs, relay → 84.46.247.92 (then re-stake + re-publish
    the card on the domain, gas only).
-2. Exa / Firecrawl consent emails (drafts in `docs/outreach/`, user sends).
-3. Before submitting: OK to make the repo public.
+2. Before submitting: OK to make the repo public.
 
 ## Next actions
 Health probe scheduled task → README + submission text + demo script →

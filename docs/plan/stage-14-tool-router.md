@@ -66,6 +66,9 @@ The provider research (official pricing + terms pages, 2026-10-07) found that **
 | Keyless (25) | Wikipedia, Wikidata, OpenAlex, MET Norway, NWS, Frankfurter, GitHub, npm, PyPI, deps.dev, HN Algolia, arXiv, Crossref, Datamuse, dictionaryapi.dev, Nager.Date, Open Food Facts, PubChem, USGS, NASA, World Bank, US Census, Wayback, YouTube oEmbed, DefiLlama | $0 | GREEN / GREEN-ish |
 | Reused from today's code | local tz compute (IANA 2026d) · GDELT local news index · 89 ATS job boards · FX cross-check · weather cross-check | $0 | ours |
 
+> **2026-10-07, D-039:** terms no longer exclude a provider (user). The terms-only exclusions below come back when
+> keyless or keyed.
+
 **Excluded:** Perplexity (no free tier; you'd prepay credits) · Groq Compound (decommissioned 2026-09-21) · terms forbid it: Brave, Tavily, SerpAPI, TinyFish (free but "internal business purposes" only), PDL, context.dev, ScreenshotOne, Alpha Vantage, CoinGecko, NewsAPI, GNews free, Semantic Scholar, Reddit, Open-Meteo free, Nominatim, Overpass, ip-api, OpenRouter passthrough, YouTube transcripts.
 
 **Pricing per endpoint** (price card in the connector, like Monid's): `$0.001` keyless / local, `$0.005` standard keyed, `$0.01` premium (Firecrawl search/ask-page, Akashi Answer). Upstream cost is never above the price.

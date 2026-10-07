@@ -19,13 +19,13 @@ re-stake the supplier on `relay.useakashi.xyz` first.
 
 ## Service Description
 
-Akashi is OpenRouter for agent tools: one Pocket service in front of 70 tool endpoints from 29 providers. Live web
-search, page reading, cited answers, research papers, packages, GitHub, weather, FX, time zones, holidays, news, jobs,
-dictionaries, science data and more. An agent asks `discover` for the best tool for a job (ranked with price and live
-health), reads its JSON Schema with `inspect`, then runs it, all with the same envelope, provenance and error shape
-whatever the provider. Off the portal, every paid run is an x402 USDC micropayment ($0.001–$0.01) that travels as a
-real Pocket relay through Akashi's own supplier, and a failed run is never charged. No accounts, no API keys: the
-payment is the credential.
+Akashi is OpenRouter for agent tools: one Pocket service in front of 80 tool endpoints from 33 providers. Live web
+search, page reading, cited answers, research papers, packages, GitHub, weather (16-day and since 1940), crypto
+prices, maps and geocoding, FX, time zones, holidays, news, jobs, dictionaries, science data and more. An agent asks
+`discover` for the best tool for a job (ranked with price and live health), reads its JSON Schema with `inspect`, then
+runs it, all with the same envelope, provenance and error shape whatever the provider. Off the portal, every paid run
+is an x402 USDC micropayment ($0.001–$0.01) that travels as a real Pocket relay through Akashi's own supplier, and a
+failed run is never charged. No accounts, no API keys: the payment is the credential.
 
 ## How should judges test your service?
 

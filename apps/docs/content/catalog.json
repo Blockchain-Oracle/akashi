@@ -27,7 +27,7 @@
     {
       "id": "news",
       "label": "News",
-      "endpointCount": 4
+      "endpointCount": 6
     },
     {
       "id": "research",
@@ -52,17 +52,17 @@
     {
       "id": "finance",
       "label": "Finance & Markets",
-      "endpointCount": 7
+      "endpointCount": 9
     },
     {
       "id": "crypto",
       "label": "Crypto & DeFi",
-      "endpointCount": 2
+      "endpointCount": 5
     },
     {
       "id": "weather",
       "label": "Weather & Earth",
-      "endpointCount": 5
+      "endpointCount": 8
     },
     {
       "id": "time",
@@ -72,7 +72,7 @@
     {
       "id": "places",
       "label": "Maps & Places",
-      "endpointCount": 2
+      "endpointCount": 4
     },
     {
       "id": "language",
@@ -131,6 +131,23 @@
       "attribution": "Thank you to arXiv for use of its open access interoperability.",
       "logoDomain": "arxiv.org",
       "endpointCount": 1,
+      "available": true
+    },
+    {
+      "id": "coingecko",
+      "displayName": "CoinGecko",
+      "summary": "Crypto market data for 17,000+ coins: prices, 24h and 7d change, market cap, volume, all-time highs and what is trending.",
+      "homepage": "https://www.coingecko.com",
+      "docsUrl": "https://docs.coingecko.com/v3.0.1/reference/introduction",
+      "categories": [
+        "crypto",
+        "finance"
+      ],
+      "terms": "value-added",
+      "licence": null,
+      "attribution": "Data provided by CoinGecko",
+      "logoDomain": "www.coingecko.com",
+      "endpointCount": 3,
       "available": true
     },
     {
@@ -267,6 +284,22 @@
       "available": true
     },
     {
+      "id": "google-news",
+      "displayName": "Google News",
+      "summary": "Headlines from thousands of publishers, searchable by keyword and filterable by country, language and recency, plus top stories by topic.",
+      "homepage": "https://news.google.com",
+      "docsUrl": "https://news.google.com/rss",
+      "categories": [
+        "news"
+      ],
+      "terms": "value-added",
+      "licence": null,
+      "attribution": "Google News (headlines link to each publisher)",
+      "logoDomain": "news.google.com",
+      "endpointCount": 2,
+      "available": true
+    },
+    {
       "id": "groq",
       "displayName": "Groq",
       "summary": "Fast open-weight LLMs (OpenAI gpt-oss on Groq LPUs) for text work: summarize, extract JSON, classify, translate.",
@@ -397,6 +430,22 @@
       "available": true
     },
     {
+      "id": "open-meteo",
+      "displayName": "Open-Meteo",
+      "summary": "Open weather models: 16-day forecasts, hourly-resolution history since 1940 and marine wave forecasts, for any coordinates on Earth.",
+      "homepage": "https://open-meteo.com",
+      "docsUrl": "https://open-meteo.com/en/docs",
+      "categories": [
+        "weather"
+      ],
+      "terms": "open",
+      "licence": "CC BY 4.0 (weather data); free API tier",
+      "attribution": "Weather data by Open-Meteo.com",
+      "logoDomain": "open-meteo.com",
+      "endpointCount": 3,
+      "available": true
+    },
+    {
       "id": "openalex",
       "displayName": "OpenAlex",
       "summary": "Open index of 250M+ scholarly works and their authors, venues, citation counts and open-access links.",
@@ -410,6 +459,22 @@
       "attribution": "OpenAlex (openalex.org)",
       "logoDomain": "openalex.org",
       "endpointCount": 3,
+      "available": true
+    },
+    {
+      "id": "openstreetmap",
+      "displayName": "OpenStreetMap",
+      "summary": "Nominatim geocoding over OpenStreetMap: find any address, landmark or business and its coordinates, or turn coordinates back into a street address.",
+      "homepage": "https://www.openstreetmap.org",
+      "docsUrl": "https://nominatim.org/release-docs/latest/api/Overview/",
+      "categories": [
+        "places"
+      ],
+      "terms": "open",
+      "licence": "ODbL 1.0",
+      "attribution": "© OpenStreetMap contributors (ODbL), geocoding by Nominatim",
+      "logoDomain": "openstreetmap.org",
+      "endpointCount": 2,
       "available": true
     },
     {
@@ -3817,6 +3882,673 @@
         "sort": "submitted",
         "max_results": 5
       }
+    },
+    {
+      "id": "coingecko/price",
+      "provider": "coingecko",
+      "providerName": "CoinGecko",
+      "slug": "price",
+      "displayName": "CoinGecko Crypto Prices",
+      "summary": "Live crypto prices by ticker or name: price, 24h and 7d change, market cap, volume, 24h range, ATH.",
+      "categories": [
+        "crypto",
+        "finance"
+      ],
+      "render": "quote",
+      "price": {
+        "usd": "0.001",
+        "atomic": "1000",
+        "tier": "local",
+        "network": "eip155:84532"
+      },
+      "method": "POST",
+      "path": "/v1/run/coingecko/price",
+      "available": true,
+      "description": "Current market data for up to 10 coins named by ticker ('btc'), CoinGecko id ('ethereum') or name ('Shiba Inu'), quoted in any major fiat or crypto currency: price, 24-hour and 7-day change, market cap and rank, 24h volume, high and low, and the all-time high with the distance from it. Prices refresh about every minute. For the leaderboard use coingecko/top; for what people are searching use coingecko/trending; for DeFi protocol value locked use defillama/protocol.",
+      "notes": [],
+      "seeAlso": [
+        "coingecko/top",
+        "coingecko/trending",
+        "defillama/protocol"
+      ],
+      "deadlineMs": 8000,
+      "cacheTtlS": 60,
+      "terms": "value-added",
+      "input": {
+        "additionalProperties": false,
+        "properties": {
+          "coins": {
+            "description": "Up to 10 coins by ticker, CoinGecko id or name: ['btc', 'ethereum', 'Shiba Inu']. A ticker shared by several coins means the largest by market cap.",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Coins",
+            "type": "array"
+          },
+          "vs_currency": {
+            "default": "usd",
+            "description": "Quote currency, lower case: usd, eur, ngn, jpy, btc, eth…",
+            "pattern": "^[a-z]{3,5}$",
+            "title": "Vs Currency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "coins"
+        ],
+        "title": "PriceInput",
+        "type": "object"
+      },
+      "output": {
+        "$defs": {
+          "Quote": {
+            "properties": {
+              "id": {
+                "title": "Id",
+                "type": "string"
+              },
+              "symbol": {
+                "title": "Symbol",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "price": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Price"
+              },
+              "currency": {
+                "title": "Currency",
+                "type": "string"
+              },
+              "change_pct": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "24-hour change, percent.",
+                "title": "Change Pct"
+              },
+              "change_7d_pct": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Change 7D Pct"
+              },
+              "market_cap": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Market Cap"
+              },
+              "market_cap_rank": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Market Cap Rank"
+              },
+              "volume": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Volume"
+              },
+              "high": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "24-hour high.",
+                "title": "High"
+              },
+              "low": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "24-hour low.",
+                "title": "Low"
+              },
+              "ath": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Ath"
+              },
+              "ath_change_pct": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Ath Change Pct"
+              },
+              "image_url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Image Url"
+              },
+              "url": {
+                "title": "Url",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "symbol",
+              "name",
+              "currency",
+              "url"
+            ],
+            "title": "Quote",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "quotes": {
+            "items": {
+              "$ref": "#/$defs/Quote"
+            },
+            "title": "Quotes",
+            "type": "array"
+          },
+          "missing": {
+            "description": "Coins CoinGecko did not recognise.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing",
+            "type": "array"
+          }
+        },
+        "required": [
+          "quotes"
+        ],
+        "title": "PriceOutput",
+        "type": "object"
+      },
+      "example": {
+        "coins": [
+          "btc",
+          "eth",
+          "sol"
+        ],
+        "vs_currency": "usd"
+      }
+    },
+    {
+      "id": "coingecko/top",
+      "provider": "coingecko",
+      "providerName": "CoinGecko",
+      "slug": "top",
+      "displayName": "CoinGecko Top Coins",
+      "summary": "The largest coins by market cap, overall or within a category (layer-1, meme, stablecoins, AI…).",
+      "categories": [
+        "crypto",
+        "finance"
+      ],
+      "render": "quote",
+      "price": {
+        "usd": "0.001",
+        "atomic": "1000",
+        "tier": "local",
+        "network": "eip155:84532"
+      },
+      "method": "POST",
+      "path": "/v1/run/coingecko/top",
+      "available": true,
+      "description": "The crypto market-cap leaderboard: up to 50 coins ranked by market cap with price, 24h and 7d change, volume and 24h range, optionally within one CoinGecko category such as 'layer-1', 'meme-token', 'stablecoins' or 'artificial-intelligence'. Use it for 'what are the biggest coins' or a sector overview; for specific coins use coingecko/price.",
+      "notes": [],
+      "seeAlso": [
+        "coingecko/price",
+        "coingecko/trending"
+      ],
+      "deadlineMs": 8000,
+      "cacheTtlS": 600,
+      "terms": "value-added",
+      "input": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "default": 10,
+            "maximum": 50,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "vs_currency": {
+            "default": "usd",
+            "pattern": "^[a-z]{3,5}$",
+            "title": "Vs Currency",
+            "type": "string"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "A CoinGecko category id: 'layer-1', 'meme-token', 'stablecoins', 'decentralized-finance-defi', 'artificial-intelligence'.",
+            "title": "Category"
+          }
+        },
+        "title": "TopInput",
+        "type": "object"
+      },
+      "output": {
+        "$defs": {
+          "Quote": {
+            "properties": {
+              "id": {
+                "title": "Id",
+                "type": "string"
+              },
+              "symbol": {
+                "title": "Symbol",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "price": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Price"
+              },
+              "currency": {
+                "title": "Currency",
+                "type": "string"
+              },
+              "change_pct": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "24-hour change, percent.",
+                "title": "Change Pct"
+              },
+              "change_7d_pct": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Change 7D Pct"
+              },
+              "market_cap": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Market Cap"
+              },
+              "market_cap_rank": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Market Cap Rank"
+              },
+              "volume": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Volume"
+              },
+              "high": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "24-hour high.",
+                "title": "High"
+              },
+              "low": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "24-hour low.",
+                "title": "Low"
+              },
+              "ath": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Ath"
+              },
+              "ath_change_pct": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Ath Change Pct"
+              },
+              "image_url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Image Url"
+              },
+              "url": {
+                "title": "Url",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "symbol",
+              "name",
+              "currency",
+              "url"
+            ],
+            "title": "Quote",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Category"
+          },
+          "quotes": {
+            "items": {
+              "$ref": "#/$defs/Quote"
+            },
+            "title": "Quotes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "quotes"
+        ],
+        "title": "TopOutput",
+        "type": "object"
+      },
+      "example": {
+        "limit": 5
+      }
+    },
+    {
+      "id": "coingecko/trending",
+      "provider": "coingecko",
+      "providerName": "CoinGecko",
+      "slug": "trending",
+      "displayName": "CoinGecko Trending Coins",
+      "summary": "The coins most searched on CoinGecko in the last 24 hours, with price and 24h change.",
+      "categories": [
+        "crypto"
+      ],
+      "render": "quote",
+      "price": {
+        "usd": "0.001",
+        "atomic": "1000",
+        "tier": "local",
+        "network": "eip155:84532"
+      },
+      "method": "POST",
+      "path": "/v1/run/coingecko/trending",
+      "available": true,
+      "description": "CoinGecko's trending list: the coins most searched by its users in the last 24 hours (about 15), top first, with market-cap rank, USD price, 24-hour change and market cap. A sentiment signal, not a ranking by size (that is coingecko/top).",
+      "notes": [],
+      "seeAlso": [
+        "coingecko/top",
+        "coingecko/price"
+      ],
+      "deadlineMs": 8000,
+      "cacheTtlS": 600,
+      "terms": "value-added",
+      "input": {
+        "additionalProperties": false,
+        "properties": {},
+        "title": "TrendingInput",
+        "type": "object"
+      },
+      "output": {
+        "$defs": {
+          "TrendingCoin": {
+            "properties": {
+              "id": {
+                "title": "Id",
+                "type": "string"
+              },
+              "symbol": {
+                "title": "Symbol",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "market_cap_rank": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Market Cap Rank"
+              },
+              "price": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "USD.",
+                "title": "Price"
+              },
+              "currency": {
+                "default": "USD",
+                "title": "Currency",
+                "type": "string"
+              },
+              "change_pct": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "24-hour change in USD, percent.",
+                "title": "Change Pct"
+              },
+              "market_cap": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "As CoinGecko formats it, e.g. '$1,234,567'.",
+                "title": "Market Cap"
+              },
+              "url": {
+                "title": "Url",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "symbol",
+              "name",
+              "url"
+            ],
+            "title": "TrendingCoin",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "quotes": {
+            "description": "Most searched on CoinGecko in the last 24 hours, top first.",
+            "items": {
+              "$ref": "#/$defs/TrendingCoin"
+            },
+            "title": "Quotes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "quotes"
+        ],
+        "title": "TrendingOutput",
+        "type": "object"
+      },
+      "example": {}
     },
     {
       "id": "crossref/search",
@@ -8468,6 +9200,390 @@
       }
     },
     {
+      "id": "google-news/headlines",
+      "provider": "google-news",
+      "providerName": "Google News",
+      "slug": "headlines",
+      "displayName": "Google News Headlines",
+      "summary": "Today's top stories, or one section (business, technology, sports…), for any country edition.",
+      "categories": [
+        "news"
+      ],
+      "render": "news",
+      "price": {
+        "usd": "0.001",
+        "atomic": "1000",
+        "tier": "local",
+        "network": "eip155:84532"
+      },
+      "method": "POST",
+      "path": "/v1/run/google-news/headlines",
+      "available": true,
+      "description": "The current Google News front page or one of its sections (world, nation, business, technology, entertainment, sports, science, health) for a country and language edition, up to 30 headlines with publisher and time. Use it for 'what's in the news in Nigeria today' or 'top tech stories'; to search a subject use google-news/search.",
+      "notes": [],
+      "seeAlso": [
+        "google-news/search",
+        "akashi/news"
+      ],
+      "deadlineMs": 8000,
+      "cacheTtlS": 600,
+      "terms": "value-added",
+      "input": {
+        "$defs": {
+          "Topic": {
+            "enum": [
+              "top",
+              "world",
+              "nation",
+              "business",
+              "technology",
+              "entertainment",
+              "sports",
+              "science",
+              "health"
+            ],
+            "title": "Topic",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "country": {
+            "default": "US",
+            "description": "ISO 3166-1 alpha-2 edition: US, GB, NG, IN…",
+            "pattern": "^[A-Za-z]{2}$",
+            "title": "Country",
+            "type": "string"
+          },
+          "language": {
+            "default": "en",
+            "description": "ISO 639-1 language: en, fr, es, pt, de…",
+            "pattern": "^[a-z]{2}$",
+            "title": "Language",
+            "type": "string"
+          },
+          "limit": {
+            "default": 10,
+            "maximum": 30,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "topic": {
+            "$ref": "#/$defs/Topic",
+            "default": "top",
+            "description": "top (front page) or a section: world, nation, business, technology, entertainment, sports, science, health."
+          }
+        },
+        "title": "HeadlinesInput",
+        "type": "object"
+      },
+      "output": {
+        "$defs": {
+          "Article": {
+            "properties": {
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "url": {
+                "description": "Google News link; it redirects to the publisher's article.",
+                "title": "Url",
+                "type": "string"
+              },
+              "publisher": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Publisher"
+              },
+              "publisher_url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Publisher Url"
+              },
+              "published": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "ISO 8601, UTC.",
+                "title": "Published"
+              }
+            },
+            "required": [
+              "title",
+              "url"
+            ],
+            "title": "Article",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Query"
+          },
+          "topic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Topic"
+          },
+          "edition": {
+            "description": "Country and language of the feed, e.g. 'US:en'.",
+            "title": "Edition",
+            "type": "string"
+          },
+          "articles": {
+            "items": {
+              "$ref": "#/$defs/Article"
+            },
+            "title": "Articles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "edition",
+          "articles"
+        ],
+        "title": "NewsOutput",
+        "type": "object"
+      },
+      "example": {
+        "topic": "technology",
+        "country": "US",
+        "limit": 5
+      }
+    },
+    {
+      "id": "google-news/search",
+      "provider": "google-news",
+      "providerName": "Google News",
+      "slug": "search",
+      "displayName": "Google News Search",
+      "summary": "Search news from thousands of publishers by keyword, country, language and recency (keyless).",
+      "categories": [
+        "news"
+      ],
+      "render": "news",
+      "price": {
+        "usd": "0.001",
+        "atomic": "1000",
+        "tier": "local",
+        "network": "eip155:84532"
+      },
+      "method": "POST",
+      "path": "/v1/run/google-news/search",
+      "available": true,
+      "description": "Searches Google News and returns up to 30 articles, newest and most relevant first: headline, publisher, publisher site, publication time and a link that redirects to the article. Filter by edition (country + language) and recency (day, week, month); Google's quotes and OR operators work. Headlines only, no article text: read one with jina/read or firecrawl/scrape. For Google's ranked news with snippets and images use serper/news; for tech-community discussion use hackernews/search.",
+      "notes": [],
+      "seeAlso": [
+        "google-news/headlines",
+        "serper/news",
+        "jina/read"
+      ],
+      "deadlineMs": 8000,
+      "cacheTtlS": 600,
+      "terms": "value-added",
+      "input": {
+        "$defs": {
+          "Recency": {
+            "enum": [
+              "any",
+              "day",
+              "week",
+              "month"
+            ],
+            "title": "Recency",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "country": {
+            "default": "US",
+            "description": "ISO 3166-1 alpha-2 edition: US, GB, NG, IN…",
+            "pattern": "^[A-Za-z]{2}$",
+            "title": "Country",
+            "type": "string"
+          },
+          "language": {
+            "default": "en",
+            "description": "ISO 639-1 language: en, fr, es, pt, de…",
+            "pattern": "^[a-z]{2}$",
+            "title": "Language",
+            "type": "string"
+          },
+          "limit": {
+            "default": 10,
+            "maximum": 30,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "query": {
+            "description": "Keywords; quotes and OR work as on Google: '\"Pocket Network\" OR POKT'.",
+            "maxLength": 200,
+            "minLength": 2,
+            "title": "Query",
+            "type": "string"
+          },
+          "recency": {
+            "$ref": "#/$defs/Recency",
+            "default": "any",
+            "description": "Only articles from the last day, week or month."
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "SearchInput",
+        "type": "object"
+      },
+      "output": {
+        "$defs": {
+          "Article": {
+            "properties": {
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "url": {
+                "description": "Google News link; it redirects to the publisher's article.",
+                "title": "Url",
+                "type": "string"
+              },
+              "publisher": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Publisher"
+              },
+              "publisher_url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Publisher Url"
+              },
+              "published": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "ISO 8601, UTC.",
+                "title": "Published"
+              }
+            },
+            "required": [
+              "title",
+              "url"
+            ],
+            "title": "Article",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Query"
+          },
+          "topic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Topic"
+          },
+          "edition": {
+            "description": "Country and language of the feed, e.g. 'US:en'.",
+            "title": "Edition",
+            "type": "string"
+          },
+          "articles": {
+            "items": {
+              "$ref": "#/$defs/Article"
+            },
+            "title": "Articles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "edition",
+          "articles"
+        ],
+        "title": "NewsOutput",
+        "type": "object"
+      },
+      "example": {
+        "query": "\"Pocket Network\"",
+        "recency": "month",
+        "limit": 5
+      }
+    },
+    {
       "id": "groq/classify",
       "provider": "groq",
       "providerName": "Groq",
@@ -10305,6 +11421,1274 @@
       }
     },
     {
+      "id": "open-meteo/forecast",
+      "provider": "open-meteo",
+      "providerName": "Open-Meteo",
+      "slug": "forecast",
+      "displayName": "Open-Meteo 16-Day Forecast",
+      "summary": "Weather now plus a daily forecast up to 16 days ahead for any place: highs, lows, rain chance, wind, UV.",
+      "categories": [
+        "weather"
+      ],
+      "render": "weather",
+      "price": {
+        "usd": "0.001",
+        "atomic": "1000",
+        "tier": "local",
+        "network": "eip155:84532"
+      },
+      "method": "POST",
+      "path": "/v1/run/open-meteo/forecast",
+      "available": true,
+      "description": "Current conditions and a day-by-day forecast (1-16 days) from Open-Meteo's blend of national weather models, for a place name or coordinates. Each day has the condition, min/max temperature, total precipitation, the highest chance of precipitation, max wind, max UV index, sunrise and sunset in local time. Use it for trips and plans beyond a few days; for hourly detail over the next 5 days use openweather/forecast, and for past days use open-meteo/history.",
+      "notes": [],
+      "seeAlso": [
+        "open-meteo/history",
+        "openweather/forecast",
+        "openweather/current"
+      ],
+      "deadlineMs": 8000,
+      "cacheTtlS": 900,
+      "terms": "open",
+      "input": {
+        "$defs": {
+          "Units": {
+            "enum": [
+              "metric",
+              "imperial"
+            ],
+            "title": "Units",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "place": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "minLength": 2,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "A city or place name: 'Lagos', 'Lake Tahoe', 'Bondi Beach'.",
+            "title": "Place"
+          },
+          "country_code": {
+            "anyOf": [
+              {
+                "maxLength": 2,
+                "minLength": 2,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ISO 3166-1 alpha-2 code to pick the right place: 'NG', 'US'.",
+            "title": "Country Code"
+          },
+          "lat": {
+            "anyOf": [
+              {
+                "maximum": 90,
+                "minimum": -90,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Latitude, with lon (instead of place).",
+            "title": "Lat"
+          },
+          "lon": {
+            "anyOf": [
+              {
+                "maximum": 180,
+                "minimum": -180,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Longitude, with lat.",
+            "title": "Lon"
+          },
+          "days": {
+            "default": 7,
+            "description": "Days ahead, 1-16.",
+            "maximum": 16,
+            "minimum": 1,
+            "title": "Days",
+            "type": "integer"
+          },
+          "units": {
+            "$ref": "#/$defs/Units",
+            "default": "metric",
+            "description": "metric (°C, m/s, mm) or imperial (°F, mph, inch)."
+          }
+        },
+        "title": "ForecastInput",
+        "type": "object"
+      },
+      "output": {
+        "$defs": {
+          "Conditions": {
+            "properties": {
+              "observed_at": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Observed At"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "temp": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Temp"
+              },
+              "feels_like": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Feels Like"
+              },
+              "humidity_pct": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Humidity Pct"
+              },
+              "precipitation": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Precipitation"
+              },
+              "clouds_pct": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Clouds Pct"
+              },
+              "pressure_hpa": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Pressure Hpa"
+              },
+              "wind_speed": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Wind Speed"
+              },
+              "wind_gust": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Wind Gust"
+              },
+              "wind_deg": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Wind Deg"
+              }
+            },
+            "title": "Conditions",
+            "type": "object"
+          },
+          "DayWeather": {
+            "properties": {
+              "date": {
+                "title": "Date",
+                "type": "string"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "temp_min": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Temp Min"
+              },
+              "temp_max": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Temp Max"
+              },
+              "temp_mean": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Temp Mean"
+              },
+              "precipitation": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Precipitation"
+              },
+              "precip_chance_max_pct": {
+                "anyOf": [
+                  {
+                    "maximum": 100,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Precip Chance Max Pct"
+              },
+              "wind_max": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Wind Max"
+              },
+              "uv_index_max": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Uv Index Max"
+              },
+              "sunrise": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Sunrise"
+              },
+              "sunset": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Sunset"
+              }
+            },
+            "required": [
+              "date"
+            ],
+            "title": "DayWeather",
+            "type": "object"
+          },
+          "Location": {
+            "properties": {
+              "name": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Name"
+              },
+              "state": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "State"
+              },
+              "country": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Country"
+              },
+              "lat": {
+                "title": "Lat",
+                "type": "number"
+              },
+              "lon": {
+                "title": "Lon",
+                "type": "number"
+              },
+              "timezone": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Timezone"
+              }
+            },
+            "required": [
+              "lat",
+              "lon"
+            ],
+            "title": "Location",
+            "type": "object"
+          },
+          "UnitLabels": {
+            "properties": {
+              "temperature": {
+                "title": "Temperature",
+                "type": "string"
+              },
+              "wind_speed": {
+                "title": "Wind Speed",
+                "type": "string"
+              },
+              "precipitation": {
+                "title": "Precipitation",
+                "type": "string"
+              }
+            },
+            "required": [
+              "temperature",
+              "wind_speed",
+              "precipitation"
+            ],
+            "title": "UnitLabels",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "location": {
+            "$ref": "#/$defs/Location"
+          },
+          "units": {
+            "$ref": "#/$defs/UnitLabels"
+          },
+          "current": {
+            "$ref": "#/$defs/Conditions"
+          },
+          "days": {
+            "description": "One row per local calendar day, today first.",
+            "items": {
+              "$ref": "#/$defs/DayWeather"
+            },
+            "title": "Days",
+            "type": "array"
+          }
+        },
+        "required": [
+          "location",
+          "units",
+          "current",
+          "days"
+        ],
+        "title": "ForecastOutput",
+        "type": "object"
+      },
+      "example": {
+        "place": "Lagos",
+        "country_code": "NG",
+        "days": 5
+      }
+    },
+    {
+      "id": "open-meteo/history",
+      "provider": "open-meteo",
+      "providerName": "Open-Meteo",
+      "slug": "history",
+      "displayName": "Open-Meteo Weather History",
+      "summary": "What the weather was on any day since 1940, anywhere: highs, lows, mean, rain and wind, day by day.",
+      "categories": [
+        "weather"
+      ],
+      "render": "weather",
+      "price": {
+        "usd": "0.001",
+        "atomic": "1000",
+        "tier": "local",
+        "network": "eip155:84532"
+      },
+      "method": "POST",
+      "path": "/v1/run/open-meteo/history",
+      "available": true,
+      "description": "Daily observed-equivalent weather for a past date or a range of up to 31 days, from 1940 to yesterday: condition, min/max/mean temperature, precipitation total, max wind, sunrise and sunset. Older dates come from the ERA5 reanalysis (about 25 km grid); the last 92 days come from archived high-resolution forecasts, so very recent days are available too. Use it to check claims about past weather, plan by climate, or compare years. Future dates belong to open-meteo/forecast.",
+      "notes": [],
+      "seeAlso": [
+        "open-meteo/forecast"
+      ],
+      "deadlineMs": 8000,
+      "cacheTtlS": 86400,
+      "terms": "open",
+      "input": {
+        "$defs": {
+          "Units": {
+            "enum": [
+              "metric",
+              "imperial"
+            ],
+            "title": "Units",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "place": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "minLength": 2,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "A city or place name: 'Lagos', 'Lake Tahoe', 'Bondi Beach'.",
+            "title": "Place"
+          },
+          "country_code": {
+            "anyOf": [
+              {
+                "maxLength": 2,
+                "minLength": 2,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ISO 3166-1 alpha-2 code to pick the right place: 'NG', 'US'.",
+            "title": "Country Code"
+          },
+          "lat": {
+            "anyOf": [
+              {
+                "maximum": 90,
+                "minimum": -90,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Latitude, with lon (instead of place).",
+            "title": "Lat"
+          },
+          "lon": {
+            "anyOf": [
+              {
+                "maximum": 180,
+                "minimum": -180,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Longitude, with lat.",
+            "title": "Lon"
+          },
+          "start_date": {
+            "description": "First day, YYYY-MM-DD, from 1940-01-01.",
+            "format": "date",
+            "title": "Start Date",
+            "type": "string"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Last day (default: start_date), at most 31 days after it.",
+            "title": "End Date"
+          },
+          "units": {
+            "$ref": "#/$defs/Units",
+            "default": "metric",
+            "description": "metric (°C, m/s, mm) or imperial (°F, mph, inch)."
+          }
+        },
+        "required": [
+          "start_date"
+        ],
+        "title": "HistoryInput",
+        "type": "object"
+      },
+      "output": {
+        "$defs": {
+          "DayWeather": {
+            "properties": {
+              "date": {
+                "title": "Date",
+                "type": "string"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "temp_min": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Temp Min"
+              },
+              "temp_max": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Temp Max"
+              },
+              "temp_mean": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Temp Mean"
+              },
+              "precipitation": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Precipitation"
+              },
+              "precip_chance_max_pct": {
+                "anyOf": [
+                  {
+                    "maximum": 100,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Precip Chance Max Pct"
+              },
+              "wind_max": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Wind Max"
+              },
+              "uv_index_max": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Uv Index Max"
+              },
+              "sunrise": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Sunrise"
+              },
+              "sunset": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Sunset"
+              }
+            },
+            "required": [
+              "date"
+            ],
+            "title": "DayWeather",
+            "type": "object"
+          },
+          "Location": {
+            "properties": {
+              "name": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Name"
+              },
+              "state": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "State"
+              },
+              "country": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Country"
+              },
+              "lat": {
+                "title": "Lat",
+                "type": "number"
+              },
+              "lon": {
+                "title": "Lon",
+                "type": "number"
+              },
+              "timezone": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Timezone"
+              }
+            },
+            "required": [
+              "lat",
+              "lon"
+            ],
+            "title": "Location",
+            "type": "object"
+          },
+          "UnitLabels": {
+            "properties": {
+              "temperature": {
+                "title": "Temperature",
+                "type": "string"
+              },
+              "wind_speed": {
+                "title": "Wind Speed",
+                "type": "string"
+              },
+              "precipitation": {
+                "title": "Precipitation",
+                "type": "string"
+              }
+            },
+            "required": [
+              "temperature",
+              "wind_speed",
+              "precipitation"
+            ],
+            "title": "UnitLabels",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "location": {
+            "$ref": "#/$defs/Location"
+          },
+          "units": {
+            "$ref": "#/$defs/UnitLabels"
+          },
+          "dataset": {
+            "description": "'era5' reanalysis, or 'recent' (archived forecasts for the last 92 days).",
+            "title": "Dataset",
+            "type": "string"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/$defs/DayWeather"
+            },
+            "title": "Days",
+            "type": "array"
+          }
+        },
+        "required": [
+          "location",
+          "units",
+          "dataset",
+          "days"
+        ],
+        "title": "HistoryOutput",
+        "type": "object"
+      },
+      "example": {
+        "place": "Paris",
+        "country_code": "FR",
+        "start_date": "2024-07-26",
+        "end_date": "2024-07-28"
+      }
+    },
+    {
+      "id": "open-meteo/marine",
+      "provider": "open-meteo",
+      "providerName": "Open-Meteo",
+      "slug": "marine",
+      "displayName": "Open-Meteo Marine Forecast",
+      "summary": "Wave height, period and direction plus swell and sea temperature, now and for up to 8 days.",
+      "categories": [
+        "weather"
+      ],
+      "render": "table",
+      "price": {
+        "usd": "0.001",
+        "atomic": "1000",
+        "tier": "local",
+        "network": "eip155:84532"
+      },
+      "method": "POST",
+      "path": "/v1/run/open-meteo/marine",
+      "available": true,
+      "description": "Sea state for a coastal place or ocean coordinates: significant wave height, wave direction and period, swell height and period and sea-surface temperature now, then daily maxima for up to 8 days. Good for surf, sailing, ferries and beach plans. A place name is geocoded to its town centre and the nearest sea grid cell is used; an inland point has no sea data and answers not found, so pass coordinates just offshore if needed. For weather on land use open-meteo/forecast.",
+      "notes": [],
+      "seeAlso": [
+        "open-meteo/forecast"
+      ],
+      "deadlineMs": 8000,
+      "cacheTtlS": 900,
+      "terms": "open",
+      "input": {
+        "additionalProperties": false,
+        "properties": {
+          "place": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "minLength": 2,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "A city or place name: 'Lagos', 'Lake Tahoe', 'Bondi Beach'.",
+            "title": "Place"
+          },
+          "country_code": {
+            "anyOf": [
+              {
+                "maxLength": 2,
+                "minLength": 2,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "ISO 3166-1 alpha-2 code to pick the right place: 'NG', 'US'.",
+            "title": "Country Code"
+          },
+          "lat": {
+            "anyOf": [
+              {
+                "maximum": 90,
+                "minimum": -90,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Latitude, with lon (instead of place).",
+            "title": "Lat"
+          },
+          "lon": {
+            "anyOf": [
+              {
+                "maximum": 180,
+                "minimum": -180,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Longitude, with lat.",
+            "title": "Lon"
+          },
+          "days": {
+            "default": 5,
+            "description": "Days ahead, 1-8.",
+            "maximum": 8,
+            "minimum": 1,
+            "title": "Days",
+            "type": "integer"
+          }
+        },
+        "title": "MarineInput",
+        "type": "object"
+      },
+      "output": {
+        "$defs": {
+          "Location": {
+            "properties": {
+              "name": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Name"
+              },
+              "state": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "State"
+              },
+              "country": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Country"
+              },
+              "lat": {
+                "title": "Lat",
+                "type": "number"
+              },
+              "lon": {
+                "title": "Lon",
+                "type": "number"
+              },
+              "timezone": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Timezone"
+              }
+            },
+            "required": [
+              "lat",
+              "lon"
+            ],
+            "title": "Location",
+            "type": "object"
+          },
+          "SeaDay": {
+            "properties": {
+              "date": {
+                "title": "Date",
+                "type": "string"
+              },
+              "wave_height_max_m": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Wave Height Max M"
+              },
+              "wave_direction_deg": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Wave Direction Deg"
+              },
+              "wave_period_max_s": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Wave Period Max S"
+              },
+              "swell_height_max_m": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Swell Height Max M"
+              }
+            },
+            "required": [
+              "date"
+            ],
+            "title": "SeaDay",
+            "type": "object"
+          },
+          "SeaNow": {
+            "properties": {
+              "observed_at": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Observed At"
+              },
+              "wave_height_m": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Wave Height M"
+              },
+              "wave_direction_deg": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Wave Direction Deg"
+              },
+              "wave_period_s": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Wave Period S"
+              },
+              "swell_height_m": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Swell Height M"
+              },
+              "swell_period_s": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Swell Period S"
+              },
+              "sea_surface_temp_c": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Sea Surface Temp C"
+              }
+            },
+            "title": "SeaNow",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "location": {
+            "$ref": "#/$defs/Location"
+          },
+          "current": {
+            "$ref": "#/$defs/SeaNow"
+          },
+          "rows": {
+            "description": "One row per local day.",
+            "items": {
+              "$ref": "#/$defs/SeaDay"
+            },
+            "title": "Rows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "location",
+          "current",
+          "rows"
+        ],
+        "title": "MarineOutput",
+        "type": "object"
+      },
+      "example": {
+        "lat": -33.89,
+        "lon": 151.28,
+        "days": 3
+      }
+    },
+    {
       "id": "openalex/authors",
       "provider": "openalex",
       "providerName": "OpenAlex",
@@ -11637,6 +14021,471 @@
       "example": {
         "query": "the left hand of darkness",
         "limit": 3
+      }
+    },
+    {
+      "id": "openstreetmap/geocode",
+      "provider": "openstreetmap",
+      "providerName": "OpenStreetMap",
+      "slug": "geocode",
+      "displayName": "OpenStreetMap Geocode",
+      "summary": "Find an address, landmark or business on OpenStreetMap: coordinates, full address, type and links.",
+      "categories": [
+        "places"
+      ],
+      "render": "place",
+      "price": {
+        "usd": "0.001",
+        "atomic": "1000",
+        "tier": "local",
+        "network": "eip155:84532"
+      },
+      "method": "POST",
+      "path": "/v1/run/openstreetmap/geocode",
+      "available": true,
+      "description": "Searches OpenStreetMap through Nominatim for an address, a landmark, a business or any named place and returns up to 10 candidates, best first: name, full address, category and type (e.g. tourism/attraction, amenity/cafe), coordinates, locality, state, postcode, country, an importance score, the OpenStreetMap link and useful tags (website, phone, opening hours, Wikipedia). Narrow it with country_codes. Use the coordinates with open-meteo/forecast or openweather/current; for ratings and reviews use serper/places.",
+      "notes": [],
+      "seeAlso": [
+        "openstreetmap/reverse",
+        "serper/places"
+      ],
+      "deadlineMs": 8000,
+      "cacheTtlS": 86400,
+      "terms": "open",
+      "input": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "An address, landmark, business or place: '10 Downing Street, London', 'Eiffel Tower', 'Lekki Phase 1'.",
+            "maxLength": 200,
+            "minLength": 2,
+            "title": "Query",
+            "type": "string"
+          },
+          "country_codes": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Limit to ISO 3166-1 alpha-2 codes, comma-separated: 'ng,gh'.",
+            "title": "Country Codes"
+          },
+          "limit": {
+            "default": 5,
+            "maximum": 10,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "SearchInput",
+        "type": "object"
+      },
+      "output": {
+        "$defs": {
+          "Place": {
+            "properties": {
+              "name": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Name"
+              },
+              "address": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Address"
+              },
+              "category": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Category"
+              },
+              "type": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Type"
+              },
+              "lat": {
+                "title": "Lat",
+                "type": "number"
+              },
+              "lon": {
+                "title": "Lon",
+                "type": "number"
+              },
+              "locality": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Locality"
+              },
+              "state": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "State"
+              },
+              "postcode": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Postcode"
+              },
+              "country": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Country"
+              },
+              "country_code": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Country Code"
+              },
+              "importance": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Importance"
+              },
+              "osm_url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Osm Url"
+              },
+              "extra": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "title": "Extra",
+                "type": "object"
+              }
+            },
+            "required": [
+              "lat",
+              "lon"
+            ],
+            "title": "Place",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "places": {
+            "items": {
+              "$ref": "#/$defs/Place"
+            },
+            "title": "Places",
+            "type": "array"
+          }
+        },
+        "required": [
+          "query",
+          "places"
+        ],
+        "title": "SearchOutput",
+        "type": "object"
+      },
+      "example": {
+        "query": "Eiffel Tower",
+        "limit": 2
+      }
+    },
+    {
+      "id": "openstreetmap/reverse",
+      "provider": "openstreetmap",
+      "providerName": "OpenStreetMap",
+      "slug": "reverse",
+      "displayName": "OpenStreetMap Reverse Geocode",
+      "summary": "Turn coordinates into the nearest street address, neighbourhood, city, postcode and country.",
+      "categories": [
+        "places"
+      ],
+      "render": "place",
+      "price": {
+        "usd": "0.001",
+        "atomic": "1000",
+        "tier": "local",
+        "network": "eip155:84532"
+      },
+      "method": "POST",
+      "path": "/v1/run/openstreetmap/reverse",
+      "available": true,
+      "description": "Reverse geocoding: the OpenStreetMap object nearest to a latitude/longitude, with its name, full address, locality, state, postcode and country. Use it to say where a GPS point, a photo's coordinates or an earthquake epicentre is. Points at sea or far from any address answer not found. For the other direction (name → coordinates) use openstreetmap/geocode.",
+      "notes": [],
+      "seeAlso": [
+        "openstreetmap/geocode"
+      ],
+      "deadlineMs": 8000,
+      "cacheTtlS": 86400,
+      "terms": "open",
+      "input": {
+        "additionalProperties": false,
+        "properties": {
+          "lat": {
+            "maximum": 90,
+            "minimum": -90,
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "maximum": 180,
+            "minimum": -180,
+            "title": "Lon",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "ReverseInput",
+        "type": "object"
+      },
+      "output": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Name"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Address"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Category"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Type"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "locality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Locality"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "State"
+          },
+          "postcode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Postcode"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Country"
+          },
+          "country_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Country Code"
+          },
+          "importance": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Importance"
+          },
+          "osm_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Osm Url"
+          },
+          "extra": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Extra",
+            "type": "object"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "Place",
+        "type": "object"
+      },
+      "example": {
+        "lat": 37.788,
+        "lon": -122.4075
       }
     },
     {
@@ -16094,5 +18943,5 @@
       }
     }
   ],
-  "hash": "d4d99712496be86a"
+  "hash": "195036f45026f305"
 }
