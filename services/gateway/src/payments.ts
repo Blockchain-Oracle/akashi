@@ -8,6 +8,7 @@ import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
 import type { Catalog } from "./catalog.js";
 import type { GatewayConfig } from "./config.js";
 import { PAYMENT_TIMEOUT_S, SERVICE_NAME } from "./constants.js";
+import { SerialFacilitator } from "./serial-facilitator.js";
 
 /** Exact `POST /v1/run/<provider>/<slug>` keys only: no wildcard, so no path can run unpaid (D-038). */
 export function runRoutes(catalog: Catalog, config: GatewayConfig): Record<string, RouteConfig> {
@@ -32,8 +33,21 @@ export function runRoutes(catalog: Catalog, config: GatewayConfig): Record<strin
   return routes;
 }
 
+// One settlement queue per facilitator for the life of the process: the payment layer is rebuilt when the catalog
+// changes, and a fresh queue would settle in parallel with the old one.
+const facilitators = new Map<string, SerialFacilitator>();
+
+function facilitatorFor(url: string): SerialFacilitator {
+  let facilitator = facilitators.get(url);
+  if (!facilitator) {
+    facilitator = new SerialFacilitator(new HTTPFacilitatorClient({ url }));
+    facilitators.set(url, facilitator);
+  }
+  return facilitator;
+}
+
 export function paymentLayer(catalog: Catalog, config: GatewayConfig) {
-  const facilitator = new HTTPFacilitatorClient({ url: config.facilitatorUrl });
+  const facilitator = facilitatorFor(config.facilitatorUrl);
   const server = new x402ResourceServer(facilitator).register(config.network, new ExactEvmScheme());
   return paymentMiddleware(runRoutes(catalog, config), server);
 }

@@ -33,7 +33,7 @@ export function ProviderLogo({ id, name, size = "md", className }: {
         alt=""
         width={px}
         height={px}
-        className={cn("shrink-0 rounded-[6px] object-contain", className)}
+        className={cn("shrink-0 rounded-[6px] border border-line bg-background object-contain p-[2px]", className)}
       />
     );
   }

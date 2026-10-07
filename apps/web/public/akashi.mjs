@@ -63056,8 +63056,12 @@ async function main() {
 `);
   }
 }
+function describe3(error62) {
+  if (!(error62 instanceof Error)) return String(error62);
+  return error62.cause ? `${error62.message} (${describe3(error62.cause)})` : error62.message;
+}
 main().catch((error62) => {
-  process.stderr.write(`akashi: ${error62 instanceof Error ? error62.message : String(error62)}
+  process.stderr.write(`akashi: ${describe3(error62)}
 `);
   process.exit(1);
 });

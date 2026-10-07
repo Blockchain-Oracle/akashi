@@ -10,6 +10,11 @@ export const DEFAULT_NETWORK = "eip155:84532" as const;
 export const DEFAULT_FACILITATOR_URL = "https://x402.org/facilitator";
 export const PAYMENT_TIMEOUT_S = 60; // the signed authorization stays valid this long (portal uses 60 s too)
 export const USDC_DECIMALS = 6;
+// The facilitator's relayer races itself when two settlements overlap (serial-facilitator.ts): queue them, and retry
+// a lost race once after roughly one Base block (2 s), well inside PAYMENT_TIMEOUT_S.
+export const SETTLE_RETRY_ATTEMPTS = 2;
+export const SETTLE_RETRY_DELAY_MS = 1_500;
+export const SETTLE_RACE_MARKERS = ["replacement transaction underpriced", "nonce too low", "already known"];
 
 // A run must answer within Pocket's ~10 s gateway window; the API's own per-endpoint deadline is ≤ 9 s.
 export const RUN_FORWARD_TIMEOUT_MS = 9_500;

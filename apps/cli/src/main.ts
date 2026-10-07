@@ -79,7 +79,13 @@ async function main(): Promise<void> {
   }
 }
 
+// Node's fetch reports every network failure as "fetch failed"; the reason (reset, timeout, DNS) is in `cause`.
+function describe(error: unknown): string {
+  if (!(error instanceof Error)) return String(error);
+  return error.cause ? `${error.message} (${describe(error.cause)})` : error.message;
+}
+
 main().catch((error: unknown) => {
-  process.stderr.write(`akashi: ${error instanceof Error ? error.message : String(error)}\n`);
+  process.stderr.write(`akashi: ${describe(error)}\n`);
   process.exit(1);
 });
