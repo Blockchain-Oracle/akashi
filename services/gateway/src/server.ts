@@ -13,6 +13,7 @@ import { loadCatalog } from "./catalog.js";
 import type { Catalog } from "./catalog.js";
 import { readConfig } from "./config.js";
 import {
+  CATALOG_REFRESH_MS,
   ENDPOINT_HEADER,
   EXPOSED_HEADERS,
   HTTP_BAD_GATEWAY,
@@ -30,8 +31,24 @@ import { forwardRead, forwardRun } from "./relay.js";
 import type { Forwarded } from "./relay.js";
 
 const config = readConfig();
-const catalog: Catalog = await loadCatalog(config.apiUrl);
-const endpointsByPath = new Map(catalog.endpoints.filter((e) => e.available).map((e) => [e.path, e]));
+let catalog: Catalog = await loadCatalog(config.apiUrl);
+let endpointsByPath = new Map(catalog.endpoints.filter((e) => e.available).map((e) => [e.path, e]));
+let payments = paymentLayer(catalog, config);
+
+/** A new api deploy can add, remove or reprice tools: swap the catalog and the paid route table atomically. */
+async function refreshCatalog(): Promise<void> {
+  try {
+    const next = await loadCatalog(config.apiUrl, 1);
+    if (next.hash === catalog.hash) return;
+    catalog = next;
+    endpointsByPath = new Map(next.endpoints.filter((e) => e.available).map((e) => [e.path, e]));
+    payments = paymentLayer(next, config);
+    console.log(JSON.stringify({ event: "catalog_reloaded", hash: next.hash, endpoints: endpointsByPath.size }));
+  } catch (error) {
+    console.warn(JSON.stringify({ event: "catalog_refresh_failed", error: String(error) }));
+  }
+}
+setInterval(() => void refreshCatalog(), CATALOG_REFRESH_MS).unref();
 
 type ErrorStatus = 400 | 404 | 413 | 502;
 
@@ -84,7 +101,7 @@ app.get("/v1/endpoints/:provider/:slug", async (c) =>
 );
 
 // Payment runs before the handler: unpaid → 402 with the price; paid → handler → settle only if status < 400.
-app.use(`${RUN_PREFIX}/*`, paymentLayer(catalog, config));
+app.use(`${RUN_PREFIX}/*`, (c, next) => payments(c, next));
 
 app.post(`${RUN_PREFIX}/:provider/:slug`, async (c) => {
   const path = `${RUN_PREFIX}/${c.req.param("provider")}/${c.req.param("slug")}`;

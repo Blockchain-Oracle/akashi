@@ -17,6 +17,8 @@ export const CATALOG_FETCH_TIMEOUT_MS = 5_000;
 export const CATALOG_RETRY_DELAY_MS = 2_000;
 export const CATALOG_RETRY_ATTEMPTS = 30; // ~1 minute: the api container may still be starting
 export const MAX_BODY_BYTES = 65_536; // Pocket portal/relay request cap (≈ 64 KiB)
+// The api may deploy without the gateway: re-read its catalog this often and rebuild the paid route table on change.
+export const CATALOG_REFRESH_MS = 60_000;
 
 // Status codes the gateway produces itself
 export const HTTP_OK = 200;

@@ -1,4 +1,4 @@
-/** The catalog, read once from the api at startup: it decides which run routes exist and what each costs. */
+/** The catalog from the api: it decides which run routes exist and what each costs (re-read every minute). */
 
 import { CATALOG_FETCH_TIMEOUT_MS, CATALOG_RETRY_ATTEMPTS, CATALOG_RETRY_DELAY_MS } from "./constants.js";
 
@@ -39,9 +39,9 @@ export interface Catalog {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export async function loadCatalog(apiUrl: string): Promise<Catalog> {
+export async function loadCatalog(apiUrl: string, attempts = CATALOG_RETRY_ATTEMPTS): Promise<Catalog> {
   let lastError: unknown;
-  for (let attempt = 1; attempt <= CATALOG_RETRY_ATTEMPTS; attempt++) {
+  for (let attempt = 1; attempt <= attempts; attempt++) {
     try {
       const res = await fetch(`${apiUrl}/v1/catalog`, { signal: AbortSignal.timeout(CATALOG_FETCH_TIMEOUT_MS) });
       if (res.ok) return (await res.json()) as Catalog;
