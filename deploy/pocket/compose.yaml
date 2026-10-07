@@ -1,0 +1,42 @@
+# HA RelayMiner for the tool-router Pocket service on Beta (Coolify "Docker Compose" resource, base /deploy/pocket).
+# Coolify's Traefik terminates TLS for https://relay.useakashi.xyz → relayer:8080 (set in the Coolify UI), so there
+# is no Caddy, no published port and no container_name here. KB fixes vs the skill template: Redis 8.10.1 with
+# noeviction (v0.1.0 refuses anything else), pinned v0.1.0 for miner AND relayer, block time 30 s (Beta), no
+# chain_id in the relayer, eager validation, memory limits (context/03-building-a-service/supplier-and-relayminer.md).
+# The relayer reaches the api through Coolify's shared network ("Connect to predefined network" on) at api.internal.
+services:
+  redis:
+    image: redis:8.10.1-alpine
+    command: ["redis-server", "--maxmemory", "192mb", "--maxmemory-policy", "noeviction", "--appendonly", "yes",
+              "--io-threads", "1"]
+    volumes: [pocket-redis-data:/data]   # session trees: never delete while claims/proofs are pending
+    mem_limit: 256m
+    healthcheck: { test: ["CMD", "redis-cli", "ping"], interval: 5s, timeout: 3s, retries: 10 }
+    restart: unless-stopped
+  miner:
+    image: ghcr.io/pokt-network/pocket-relay-miner:v0.1.0
+    command: ["miner", "--config", "/config/config.yaml"]
+    volumes:
+      - ./miner-config.yaml:/config/config.yaml:ro
+      - /opt/pocket/secrets/supplier-keys.yaml:/keys/supplier-keys.yaml:ro   # uid 1000, 0400; never in git
+    mem_limit: 256m
+    environment: { GOMEMLIMIT: "230MiB", GOMAXPROCS: "1" }
+    depends_on: { redis: { condition: service_healthy } }
+    healthcheck: { test: ["CMD", "curl", "-fsS", "http://localhost:9092/health"], interval: 10s, timeout: 3s,
+                   retries: 30, start_period: 30s }
+    restart: on-failure
+  relayer:
+    image: ghcr.io/pokt-network/pocket-relay-miner:v0.1.0   # SAME tag as the miner, always
+    command: ["relayer", "--config", "/config/config.yaml"]
+    volumes:
+      - ./relayer-config.yaml:/config/config.yaml:ro
+      - /opt/pocket/secrets/supplier-keys.yaml:/keys/supplier-keys.yaml:ro
+    expose: ["8080"]
+    mem_limit: 256m
+    environment: { GOMEMLIMIT: "230MiB", GOMAXPROCS: "2" }
+    depends_on: { redis: { condition: service_healthy }, miner: { condition: service_healthy } }
+    # /health, not /ready: Traefik drops an unhealthy container, and /ready stays 503 until the miner publishes
+    healthcheck: { test: ["CMD", "curl", "-fsS", "http://localhost:8081/health"], interval: 10s, timeout: 3s,
+                   retries: 30, start_period: 20s }
+    restart: unless-stopped
+volumes: { pocket-redis-data: {} }

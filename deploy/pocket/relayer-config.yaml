@@ -1,0 +1,29 @@
+listen_addr: "0.0.0.0:8080"
+redis: { url: "redis://redis:6379" }
+pocket_node:
+  query_node_rpc_url: "https://sauron-rpc.beta.infra.pocket.network"
+  query_node_grpc_url: "sauron-grpc.beta.infra.pocket.network:443"   # host:port, NO scheme
+  grpc_insecure: false
+  # no chain_id: not a relayer key (validate fails on it)
+keys: { keys_file: "/keys/supplier-keys.yaml" }
+default_validation_mode: eager
+services:
+  tool-router:
+    validation_mode: eager
+    timeout_profile: fast            # 30 s; every run answers in < 9 s
+    max_body_size_bytes: 1048576     # inputs are ≤ 64 KiB; outputs ≤ ~60 KB
+    default_backend: rest            # a REST-only service MUST set this (default is jsonrpc)
+    backends:
+      rest:
+        url: "http://api.internal:8000"   # the akashi-api network alias; no path prefix
+        health_check:
+          enabled: true
+          endpoint: "/v1/health"
+          expected_body: '"ok"'
+          interval_seconds: 10
+          timeout_seconds: 5
+          unhealthy_threshold: 3
+          healthy_threshold: 2
+health_check: { enabled: true, addr: "0.0.0.0:8081" }
+metrics: { enabled: true, addr: "0.0.0.0:9090" }
+logging: { level: "info", format: "json" }

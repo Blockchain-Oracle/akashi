@@ -1,0 +1,4 @@
+# The app whose key pocket-ap uses to sign tool-router relays (exactly one service per app stake).
+stake_amount: 1000000000upokt
+service_ids:
+  - tool-router

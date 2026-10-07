@@ -1,0 +1,26 @@
+# akashi-gateway + pocket-ap (Coolify "Docker Compose" resource, base /deploy/gateway). Coolify routes
+# https://api.useakashi.xyz → gateway:8080. pocket-ap signs every paid run as a relay with the tool-router app key
+# and sends it to Akashi's supplier (relay.useakashi.xyz); nothing in this file is a secret.
+services:
+  gateway:
+    image: ghcr.io/blockchain-oracle/akashi-gateway:main
+    environment:
+      AKASHI_API_URL: http://api.internal:8000
+      POCKET_AP_URL: http://pocket-ap:8550
+      AKASHI_PAY_TO: ${AKASHI_PAY_TO}
+      AKASHI_PUBLIC_URL: ${AKASHI_PUBLIC_URL:-https://api.useakashi.xyz}
+      AKASHI_CORS_ORIGINS: ${AKASHI_CORS_ORIGINS:-*}
+      X402_NETWORK: eip155:84532
+    expose: ["8080"]
+    mem_limit: 192m
+    depends_on: { pocket-ap: { condition: service_started } }
+    restart: unless-stopped
+  pocket-ap:
+    image: ghcr.io/pokt-network/pocket-ap:v0.1.2
+    command: ["serve", "--config", "/config/pocket-ap.yaml"]
+    environment:
+      POCKET_APP_PRIVATE_KEY: ${POCKET_APP_PRIVATE_KEY}   # Coolify secret env; the tool-router app key
+    volumes: ["./pocket-ap.yaml:/config/pocket-ap.yaml:ro"]
+    expose: ["8550"]
+    mem_limit: 128m
+    restart: unless-stopped

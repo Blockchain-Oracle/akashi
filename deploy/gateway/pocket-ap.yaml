@@ -1,0 +1,6 @@
+network: beta
+listeners:
+  - addr: 0.0.0.0:8550     # inside the compose network only (the image is FROM scratch: bind 0.0.0.0)
+    service_id: tool-router
+    rpc_type: rest
+app: {}                    # key from POCKET_APP_PRIVATE_KEY

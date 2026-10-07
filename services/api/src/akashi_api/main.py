@@ -77,6 +77,14 @@ async def health() -> dict[str, str]:
     return {"status": HEALTH_OK}
 
 
+SPEC_PATH = f"/specs/{SERVICE_ID}.openapi.json"  # the card's specs[].url (audit A8)
+
+
+@app.get(SPEC_PATH, include_in_schema=False)
+async def openapi_spec() -> dict[str, Any]:
+    return app.openapi()
+
+
 @app.get("/v1/catalog", summary="Every provider and endpoint with input/output schemas and prices")
 async def get_catalog() -> dict[str, Any]:
     return catalog.compiled()

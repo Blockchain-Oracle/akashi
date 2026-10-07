@@ -1,0 +1,12 @@
+# Operator-signed stake for tool-router (the operator pays the stake; it returns to the owner on unstake).
+# Re-stake with the FULL services list whenever an endpoint changes.
+owner_address: pokt16p53au7ctwrtfdwd23pt2tv54nj9f0n8wsj805
+operator_address: pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg
+stake_amount: 60000000000upokt   # 500 POKT over the live min (59,500 on 2026-10-07): missed-proof penalties come off the stake
+default_rev_share_percent:
+  pokt16p53au7ctwrtfdwd23pt2tv54nj9f0n8wsj805: 100
+services:
+  - service_id: tool-router
+    endpoints:
+      - publicly_exposed_url: https://relay.useakashi.xyz
+        rpc_type: REST

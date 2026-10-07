@@ -1,0 +1,11 @@
+redis: { url: "redis://redis:6379" }
+pocket_node:
+  query_node_rpc_url: "https://sauron-rpc.beta.infra.pocket.network"
+  query_node_grpc_url: "sauron-grpc.beta.infra.pocket.network:443"
+  chain_id: "pocket-lego-testnet"   # live_params 2026-10-07
+  grpc_insecure: false
+keys: { keys_file: "/keys/supplier-keys.yaml" }
+block_time_seconds: 30              # Beta (MainNet 60)
+balance_monitor: { enabled: true, check_interval_seconds: 300, balance_threshold_upokt: 100000000 }
+metrics: { enabled: true, addr: "0.0.0.0:9092" }
+logging: { level: "info", format: "json" }

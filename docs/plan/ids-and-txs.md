@@ -8,6 +8,12 @@
 | add_service_fee / supplier min_stake / app min_stake / CUTTM | 1,000 POKT / 59,500 POKT / 1,000 POKT / 40,000 (1 CU = 0.04 uPOKT) · supplier unbonding 86 sessions · 20 blocks/session | 2026-09-30 03:16 UTC (`live_params.py`) |
 | Beta CUPR distribution (all 97 services) | median 10,000 · p95 50,000 · max 300,000 | 2026-09-30 03:17 UTC (`query service all-services`) |
 
+## Base Sepolia (x402) wallets — public addresses only; keys in `~/.akashi-secrets/*-base-sepolia.json` (0600)
+| role | address | notes |
+|---|---|---|
+| payTo (AKASHI_PAY_TO) | 0x8164dabAfc824322221654ED421715FdaA66948D | receives every paid run |
+| demo payer | 0xF2A2eD6Fc57e32A6DC5A6F371ED8996AC30f9ebA | pays demo / free-mode runs; needs Circle-faucet USDC (user, CAPTCHA) |
+
 ## Accounts
 | role | key name | address | funded tx | notes |
 |---|---|---|---|---|
@@ -23,6 +29,9 @@
 | citation-verify | Akashi Citation Verifier | 40000 | 530cb1445e0a0bb7… (v1) | 8CA28E2F9F8628FD8BF017D56A259702EF2D4FB62BF56B4ECCBF630DCA22BF6C | 691097 | v1 card points at the temp sslip host; re-publish on the domain (gas only) |
 | code-reality-check | Akashi Code Reality Check | 20000 | 580d1a8f3d25505c… (v1) | 0829C8D96D3911A73948471568D63F8D03AEB6DCB5ECDE1B1136515229642E2E | 691098 | same |
 | live-facts | Akashi Live Facts | 10000 | dbead1479954aa9a… (v1) | 33CD6B89D18036FFAC17D8AAF0F9E8FB4D087B8FE5FFFD410CD4899265D69C09 | 691099 | same |
+| **tool-router** | Akashi Tool Router | 20000 (800 uPOKT/relay) | `deploy/pocket/tool-router.card.min.json` (2,596 B; on-chain card byte-identical, 2026-10-07) | A96AAAB2B2BA81723ABB3C74BF10C7B79A7D55F07992D7F2F365B51D2AFE67F7 | 711952 | v1 card spec URL on the temp sslip host; re-publish on useakashi.xyz (gas only) |
+
+> 2026-10-07: citation-verify, code-reality-check and live-facts are **retired** (user's pivot to the tool router, S14). They stay registered on chain (IDs are permanent) but are no longer served, staked or submitted.
 
 ## Supplier
 | stake tx | amount | endpoint | activation height | updates |
