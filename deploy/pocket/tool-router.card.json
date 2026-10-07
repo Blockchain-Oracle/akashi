@@ -14,7 +14,7 @@
     {
       "kind": "openapi",
       "api": "tool-router-api",
-      "url": "http://qbjpovbitgqrjgafdcrigqmd.84.46.247.92.sslip.io/specs/tool-router.openapi.json"
+      "url": "https://mwivqpuwa5rpwtrxpwjc1j0w.84.46.247.92.sslip.io/specs/tool-router.openapi.json"
     }
   ],
   "access": "public",
@@ -47,6 +47,6 @@
     ],
     "notes": "Runs answer in under 9 s (per-tool deadlines); request bodies up to 64 KiB; outputs capped near 60 KB. Gateway operators: configure as type passthrough with rpc_types [\"rest\"]."
   },
-  "docs": "https://github.com/Blockchain-Oracle/akashi/tree/main/docs",
+  "docs": "https://github.com/Blockchain-Oracle/akashi#readme",
   "updated": "2026-10-07"
 }
