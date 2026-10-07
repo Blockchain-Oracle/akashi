@@ -40,6 +40,7 @@
 ## App stakes
 | service | app addr | stake tx | amount | delegations |
 |---|---|---|---|---|
+| tool-router | pokt14d678cn7kzjy6zux5z7ekymz3dlnj3sgjme4mj (key `akashi-app-cite`, reused) | 113EFC5118886B6F65EF23B2028F8ECCBAA6C0986BCC0E1E8E0CF5DE85835BBC (h 712014, 2026-10-07) | 1,000 POKT | none (pocket-ap signs with the app key directly) |
 
 ## Relays and claims
 | service | session end | #relays | MsgCreateClaim tx | settled? | proof tx | chosen Test Tx ✓ |

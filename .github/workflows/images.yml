@@ -12,6 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false # one app failing must not cancel the others' images
       matrix:
         include:
           - { app: web, file: deploy/next-app/Dockerfile }

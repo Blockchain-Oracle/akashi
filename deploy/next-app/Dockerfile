@@ -30,10 +30,8 @@ COPY --from=prune /app/out/json/ .
 RUN --mount=type=cache,id=akashi-pnpm-store,target=/pnpm/store \
     pnpm install --frozen-lockfile
 COPY --from=prune /app/out/full/ .
-# turbo prune keeps workspace members only: the shared compiler settings, and the per-service OpenAPI that the
-# docs' API reference is generated from, live at the root
+# turbo prune keeps workspace members only: the shared compiler settings live at the root
 COPY --from=prune /app/tsconfig.base.json ./
-COPY --from=prune /app/cards ./cards
 ARG NEXT_PUBLIC_APP_URL
 ARG NEXT_PUBLIC_DOCS_URL
 ARG NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
@@ -61,8 +59,6 @@ WORKDIR /app
 COPY --from=build --chown=node:node /app/apps/${APP}/.next/standalone ./
 COPY --from=build --chown=node:node /app/apps/${APP}/.next/static ./apps/${APP}/.next/static
 COPY --from=build --chown=node:node /app/apps/${APP}/public ./apps/${APP}/public
-# the docs read cards/*/openapi.json at request time too (playground proxy, on-demand pages)
-COPY --from=build --chown=node:node /app/cards ./cards
 USER node
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
