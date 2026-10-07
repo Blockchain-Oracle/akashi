@@ -5,7 +5,9 @@
 # chain_id in the relayer, eager validation, memory limits (context/03-building-a-service/supplier-and-relayminer.md).
 # The relayer reaches the api through Coolify's shared network ("Connect to predefined network" on) at api.internal.
 services:
-  redis:
+  # Not "redis": with the shared coolify network on, that alias also resolves to coolify-redis (password-protected),
+  # and the miner hit it at random (NOAUTH, 2026-10-07). A name no other stack uses keeps DNS to this one container.
+  pocket-relay-redis:
     image: redis:8.10.1-alpine
     command: ["redis-server", "--maxmemory", "192mb", "--maxmemory-policy", "noeviction", "--appendonly", "yes",
               "--io-threads", "1"]
@@ -21,7 +23,7 @@ services:
       - /opt/pocket/secrets/supplier-keys.yaml:/keys/supplier-keys.yaml:ro   # uid 1000, 0400; never in git
     mem_limit: 256m
     environment: { GOMEMLIMIT: "230MiB", GOMAXPROCS: "1" }
-    depends_on: { redis: { condition: service_healthy } }
+    depends_on: { pocket-relay-redis: { condition: service_healthy } }
     # Measured 2026-10-07 on the shared box: healthy after ~35 s, slower under load, so a generous start period.
     healthcheck: { test: ["CMD", "curl", "-fsS", "http://localhost:9092/health"], interval: 10s, timeout: 5s,
                    retries: 30, start_period: 180s }
@@ -37,7 +39,7 @@ services:
     environment: { GOMEMLIMIT: "230MiB", GOMAXPROCS: "2" }
     # Started, not healthy: the relayer's own /ready stays 503 until the miner publishes its manifest, and a strict
     # healthy gate failed the whole Coolify deploy when the miner warmed up slowly under load.
-    depends_on: { redis: { condition: service_healthy }, miner: { condition: service_started } }
+    depends_on: { pocket-relay-redis: { condition: service_healthy }, miner: { condition: service_started } }
     # /health, not /ready: Traefik drops an unhealthy container, and /ready stays 503 until the miner publishes
     healthcheck: { test: ["CMD", "curl", "-fsS", "http://localhost:8081/health"], interval: 10s, timeout: 3s,
                    retries: 30, start_period: 20s }

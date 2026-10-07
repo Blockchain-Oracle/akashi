@@ -252,7 +252,7 @@ volumes: { pocket-redis-data: {} }
 `relayer-config.yaml`:
 ```yaml
 listen_addr: "0.0.0.0:8080"
-redis: { url: "redis://redis:6379" }
+redis: { url: "redis://pocket-relay-redis:6379" }
 pocket_node:
   query_node_rpc_url: "https://sauron-rpc.beta.infra.pocket.network"
   query_node_grpc_url: "sauron-grpc.beta.infra.pocket.network:443"   # host:port, NO scheme
@@ -278,7 +278,7 @@ logging: { level: "info", format: "json" }
 ```
 `miner-config.yaml`:
 ```yaml
-redis: { url: "redis://redis:6379" }
+redis: { url: "redis://pocket-relay-redis:6379" }
 pocket_node:
   query_node_rpc_url: "https://sauron-rpc.beta.infra.pocket.network"
   query_node_grpc_url: "sauron-grpc.beta.infra.pocket.network:443"
