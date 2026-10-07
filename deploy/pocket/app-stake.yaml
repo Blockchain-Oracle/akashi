@@ -1,4 +1,7 @@
 # The app whose key pocket-ap uses to sign tool-router relays (exactly one service per app stake).
-stake_amount: 1000000000upokt
+# Settled claims are paid out of this stake, and an app below application min_stake (1,000 POKT on Beta, 2026-10-07)
+# is unstaked by the protocol: the first stake of exactly 1,000 POKT was unstaked by its first settled relay (800 uPOKT).
+# 150 POKT of headroom covers ~187,000 relays at 800 uPOKT. Re-staking needs a strictly higher amount.
+stake_amount: 1150000000upokt
 service_ids:
   - tool-router

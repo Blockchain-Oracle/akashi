@@ -23,7 +23,7 @@
   Akashi is now one Pocket service, `tool-router`, in front of ~70 tool endpoints from ~30 providers.
 - **Live end to end on temporary sslip.io hosts** (the domain is not a blocker, user 2026-10-07): agent → gateway (x402)
   → pocket-ap → RelayMiner → api. First relayed paid run 15:57 UTC; every id and tx is in `ids-and-txs.md`.
-- **On chain (Beta):** `tool-router` registered (A96AAAB2…, h711952) · app stake (113EFC51…, h712014) · supplier stake
+- **On chain (Beta):** `tool-router` registered (A96AAAB2…, h711952) · app stake (113EFC51…, h712014; re-staked 1,150 POKT 9986F963…, h712567) · supplier stake
   (E8997D51…, h712494, active 712501, endpoint https://relay.84.46.247.92.sslip.io) · **first claim AC215AB4… (h712535)
   + proof 6729C253… (h712544)**, settlement due at the end of the proof window — **settled 16:14:50 UTC; Service Audit A1–A9 PASS 16:15** (`audits/2026-10-07-tool-router.json`).
 - **Hosts:** gateway https://mwivqpuwa5rpwtrxpwjc1j0w.84.46.247.92.sslip.io · web https://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io
@@ -37,7 +37,8 @@
 - **CLI / local MCP:** `apps/cli` → one bundle `akashi.mjs` (served from the web at /akashi.mjs).
 - **Chat model:** Groq free tier (8k tokens/min per model) as fallback; a stronger key is optional.
 - **Lessons today:** on Coolify's shared network a compose service named `redis` also resolves to `coolify-redis` →
-  the RelayMiner Redis is `pocket-relay-redis`. The public x402 facilitator races its own nonce on parallel settlements.
+  the RelayMiner Redis is `pocket-relay-redis`. The public x402 facilitator races its own nonce on parallel settlements. Settled claims are paid from the **app
+  stake**: an app at exactly min_stake is unstaked by its first settled relay (re-staked at 1,150 POKT, h712567).
 
 ## Blockers (user)
 1. Namecheap top-up ($2) → register useakashi.xyz → DNS @, api, docs, relay → 84.46.247.92 (then re-stake + re-publish

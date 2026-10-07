@@ -2,7 +2,8 @@
 
   gdelt   refresh the local GDELT news index (akashi/news)
   jobs    refresh the 89 ATS job boards (akashi/jobs)
-  probe   run every keyless endpoint's example so health has fresh samples (keyed ones get theirs from traffic)
+  probe   run every keyless endpoint's example, past the cache, so health has fresh samples (keyed ones get
+          theirs from traffic); scheduled every 10 min, inside HEALTH_RECENT_S (15 min)
 """
 
 import asyncio
@@ -34,7 +35,7 @@ async def probe() -> dict[str, Any]:
     failed: list[str] = []
     for endpoint in keyless:
         try:
-            await run(endpoint.id, endpoint.example)
+            await run(endpoint.id, endpoint.example, fresh=True)
         except ToolError as exc:
             failed.append(f"{endpoint.id}: {exc.code}")
     await close_clients()

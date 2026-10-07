@@ -42,6 +42,7 @@
 | service | app addr | stake tx | amount | delegations |
 |---|---|---|---|---|
 | tool-router | pokt14d678cn7kzjy6zux5z7ekymz3dlnj3sgjme4mj (key `akashi-app-cite`, reused) | 113EFC5118886B6F65EF23B2028F8ECCBAA6C0986BCC0E1E8E0CF5DE85835BBC (h 712014, 2026-10-07) | 1,000 POKT | none (pocket-ap signs with the app key directly) |
+| tool-router (re-stake) | same | 9986F9632F7D30D8C0499DB8A71B75C858E1D8A64DB80F5921B33579A666A316 (h 712567, EventApplicationStaked + EventApplicationUnbondingCanceled) | 1,150 POKT | the 1,000 POKT stake fell to 999.999199 after the first settled claim and the protocol unstaked it (below min_stake) |
 
 ## Relays and claims
 | service | session end | #relays | MsgCreateClaim tx | settled? | proof tx | chosen Test Tx ✓ |

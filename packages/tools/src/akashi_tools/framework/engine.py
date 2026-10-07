@@ -86,14 +86,15 @@ def _envelope(endpoint: Endpoint, deadline: Deadline, *, data: Any, sources: lis
     }
 
 
-async def run(endpoint_id: str, payload: Any) -> dict[str, Any]:
+async def run(endpoint_id: str, payload: Any, *, fresh: bool = False) -> dict[str, Any]:
+    """`fresh` skips the cache read (the probe task: a cache hit records no health sample) but still refreshes it."""
     endpoint = resolve(endpoint_id)
     inp = validate_input(endpoint, payload)
     deadline = Deadline(min(endpoint.deadline_s, RUN_DEADLINE_MAX_S))
     set_deadline(deadline)
     canonical = orjson.dumps(inp.model_dump(mode="json"), option=orjson.OPT_SORT_KEYS)
     key = _cache_id(endpoint, canonical) if endpoint.cache_ttl_s else None
-    if key:
+    if key and not fresh:
         hit = await cache.get(key)
         if hit is not None:
             return _envelope(endpoint, deadline, data=hit["data"], sources=hit["sources"], notes=hit["notes"],
