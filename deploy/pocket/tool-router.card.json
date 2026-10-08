@@ -14,7 +14,7 @@
     {
       "kind": "openapi",
       "api": "tool-router-api",
-      "url": "https://mwivqpuwa5rpwtrxpwjc1j0w.84.46.247.92.sslip.io/specs/tool-router.openapi.json"
+      "url": "https://api.useakashi.xyz/specs/tool-router.openapi.json"
     }
   ],
   "access": "public",

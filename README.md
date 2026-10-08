@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io">
+  <a href="https://useakashi.xyz">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset=".github/assets/banner-dark.png" />
       <source media="(prefers-color-scheme: light)" srcset=".github/assets/banner-light.png" />
@@ -12,17 +12,17 @@
 <p align="center">One place where an AI agent finds a tool, pays a fraction of a cent for it, and gets the answer.<br/>80 tools from 33 providers, paid per call in USDC over x402, with the paid runs travelling as Pocket Network relays.</p>
 
 <p align="center">
-  <a href="https://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io"><b>Open the app</b></a>
+  <a href="https://useakashi.xyz"><b>Open the app</b></a>
   &nbsp;·&nbsp;
   <a href="#demo-video"><b>Demo video</b></a>
   &nbsp;·&nbsp;
-  <a href="https://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io/agent"><b>Try the agent</b></a>
+  <a href="https://useakashi.xyz/agent"><b>Try the agent</b></a>
   &nbsp;·&nbsp;
   <a href="https://explorer.pocket.network/beta/service/tool-router"><b>tool-router on Pocket</b></a>
   &nbsp;·&nbsp;
   <a href="https://mcp.pocketmcp.network/audit?network=beta&ids=tool-router&operator=pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg"><b>Service Audit</b></a>
   &nbsp;·&nbsp;
-  <a href="https://k7ds7ucqsnaxw5lorj8a9buu.84.46.247.92.sslip.io"><b>Docs</b></a>
+  <a href="https://docs.useakashi.xyz"><b>Docs</b></a>
 </p>
 
 Built for the **Pocket Network Agentic Services Hackathon**. Jump to [how Akashi meets the hackathon](#how-akashi-meets-the-hackathon).
@@ -40,16 +40,16 @@ Akashi puts the tools behind one API and one way to pay. The agent **discovers**
 ## Demo video
 
 <p align="center">
-  <a href="https://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io/demo">
+  <a href="https://useakashi.xyz/demo">
     <img src="apps/web/public/demo/cover.png" width="960" alt="Watch Akashi work: the 証 seal and a play button" />
   </a>
 </p>
 
-**[Watch it on /demo](https://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io/demo)**, with the same steps to repeat live.
+**[Watch it on /demo](https://useakashi.xyz/demo)**, with the same steps to repeat live.
 
 You can also follow the proof directly:
 
-1. Open [the agent](https://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io/agent) and ask anything that needs live data. Demo credit pays, so no wallet is needed.
+1. Open [the agent](https://useakashi.xyz/agent) and ask anything that needs live data. Demo credit pays, so no wallet is needed.
 2. Open the first relayed paid run on Basescan: [`0xb544a3a4…a32b`](https://sepolia.basescan.org/tx/0xb544a3a445ed90c0a4d23794c63f6524723ea986628f5abac15b286c63c0a32b), 0.001 USDC from the payer to Akashi, settled after the tool answered.
 3. Open the Pocket claim for that relay, [`AC215AB4…E244`](https://explorer.pocket.network/beta/tx/AC215AB4282193BDE42DD2EA99E419C0E489F17594371D64988A89F3F9A3E244), and its proof, [`6729C253…6560`](https://explorer.pocket.network/beta/tx/6729C253844DF7CF7FEF9BDBD169F09D517067F2C09BF945D7659A4703E06560).
 4. Run the [Service Audit](https://mcp.pocketmcp.network/audit?network=beta&ids=tool-router&operator=pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg) for `tool-router`. It passes rules A1 to A9.
@@ -109,22 +109,21 @@ The gateway holds no Pocket key: `pocket-ap` signs relays with the application k
 | Developer | GitHub repos, search and releases, npm, PyPI, deps.dev versions and advisories, developer search |
 | Time, science, words and more | time zones, holidays, business days, NASA, PubChem, Open Food Facts, dictionary, word finder, job boards, US law search, IP lookup |
 
-Browse them at [/tools](https://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io/tools), or `GET /v1/catalog`. A new provider is one Python file per tool: [`CONNECTORS.md`](packages/tools/CONNECTORS.md).
+Browse them at [/tools](https://useakashi.xyz/tools), or `GET /v1/catalog`. A new provider is one Python file per tool: [`CONNECTORS.md`](packages/tools/CONNECTORS.md).
 
 ## Connect an agent
 
 | Way | How |
 | --- | --- |
-| **Skill** | Give the agent [`/SKILL.md`](https://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io/SKILL.md). It explains discover, inspect, run and the x402 flow. |
-| **Remote MCP** | Add `https://mwivqpuwa5rpwtrxpwjc1j0w.84.46.247.92.sslip.io/mcp` (Streamable HTTP): `akashi_discover`, `akashi_inspect`, `akashi_run`. Runs are paid by Akashi's demo wallet, capped per visitor per day ([`mcp.ts`](services/gateway/src/mcp.ts)). |
+| **Skill** | Give the agent [`/SKILL.md`](https://useakashi.xyz/SKILL.md). It explains discover, inspect, run and the x402 flow. |
+| **Remote MCP** | Add `https://api.useakashi.xyz/mcp` (Streamable HTTP): `akashi_discover`, `akashi_inspect`, `akashi_run`. Runs are paid by Akashi's demo wallet, capped per visitor per day ([`mcp.ts`](services/gateway/src/mcp.ts)). |
 | **Local MCP and CLI** | `node akashi.mjs mcp` with your own `AKASHI_PRIVATE_KEY`: a stdio MCP server that pays from your key, with a per-call and a per-session cap ([`client.ts`](apps/cli/src/client.ts)). |
 | **HTTP** | Any x402 client: `POST /v1/discover`, `POST /v1/inspect`, then `POST /v1/run/{provider}/{endpoint}`. |
 
-The CLI is one file. While the hosts are temporary, point it at the gateway with `AKASHI_API_URL`:
+The CLI is one file:
 
 ```bash
-curl -fsSLO https://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io/akashi.mjs
-export AKASHI_API_URL=https://mwivqpuwa5rpwtrxpwjc1j0w.84.46.247.92.sslip.io
+curl -fsSLO https://useakashi.xyz/akashi.mjs
 node akashi.mjs discover "crypto prices"
 node akashi.mjs inspect coingecko/price
 AKASHI_PRIVATE_KEY=0x… node akashi.mjs run coingecko/price --input '{"coins": ["btc", "eth"]}'
@@ -154,13 +153,13 @@ The hackathon asks for "a service that can be deployed on Pocket testnet and rea
 | Requirement or criterion | How Akashi meets it | Check it here |
 | --- | --- | --- |
 | **Deployed on Pocket testnet** | `tool-router` is registered on Beta, with a staked supplier, a staked application and settled claims. | [service on the explorer](https://explorer.pocket.network/beta/service/tool-router) · [proof on Pocket Beta](#proof-on-pocket-beta) |
-| **Reached by an agent** | The Skill, a remote MCP server, a local MCP server, the CLI and plain HTTP. The chat is itself an agent that uses Akashi. | [/agent](https://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io/agent) · [`mcp.ts`](services/gateway/src/mcp.ts) · [`SKILL.md`](https://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io/SKILL.md) |
+| **Reached by an agent** | The Skill, a remote MCP server, a local MCP server, the CLI and plain HTTP. The chat is itself an agent that uses Akashi. | [/agent](https://useakashi.xyz/agent) · [`mcp.ts`](services/gateway/src/mcp.ts) · [`SKILL.md`](https://useakashi.xyz/SKILL.md) |
 | **Passes the Service Audit** | Rules A1 to A9 all `PASS` with no findings: registration, card, unique API, active supplier, https endpoint, TLS, a settled claim, probes and specs, and price (48th percentile of the 116 services on Beta). | [live audit](https://mcp.pocketmcp.network/audit?network=beta&ids=tool-router&operator=pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg) · [saved result](deploy/pocket/audits/2026-10-07-tool-router.json) |
 | **Follows the service rules** | Every response is a JSON object, errors included, with 4xx/5xx semantics. Inputs travel in the body. Request bodies are capped at 64 KiB, and each tool has a deadline under 9 seconds. | [`engine.py`](packages/tools/src/akashi_tools/framework/engine.py) · [`errors.py`](packages/tools/src/akashi_tools/framework/errors.py) |
 | **Uniqueness** | Of the 116 services on Pocket Beta, none is a tool router. Akashi is a catalog an agent searches and pays per tool, not one more single-purpose wrapper. | [Pocket explorer services](https://explorer.pocket.network/beta/services) |
-| **Usefulness** | The calls an agent makes many times per task (search, read a page, papers, packages, weather, prices, maps, time) behind one schema-checked contract and one way to pay. Errors and lookups that find nothing are free. | [/tools](https://uaydz8sozk7g4fgbqr49rj2a.84.46.247.92.sslip.io/tools) · [`CONNECTORS.md`](packages/tools/CONNECTORS.md) |
+| **Usefulness** | The calls an agent makes many times per task (search, read a page, papers, packages, weather, prices, maps, time) behind one schema-checked contract and one way to pay. Errors and lookups that find nothing are free. | [/tools](https://useakashi.xyz/tools) · [`CONNECTORS.md`](packages/tools/CONNECTORS.md) |
 | **Technical complexity** | An x402 seller with a route per tool, a free input check and settlement only on success; real Pocket relays through Akashi's own RelayMiner; a connector framework with schemas, deadlines, size limits, cache and measured health; search over the catalog; a chat with an inline wallet pay card. | [Architecture](#architecture) |
-| **Market appeal** | Pay-per-call with no signup is the model an autonomous agent can use on its own. Prices run from $0.001 to $0.01, above each tool's upstream cost. On MainNet the service owner also earns Pocket's 2.5% data owner's fee on every relay. | [pricing](https://k7ds7ucqsnaxw5lorj8a9buu.84.46.247.92.sslip.io/docs/pricing) |
+| **Market appeal** | Pay-per-call with no signup is the model an autonomous agent can use on its own. Prices run from $0.001 to $0.01, above each tool's upstream cost. On MainNet the service owner also earns Pocket's 2.5% data owner's fee on every relay. | [pricing](https://docs.useakashi.xyz/docs/pricing) |
 
 ## Proof on Pocket Beta
 
@@ -170,6 +169,7 @@ On Pocket Beta (`pocket-lego-testnet`) unless marked Base Sepolia, checked on 20
 | --- | --- |
 | Service `tool-router` registered | [`A96AAAB2…E67F7`](https://explorer.pocket.network/beta/tx/A96AAAB2B2BA81723ABB3C74BF10C7B79A7D55F07992D7F2F365B51D2AFE67F7) (height 711952) |
 | Supplier staked, 60,000 POKT | [`E8997D51…4915`](https://explorer.pocket.network/beta/tx/E8997D51009D84EE42FFB9B69F0905C55AD4762ABD02F60645634784B97D4915) (height 712494) |
+| Supplier moved to `relay.useakashi.xyz` | [`73D108E1…C2DD`](https://explorer.pocket.network/beta/tx/73D108E1EDF0E86E086C27178ADF0DD2F2F136E242915BA46007EA42B174C2DD) (active from height 714881) |
 | Application staked | [`113EFC51…5BBC`](https://explorer.pocket.network/beta/tx/113EFC5118886B6F65EF23B2028F8ECCBAA6C0986BCC0E1E8E0CF5DE85835BBC), re-staked with headroom in [`9986F963…A316`](https://explorer.pocket.network/beta/tx/9986F9632F7D30D8C0499DB8A71B75C858E1D8A64DB80F5921B33579A666A316) |
 | First x402-paid run relayed over Pocket (Base Sepolia) | [`0xb544a3a4…a32b`](https://sepolia.basescan.org/tx/0xb544a3a445ed90c0a4d23794c63f6524723ea986628f5abac15b286c63c0a32b) |
 | Relay claim (MsgCreateClaim) | [`AC215AB4…E244`](https://explorer.pocket.network/beta/tx/AC215AB4282193BDE42DD2EA99E419C0E489F17594371D64988A89F3F9A3E244) (height 712535) |
@@ -183,7 +183,7 @@ On Pocket Beta (`pocket-lego-testnet`) unless marked Base Sepolia, checked on 20
 | `pokt14d678cn7kzjy6zux5z7ekymz3dlnj3sgjme4mj` | Application that signs Akashi's relays |
 | [`0x8164dabAfc824322221654ED421715FdaA66948D`](https://sepolia.basescan.org/address/0x8164dabAfc824322221654ED421715FdaA66948D) | Receives every x402 payment (Base Sepolia) |
 
-Supplier endpoint: `https://relay.84.46.247.92.sslip.io` (REST).
+Supplier endpoint: `https://relay.useakashi.xyz` (REST).
 
 ## Pricing and revenue
 
@@ -248,7 +248,6 @@ To supply `tool-router` yourself: run the backend container ([`services/api/Dock
 ## Honest limits
 
 - **Testnet only.** Payments are Base Sepolia test USDC and relays are on Pocket Beta. Nothing here moves real money.
-- **Temporary addresses.** The app, gateway, docs and supplier run on `sslip.io` hostnames until the `useakashi.xyz` domain is registered.
 - **Not on the Agentic Portal yet.** Listing on Pocket's portal is a separate step curated by the Pocket Network Foundation. `tool-router` passes the audit; the listing request is the next step.
 - **One server.** Every piece runs on one Coolify host. The RelayMiner uses the HA design (relayer, miner and Redis) but runs one of each.
 - **Direct fallback.** If pocket-ap cannot be reached at all, a paid run goes to the backend directly and its receipt says `via: direct`. If the relay was sent but timed out, the run fails closed and is not charged rather than run twice.
