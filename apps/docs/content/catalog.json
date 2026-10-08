@@ -17723,7 +17723,7 @@
         "additionalProperties": false,
         "properties": {
           "url": {
-            "description": "The page to look up, e.g. 'https://example.com/pricing' or 'example.com'.",
+            "description": "The page to look up, e.g. 'https://www.python.org/downloads' or 'python.org'.",
             "maxLength": 2000,
             "minLength": 3,
             "pattern": "^\\S+$",
@@ -18943,5 +18943,5 @@
       }
     }
   ],
-  "hash": "195036f45026f305"
+  "hash": "67461b11b08ff1d1"
 }

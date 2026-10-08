@@ -1,19 +1,49 @@
+import { Seal } from "@akashi/brand/react";
+import type { Metadata } from "next";
 import Link from "next/link";
 
+import { SiteFooter } from "@/components/shell/SiteFooter";
 import { SiteHeader } from "@/components/shell/SiteHeader";
+import { getCatalog } from "@/lib/catalog/catalog.server";
+import { docsPage } from "@/lib/constants/site";
 
-export default function NotFound() {
+const WAYS_BACK = [
+  { title: "Ask the agent", body: "Live data, paid per call with demo credit.", href: "/agent" },
+  { title: "Browse the tools", body: "Every tool with its price and example.", href: "/tools" },
+  { title: "Read the docs", body: "Quickstarts, the API and how it runs on Pocket.", href: docsPage() },
+] as const;
+
+export const metadata: Metadata = { title: "Page not found" };
+
+/** The 404: the seal, one line, and three ways back in. */
+export default async function NotFound() {
+  const catalog = await getCatalog();
+  const tools = catalog.endpoints.filter((e) => e.available).length;
   return (
     <>
       <SiteHeader />
-      <main id="main" className="mx-auto flex max-w-[680px] flex-col items-center px-4 py-32 text-center">
-        <p className="font-mono text-xs tracking-[0.12em] text-muted-foreground uppercase">404</p>
-        <h1 className="display mt-4 text-5xl">Nothing here.</h1>
-        <p className="mt-4 text-lg text-muted-foreground">That page is not part of the catalog.</p>
-        <Link href="/tools" className="mt-8 rounded-md bg-brand px-5 py-2.5 font-medium text-primary-foreground hover:bg-brand-hover">
-          Browse the tools
+      <main id="main" className="mx-auto flex max-w-[760px] flex-col items-center px-4 py-28 text-center">
+        <Seal className="size-14 text-brand" label={null} />
+        <p className="mt-8 font-mono text-xs tracking-[0.12em] text-muted-foreground uppercase">404 · page not found</p>
+        <h1 className="display mt-3 text-[clamp(2.4rem,6vw,3.5rem)]">Nothing here.</h1>
+        <p className="mt-4 text-lg text-muted-foreground">This page isn&apos;t part of Akashi. Try one of these instead.</p>
+        <div className="mt-10 grid w-full gap-3 text-left sm:grid-cols-3">
+          {WAYS_BACK.map((way) => (
+            <Link
+              key={way.href}
+              href={way.href}
+              className="rounded-lg border border-line bg-background p-4 transition-colors hover:bg-muted"
+            >
+              <span className="block font-medium text-foreground">{way.title}</span>
+              <span className="mt-1 block text-sm text-muted-foreground">{way.body}</span>
+            </Link>
+          ))}
+        </div>
+        <Link href="/" className="mt-8 text-sm text-brand underline-offset-4 hover:underline">
+          Back to the home page
         </Link>
       </main>
+      <SiteFooter toolCount={tools} />
     </>
   );
 }

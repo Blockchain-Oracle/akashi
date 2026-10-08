@@ -1,5 +1,12 @@
 {
   "title": "Quickstart",
   "defaultOpen": true,
-  "pages": ["skill", "mcp", "cli", "http", "agent-chat"]
+  "pages": [
+    "index",
+    "skill",
+    "mcp",
+    "cli",
+    "http",
+    "agent-chat"
+  ]
 }

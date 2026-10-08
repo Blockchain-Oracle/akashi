@@ -20,7 +20,7 @@ _NON_DIGIT = re.compile(r"\D")
 
 class SnapshotInput(ToolInput):
     url: str = Field(min_length=3, max_length=URL_MAX_CHARS, pattern=r"^\S+$",
-                     description="The page to look up, e.g. 'https://example.com/pricing' or 'example.com'.")
+                     description="The page to look up, e.g. 'https://www.python.org/downloads' or 'python.org'.")
     at: str | None = Field(None, description="Closest to this moment: '2015', '2015-06-30' or "
                            "'2015-06-30T12:00:00Z' (default: the newest capture).")
 
