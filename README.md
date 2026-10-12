@@ -1,10 +1,6 @@
 <p align="center">
   <a href="https://useakashi.xyz">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset=".github/assets/banner-dark.png" />
-      <source media="(prefers-color-scheme: light)" srcset=".github/assets/banner-light.png" />
-      <img src=".github/assets/banner-dark.png" width="960" alt="Akashi 証. Every tool your agent needs. One wallet. Paid per call. A tool router for AI agents on Pocket Network." />
-    </picture>
+    <img src=".github/assets/banner.png" width="960" alt="Akashi 証. One endpoint, every tool your agent needs. Discover, inspect and pay per call; an illustrated network of tool cards connects to a Pocket relay." />
   </a>
 </p>
 
@@ -14,7 +10,7 @@
 <p align="center">
   <a href="https://useakashi.xyz"><b>Open the app</b></a>
   &nbsp;·&nbsp;
-  <a href="#demo-video"><b>Demo video</b></a>
+  <a href="#demo-walkthrough"><b>Demo walkthrough</b></a>
   &nbsp;·&nbsp;
   <a href="https://useakashi.xyz/agent"><b>Try the agent</b></a>
   &nbsp;·&nbsp;
@@ -37,15 +33,15 @@ Akashi puts the tools behind one API and one way to pay. The agent **discovers**
 
 **In practice.** Asked "Is it raining in Lagos right now, and what is 100 USD in naira?", the agent in Akashi's chat picks `openweather/current` and `frankfurter/rates`, pays $0.005 and $0.001, and answers. Under the answer are the two tool cards, the two receipts with their Base Sepolia transactions, and "Pocket relay · tool-router".
 
-## Demo video
+## Demo walkthrough
 
 <p align="center">
   <a href="https://useakashi.xyz/demo">
-    <img src="apps/web/public/demo/cover.png" width="960" alt="Watch Akashi work: the 証 seal and a play button" />
+    <img src="apps/web/public/demo/cover.png" width="960" alt="See Akashi work: discover, inspect, pay and relay, shown as a light illustration with a play button" />
   </a>
 </p>
 
-**[Watch it on /demo](https://useakashi.xyz/demo)**, with the same steps to repeat live.
+**[Follow the live walkthrough on /demo](https://useakashi.xyz/demo)**. The narrated film has not been published yet; the page links to the steps and proof you can check now.
 
 You can also follow the proof directly:
 

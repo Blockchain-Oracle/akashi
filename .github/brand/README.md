@@ -1,9 +1,5 @@
-# Banner and demo cover
+# README and demo artwork
 
-`../assets/banner-dark.svg`, `../assets/banner-light.svg` and `demo-cover.svg` are the sources. Each embeds its fonts (Outfit and JetBrains Mono) and the 証 seal's real paths from `apps/web/src/app/icon.svg`; every word is vector text. Re-render the PNGs from the repository root:
+The README banner is [`../assets/banner.png`](../assets/banner.png). The demo preview is [`../../apps/web/public/demo/cover.png`](../../apps/web/public/demo/cover.png). Both are light artwork made for Akashi on 2026-10-12, using the live site's white, dotted surface and cobalt blue accent. The small tool cards and relay network are illustrations, not screenshots of an executed run.
 
-```sh
-uv run --with fonttools --with brotli python .github/brand/render.py
-```
-
-It needs `rsvg-convert` (librsvg) and Fontconfig. Exports are 2×: banners at 2560 × 1280, the demo cover at 1672 × 941. 証 is set in Hiragino Mincho ProN (macOS); elsewhere install Noto Serif JP.
+These PNGs are the source artwork. The text in the banner describes the current product; update the tool and provider counts if the public catalog changes. The demo preview links to the live walkthrough until a narrated video is published.
