@@ -1,5 +1,5 @@
 /** CLI / local MCP constants. Every number names its reason. */
-export const VERSION = "0.1.0";
+export const VERSION = "0.1.1";
 export const DEFAULT_API_URL = "https://api.useakashi.xyz";
 export const NETWORK = "eip155:84532"; // Base Sepolia (testnet USDC)
 export const USDC_DECIMALS = 6;

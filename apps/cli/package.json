@@ -1,6 +1,6 @@
 {
   "name": "akashi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Akashi CLI and local MCP server: discover, inspect and run agent tools, paying per call in USDC over x402.",
   "type": "module",
   "bin": {

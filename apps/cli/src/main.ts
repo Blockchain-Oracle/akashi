@@ -50,7 +50,7 @@ async function main(): Promise<void> {
       if (!id) throw new Error("usage: akashi run <provider/endpoint> --input '<json>'");
       const file = flag(rest, "--file");
       const raw = file ? await readFile(file, "utf8") : (flag(rest, "--input") ?? "{}");
-      const result = await akashi.run(id, JSON.parse(raw));
+      const result = await akashi.run(id, parseInput(raw, file ?? "--input"));
       print(result);
       if (result.status >= 400) process.exitCode = 1;
       return;
@@ -74,8 +74,23 @@ async function main(): Promise<void> {
     case "version":
       process.stdout.write(`${VERSION}\n`);
       return;
-    default:
+    case undefined:
+    case "help":
+    case "--help":
+    case "-h":
       process.stdout.write(`${HELP}\n`);
+      return;
+    default: // a typo must not look like success to a script
+      process.stderr.write(`akashi: unknown command '${command}'\n\n${HELP}\n`);
+      process.exitCode = 1;
+  }
+}
+
+function parseInput(raw: string, from: string): unknown {
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    throw new Error(`${from} is not valid JSON (${error instanceof Error ? error.message : String(error)})`);
   }
 }
 

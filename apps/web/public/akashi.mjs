@@ -33531,7 +33531,7 @@ function privateKeyToAccount(privateKey, options = {}) {
 }
 
 // src/constants.ts
-var VERSION = "0.1.0";
+var VERSION = "0.1.1";
 var DEFAULT_API_URL = "https://api.useakashi.xyz";
 var NETWORK = "eip155:84532";
 var DEFAULT_MAX_ATOMIC_PER_CALL = 10000n;
@@ -63026,7 +63026,7 @@ async function main() {
       if (!id) throw new Error("usage: akashi run <provider/endpoint> --input '<json>'");
       const file2 = flag(rest, "--file");
       const raw = file2 ? await readFile(file2, "utf8") : flag(rest, "--input") ?? "{}";
-      const result = await akashi.run(id, JSON.parse(raw));
+      const result = await akashi.run(id, parseInput(raw, file2 ?? "--input"));
       print(result);
       if (result.status >= 400) process.exitCode = 1;
       return;
@@ -63051,9 +63051,26 @@ async function main() {
       process.stdout.write(`${VERSION}
 `);
       return;
-    default:
+    case void 0:
+    case "help":
+    case "--help":
+    case "-h":
       process.stdout.write(`${HELP}
 `);
+      return;
+    default:
+      process.stderr.write(`akashi: unknown command '${command}'
+
+${HELP}
+`);
+      process.exitCode = 1;
+  }
+}
+function parseInput(raw, from15) {
+  try {
+    return JSON.parse(raw);
+  } catch (error62) {
+    throw new Error(`${from15} is not valid JSON (${error62 instanceof Error ? error62.message : String(error62)})`);
   }
 }
 function describe3(error62) {

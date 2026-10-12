@@ -5,6 +5,7 @@ Identical for every provider. A failure raises a ToolError (non-2xx: the x402 pa
 """
 
 import asyncio
+import functools
 import hashlib
 import time
 from datetime import UTC, datetime, timedelta
@@ -60,8 +61,15 @@ def validate_input(endpoint: Endpoint, payload: Any) -> Any:
         raise InvalidToolInput(f"input does not match {endpoint.id}'s schema", details=details) from exc
 
 
+@functools.cache
+def _contract(endpoint_id: str) -> bytes:
+    """The endpoint's published contract (description, schemas, price, notes…), sorted. It is part of every cache
+    key, so a deploy that changes a tool retires the answers its previous code cached instead of serving them."""
+    return orjson.dumps(REGISTRY[endpoint_id].doc(), option=orjson.OPT_SORT_KEYS)
+
+
 def _cache_id(endpoint: Endpoint, canonical: bytes) -> str:
-    digest = hashlib.blake2b(canonical, digest_size=_INPUT_HASH_BYTES).hexdigest()
+    digest = hashlib.blake2b(_contract(endpoint.id) + canonical, digest_size=_INPUT_HASH_BYTES).hexdigest()
     return cache_key(_CACHE_SVC, endpoint.provider.id, endpoint.slug, digest)
 
 
