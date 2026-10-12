@@ -105,7 +105,7 @@ export default async function DemoPage() {
             />
           ) : (
             <Link href="/agent" aria-label="Try the agent live">
-              <Image src={DEMO_COVER.src} width={DEMO_COVER.width} height={DEMO_COVER.height} alt={title} priority
+              <Image src={DEMO_COVER.src} width={DEMO_COVER.width} height={DEMO_COVER.height} alt={title} priority unoptimized
                      className="h-auto w-full" />
             </Link>
           )}
