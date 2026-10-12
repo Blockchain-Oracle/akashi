@@ -1,9 +1,9 @@
 ---
 title: For AI agents (Skill)
-description: Give your agent Akashi's SKILL.md. It learns the three verbs, the prices, how to pay and how to read a result.
+description: Give your agent Akashi's SKILL.md. It learns the CLI, hosted or local MCP, plain HTTP, pricing and results.
 ---
 
-The skill is one Markdown file: `https://useakashi.xyz/SKILL.md`. It tells an agent when to reach for Akashi (before writing a scraper, before a generic web fetch for structured data, before saying something is inaccessible), how to call discover, inspect and run, how the x402 payment works and how to read the result.
+The skill is one Markdown file: `https://useakashi.xyz/SKILL.md`. It tells an agent when to reach for Akashi, how to connect through hosted or local MCP, the npm CLI or plain HTTP, how discover, inspect and run work, and how to read the result.
 
 ## Install it
 
@@ -31,10 +31,11 @@ curl -s -X POST https://api.useakashi.xyz/v1/inspect -H 'content-type: applicati
   -d '{"id": "firecrawl/research-papers"}'
 ```
 
-A run is paid, so the agent needs a wallet and an x402 client. Give it one of these:
+A run is paid in Base Sepolia test USDC. The payment method depends on the connection:
 
-- **The CLI.** Install `akashi` from npm and set `AKASHI_PRIVATE_KEY`. The agent runs `akashi run <id> --input '<json>'`. See [For humans (CLI)](/docs/quickstart/cli).
-- **The MCP server.** The same file, as three MCP tools. See [For AI agents (MCP)](/docs/quickstart/mcp).
+- **Hosted MCP.** Connect to `https://api.useakashi.xyz/mcp` for the three MCP tools. Akashi covers runs within its capped demo credit. See [For AI agents (MCP)](/docs/quickstart/mcp).
+- **Local MCP.** Launch `npx -y akashi mcp` and give that process `AKASHI_PRIVATE_KEY` to pay from your test wallet. See [For AI agents (MCP)](/docs/quickstart/mcp).
+- **CLI.** Install `akashi` from npm and set `AKASHI_PRIVATE_KEY`. The agent runs `akashi run <id> --input '<json>'`. See [For humans (CLI)](/docs/quickstart/cli).
 - **Code.** The skill includes an `@x402/fetch` snippet with a per-call price cap. See [From code (HTTP)](/docs/quickstart/http).
 
 ## Fund a test wallet

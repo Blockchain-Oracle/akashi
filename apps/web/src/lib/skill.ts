@@ -19,7 +19,27 @@ description: >-
 
 Base URL: \`${GATEWAY_URL}\` · Catalog: \`${GATEWAY_URL}/v1/catalog\` · Docs: ${DOCS_URL}
 
-Three verbs. The first two are free.
+## Choose a connection
+
+- **Hosted MCP (no install):** connect an MCP client to \`${GATEWAY_URL}/mcp\` using Streamable HTTP.
+  It exposes \`akashi_discover\`, \`akashi_inspect\` and \`akashi_run\`. Discover and inspect are free;
+  runs use Akashi's capped demo credit. See ${DOCS_URL}/docs/quickstart/mcp.
+- **Local MCP (your test wallet):** install the npm CLI with \`npm install -g akashi\` and configure
+  your MCP client to launch \`akashi mcp\` over stdio. \`npx -y akashi mcp\` works without a global
+  install. Set \`AKASHI_PRIVATE_KEY\` in the MCP client's environment to enable paid runs. It must
+  hold Base Sepolia test USDC; never put the key in a prompt or repository. Discover and inspect
+  work without a key. See ${DOCS_URL}/docs/quickstart/mcp.
+- **CLI:** \`akashi discover "<query>"\`, \`akashi inspect <provider/endpoint>\`, then
+  \`akashi run <provider/endpoint> --input '<json>'\`. The first two are free; run needs the same
+  test wallet environment variable. See ${DOCS_URL}/docs/cli.
+- **Plain HTTP:** use the three endpoints below. For paid runs, an x402 client signs the payment.
+
+If an MCP connection is available, use its discover and inspect tools before run. Never guess a
+tool's input fields. The HTTP examples below describe the same three verbs.
+
+## Plain HTTP
+
+The first two verbs are free.
 
 ## 1. Discover (free)
 
