@@ -103,7 +103,9 @@ export function AgentApp({ endpoints, initialChatId, initialInput }: {
               }}
             />
             <ChatView
-              key={opened.id}
+              // useChat reads its messages once, at mount: /agent/c/{id} opens on the same id before the stored
+              // messages arrive, so the key changes with them too (a chat created here never flips `created`).
+              key={`${opened.id}:${opened.created}`}
               chatId={opened.id}
               initialMessages={opened.messages}
               created={opened.created}
