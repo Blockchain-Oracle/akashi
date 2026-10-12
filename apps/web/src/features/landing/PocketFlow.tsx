@@ -1,6 +1,7 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
-import { ONCHAIN, pocketTx, shortHash } from "@/lib/constants/onchain";
+import { buttonVariants } from "@/components/ui/button";
+import { ONCHAIN, pocketAccount, pocketService, pocketTx, shortHash } from "@/lib/constants/onchain";
 
 const HOPS = [
   { label: "Your agent", detail: "POST /v1/run/…", mono: "x402 · USDC" },
@@ -8,6 +9,12 @@ const HOPS = [
   { label: "Pocket relay", detail: "signed by Akashi's staked app", mono: `service ${ONCHAIN.serviceId}` },
   { label: "Akashi supplier", detail: "RelayMiner on Pocket Beta", mono: "claims + proofs on chain" },
   { label: "The tool", detail: "Firecrawl, Groq, Wikipedia…", mono: "JSON back in < 9 s" },
+] as const;
+
+/** Where anyone can check Akashi on Pocket itself: the registered service, and its supplier's relays and claims. */
+const POCKET_LINKS = [
+  { label: `See ${ONCHAIN.serviceId} on the Pocket Explorer`, href: pocketService(ONCHAIN.serviceId) },
+  { label: "Live relay activity", href: pocketAccount(ONCHAIN.operator) },
 ] as const;
 
 /** Akashi's own section (not on Monid): how one paid run travels through x402 and Pocket Network. */
@@ -37,7 +44,20 @@ export function PocketFlow() {
             </li>
           ))}
         </ol>
-        <p className="mt-8 font-mono text-xs text-muted-foreground">
+        <div className="mt-10 flex flex-wrap gap-3">
+          {POCKET_LINKS.map((link) => (
+            <a
+              key={link.href}
+              className={buttonVariants({ variant: "outline", size: "lg" })}
+              href={link.href}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {link.label} <ArrowUpRight data-icon="inline-end" aria-hidden />
+            </a>
+          ))}
+        </div>
+        <p className="mt-6 font-mono text-xs text-muted-foreground">
           {ONCHAIN.serviceId} registered on {ONCHAIN.network} at height {ONCHAIN.registrationHeight.toLocaleString("en-US")} ·{" "}
           <a className="text-brand underline-offset-4 hover:underline" href={pocketTx(ONCHAIN.registrationTx)}>
             tx {shortHash(ONCHAIN.registrationTx)}
