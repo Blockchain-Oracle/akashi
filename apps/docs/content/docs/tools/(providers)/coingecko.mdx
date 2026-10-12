@@ -51,7 +51,7 @@ Related: [`coingecko/top`](/docs/tools/coingecko#top), [`coingecko/trending`](/d
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run coingecko/price --input '{"coins":["btc","eth","sol"],"vs_currency":"usd"}'
+akashi run coingecko/price --input '{"coins":["btc","eth","sol"],"vs_currency":"usd"}'
 ```
 
 ## CoinGecko Top Coins [#top]
@@ -81,7 +81,7 @@ Related: [`coingecko/price`](/docs/tools/coingecko#price), [`coingecko/trending`
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run coingecko/top --input '{"limit":5}'
+akashi run coingecko/top --input '{"limit":5}'
 ```
 
 ## CoinGecko Trending Coins [#trending]
@@ -105,5 +105,5 @@ No input fields: send `{}`.
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run coingecko/trending --input '{}'
+akashi run coingecko/trending --input '{}'
 ```

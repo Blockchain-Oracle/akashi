@@ -1,24 +1,24 @@
 ---
 title: For humans (CLI)
-description: One file, akashi.mjs. Find a tool, read its contract and run it from a terminal, paying per call in test USDC.
+description: Install the Akashi CLI from npm. Find a tool, read its contract and run it from a terminal, paying per call in test USDC.
 ---
 
-## 1. Download
+## 1. Install
 
-The CLI is a single file. It needs Node.js 20 or later and nothing else.
+The CLI needs Node.js 20 or later. npm installs the `akashi` command:
 
 ```bash
-curl -fsSLO https://useakashi.xyz/akashi.mjs
-node akashi.mjs
+npm install -g akashi
+akashi
 ```
 
-With no command it prints its help.
+With no command it prints its help. You can also run `npx -y akashi` without installing globally, or [download the single-file build](https://useakashi.xyz/akashi.mjs) and run it with `node akashi.mjs`.
 
 ## 2. Find and read a tool (free)
 
 ```bash
-node akashi.mjs discover "weather in Lagos"
-node akashi.mjs inspect openweather/current
+akashi discover "weather in Lagos"
+akashi inspect openweather/current
 ```
 
 `discover` prints ranked candidates. `inspect` prints the tool's description, input JSON Schema, output schema, price and example. Output is JSON, so you can pipe it to `jq`.
@@ -29,7 +29,7 @@ Runs are paid in test USDC on Base Sepolia. Use a new key that holds nothing els
 
 ```bash
 export AKASHI_PRIVATE_KEY=0x$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
-node akashi.mjs wallet
+akashi wallet
 ```
 
 `wallet` prints the address, the network and the spend caps. Send test USDC to that address from [faucet.circle.com](https://faucet.circle.com) (pick Base Sepolia). No ETH is needed.
@@ -37,14 +37,14 @@ node akashi.mjs wallet
 ## 4. Run a tool (paid)
 
 ```bash
-node akashi.mjs run openweather/current --input '{"city":"Lagos"}'
+akashi run openweather/current --input '{"city":"Lagos"}'
 ```
 
 For a larger input, put it in a file:
 
 ```bash
 echo '{"query": "solid-state battery startups", "limit": 5}' > in.json
-node akashi.mjs run firecrawl/search --file in.json
+akashi run firecrawl/search --file in.json
 ```
 
 The CLI prints the HTTP status, the result and a receipt:
@@ -68,4 +68,4 @@ The CLI prints the HTTP status, the result and a receipt:
 
 ## Next
 
-The [CLI reference](/docs/cli) covers every command, flag and environment variable. To use the same file from an AI agent, see [For AI agents (MCP)](/docs/quickstart/mcp).
+The [CLI reference](/docs/cli) covers every command, flag and environment variable. To connect an AI agent through MCP, see [For AI agents (MCP)](/docs/quickstart/mcp).

@@ -52,7 +52,7 @@ Related: [`frankfurter/rates`](/docs/tools/frankfurter#rates), [`akashi/fx`](/do
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run frankfurter/convert --input '{"amount":250,"base":"GBP","quote":"NGN"}'
+akashi run frankfurter/convert --input '{"amount":250,"base":"GBP","quote":"NGN"}'
 ```
 
 ## Frankfurter Rate History [#history]
@@ -91,7 +91,7 @@ Related: [`frankfurter/rates`](/docs/tools/frankfurter#rates), [`akashi/fx`](/do
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run frankfurter/history --input '{"base":"USD","quotes":["EUR"],"start":"2026-07-01","end":"2026-09-28","group":"week"}'
+akashi run frankfurter/history --input '{"base":"USD","quotes":["EUR"],"start":"2026-07-01","end":"2026-09-28","group":"week"}'
 ```
 
 ## Frankfurter Exchange Rates [#rates]
@@ -127,5 +127,5 @@ Related: [`frankfurter/convert`](/docs/tools/frankfurter#convert), [`frankfurter
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run frankfurter/rates --input '{"base":"USD","quotes":["EUR","JPY","GBP"]}'
+akashi run frankfurter/rates --input '{"base":"USD","quotes":["EUR","JPY","GBP"]}'
 ```

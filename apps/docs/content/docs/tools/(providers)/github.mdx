@@ -45,7 +45,7 @@ Related: [`github/repo`](/docs/tools/github#repo), [`npm/package`](/docs/tools/n
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run github/latest-release --input '{"repo":"astral-sh/uv"}'
+akashi run github/latest-release --input '{"repo":"astral-sh/uv"}'
 ```
 
 ## GitHub Repository [#repo]
@@ -73,7 +73,7 @@ Related: [`github/latest-release`](/docs/tools/github#latest-release), [`github/
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run github/repo --input '{"repo":"encode/httpx"}'
+akashi run github/repo --input '{"repo":"encode/httpx"}'
 ```
 
 ## GitHub Repository Search [#search-repos]
@@ -107,5 +107,5 @@ Related: [`github/repo`](/docs/tools/github#repo), [`firecrawl/developer-search`
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run github/search-repos --input '{"query":"http client","language":"Python","sort":"stars","limit":5}'
+akashi run github/search-repos --input '{"query":"http client","language":"Python","sort":"stars","limit":5}'
 ```

@@ -89,8 +89,8 @@ Pass a category id to discover to narrow the ranking: `{"query": "...", "categor
 ## Run any tool
 
 ```bash
-node akashi.mjs inspect openweather/current
-node akashi.mjs run openweather/current --input '{"city":"Lagos"}'
+akashi inspect openweather/current
+akashi run openweather/current --input '{"city":"Lagos"}'
 ```
 
 Over plain HTTP, `POST /v1/run/{provider}/{endpoint}` with the tool's input as the JSON body. Without a payment it answers `402`; see [Run](/docs/api/run).

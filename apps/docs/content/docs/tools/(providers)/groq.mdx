@@ -54,7 +54,7 @@ Related: [`groq/extract`](/docs/tools/groq#extract), [`groq/summarize`](/docs/to
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run groq/classify --input '{"text":"My card was charged twice for the same order and I need the duplicate refunded today.","labels":["billing","shipping","technical issue","account access","other"]}'
+akashi run groq/classify --input '{"text":"My card was charged twice for the same order and I need the duplicate refunded today.","labels":["billing","shipping","technical issue","account access","other"]}'
 ```
 
 ## Groq Extract JSON [#extract]
@@ -115,7 +115,7 @@ Each `FieldSpec` object:
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run groq/extract --input '{"text":"Hi team, invoice INV-2291 from Northwind Traders is due on 14 November 2026. The total is $1,284.50 including tax. Contact: Maria Lopez, maria@northwind.example.","fields":[{"name":"invoice_number","type":"string"},{"name":"vendor","type":"string"},{"name":"due_date","type":"string","description":"ISO date"},{"name":"total_usd","type":"number"},{"name":"contact_email","type":"string"}]}'
+akashi run groq/extract --input '{"text":"Hi team, invoice INV-2291 from Northwind Traders is due on 14 November 2026. The total is $1,284.50 including tax. Contact: Maria Lopez, maria@northwind.example.","fields":[{"name":"invoice_number","type":"string"},{"name":"vendor","type":"string"},{"name":"due_date","type":"string","description":"ISO date"},{"name":"total_usd","type":"number"},{"name":"contact_email","type":"string"}]}'
 ```
 
 ## Groq Summarize [#summarize]
@@ -146,7 +146,7 @@ Related: [`jina/read`](/docs/tools/jina#read), [`groq/extract`](/docs/tools/groq
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run groq/summarize --input '{"text":"The transistor was invented at Bell Labs in 1947 by John Bardeen and Walter Brattain, working under William Shockley. Their point-contact device used a germanium crystal to amplify a signal, replacing bulky and power-hungry vacuum tubes. Shockley followed with the more robust junction transistor in 1948. The three shared the 1956 Nobel Prize in Physics. Transistors made portable radios, computers and eventually integrated circuits possible; a modern phone chip holds billions.","max_points":3}'
+akashi run groq/summarize --input '{"text":"The transistor was invented at Bell Labs in 1947 by John Bardeen and Walter Brattain, working under William Shockley. Their point-contact device used a germanium crystal to amplify a signal, replacing bulky and power-hungry vacuum tubes. Shockley followed with the more robust junction transistor in 1948. The three shared the 1956 Nobel Prize in Physics. Transistors made portable radios, computers and eventually integrated circuits possible; a modern phone chip holds billions.","max_points":3}'
 ```
 
 ## Groq Translate [#translate]
@@ -177,5 +177,5 @@ Related: [`groq/summarize`](/docs/tools/groq#summarize).
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run groq/translate --input '{"text":"The meeting moved to Thursday at 3 pm. Please bring the signed contract.","target_language":"French"}'
+akashi run groq/translate --input '{"text":"The meeting moved to Thursday at 3 pm. Please bring the signed contract.","target_language":"French"}'
 ```

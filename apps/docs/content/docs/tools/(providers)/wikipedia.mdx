@@ -53,7 +53,7 @@ Related: [`wikipedia/summary`](/docs/tools/wikipedia#summary), [`akashi/answer`]
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run wikipedia/on-this-day --input '{"month":7,"day":20,"kind":"selected","limit":10}'
+akashi run wikipedia/on-this-day --input '{"month":7,"day":20,"kind":"selected","limit":10}'
 ```
 
 ## Wikipedia Search [#search]
@@ -84,7 +84,7 @@ Related: [`wikipedia/summary`](/docs/tools/wikipedia#summary), [`wikidata/search
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run wikipedia/search --input '{"query":"solid state battery","limit":5}'
+akashi run wikipedia/search --input '{"query":"solid state battery","limit":5}'
 ```
 
 ## Wikipedia Article Summary [#summary]
@@ -113,5 +113,5 @@ Related: [`wikipedia/search`](/docs/tools/wikipedia#search), [`wikidata/entity`]
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run wikipedia/summary --input '{"title":"Alan Turing"}'
+akashi run wikipedia/summary --input '{"title":"Alan Turing"}'
 ```

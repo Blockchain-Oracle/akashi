@@ -4,7 +4,7 @@ description: Rank the catalog for a job described in plain words. Free.
 ---
 
 ```bash
-node akashi.mjs discover "<what you need>" [--limit N]
+akashi discover "<what you need>" [--limit N]
 ```
 
 All words that are not flags form the query, so quotes are optional: `discover weather in Lagos` and `discover "weather in Lagos"` are the same.
@@ -18,7 +18,7 @@ It calls [`POST /v1/discover`](/docs/api/discover) with `{query, limit}` and pri
 ## Example
 
 ```bash
-node akashi.mjs discover "weather in Lagos" --limit 2
+akashi discover "weather in Lagos" --limit 2
 ```
 
 ```json

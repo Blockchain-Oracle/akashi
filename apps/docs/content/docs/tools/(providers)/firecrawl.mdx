@@ -52,7 +52,7 @@ Related: [`akashi/answer`](/docs/tools/akashi#answer), [`firecrawl/scrape`](/doc
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run firecrawl/ask-page --input '{"url":"https://www.firecrawl.dev/pricing","question":"How many credits does the free plan include?"}'
+akashi run firecrawl/ask-page --input '{"url":"https://www.firecrawl.dev/pricing","question":"How many credits does the free plan include?"}'
 ```
 
 ## Firecrawl Developer Search [#developer-search]
@@ -84,7 +84,7 @@ Related: [`github/search-repos`](/docs/tools/github#search-repos), [`npm/package
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run firecrawl/developer-search --input '{"query":"how to configure retries in httpx","k":5}'
+akashi run firecrawl/developer-search --input '{"query":"how to configure retries in httpx","k":5}'
 ```
 
 ## Firecrawl Government Search [#gov-search]
@@ -114,7 +114,7 @@ Related: [`firecrawl/scrape`](/docs/tools/firecrawl#scrape).
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run firecrawl/gov-search --input '{"query":"food labeling requirements for allergens","k":5}'
+akashi run firecrawl/gov-search --input '{"query":"food labeling requirements for allergens","k":5}'
 ```
 
 ## Firecrawl Site Map [#map]
@@ -146,7 +146,7 @@ Related: [`firecrawl/scrape`](/docs/tools/firecrawl#scrape).
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run firecrawl/map --input '{"url":"https://docs.firecrawl.dev","search":"rate limits","limit":10}'
+akashi run firecrawl/map --input '{"url":"https://docs.firecrawl.dev","search":"rate limits","limit":10}'
 ```
 
 ## Firecrawl Read Paper [#read-paper]
@@ -177,7 +177,7 @@ Related: [`firecrawl/research-papers`](/docs/tools/firecrawl#research-papers), [
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run firecrawl/read-paper --input '{"paper_id":"arxiv:2510.21538","question":"How is hallucination detected?"}'
+akashi run firecrawl/read-paper --input '{"paper_id":"arxiv:2510.21538","question":"How is hallucination detected?"}'
 ```
 
 ## Firecrawl Related Papers [#related-papers]
@@ -209,7 +209,7 @@ Related: [`firecrawl/read-paper`](/docs/tools/firecrawl#read-paper).
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run firecrawl/related-papers --input '{"paper_id":"arxiv:2510.21538","mode":"similar","k":5}'
+akashi run firecrawl/related-papers --input '{"paper_id":"arxiv:2510.21538","mode":"similar","k":5}'
 ```
 
 ## Firecrawl Research Papers [#research-papers]
@@ -242,7 +242,7 @@ Related: [`firecrawl/read-paper`](/docs/tools/firecrawl#read-paper), [`firecrawl
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run firecrawl/research-papers --input '{"query":"retrieval augmented generation hallucination detection","k":5}'
+akashi run firecrawl/research-papers --input '{"query":"retrieval augmented generation hallucination detection","k":5}'
 ```
 
 ## Firecrawl Scrape [#scrape]
@@ -271,7 +271,7 @@ Related: [`jina/read`](/docs/tools/jina#read), [`firecrawl/ask-page`](/docs/tool
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run firecrawl/scrape --input '{"url":"https://en.wikipedia.org/wiki/Solid-state_battery"}'
+akashi run firecrawl/scrape --input '{"url":"https://en.wikipedia.org/wiki/Solid-state_battery"}'
 ```
 
 ## Firecrawl Web Search [#search]
@@ -305,5 +305,5 @@ Related: [`serper/search`](/docs/tools/serper#search), [`firecrawl/scrape`](/doc
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run firecrawl/search --input '{"query":"solid-state battery startups","limit":5}'
+akashi run firecrawl/search --input '{"query":"solid-state battery startups","limit":5}'
 ```

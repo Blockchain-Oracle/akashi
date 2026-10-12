@@ -4,8 +4,8 @@ description: Run a tool with its input, paying its price in USDC on Base Sepolia
 ---
 
 ```bash
-node akashi.mjs run <provider/endpoint> --input '<json>'
-node akashi.mjs run <provider/endpoint> --file input.json
+akashi run <provider/endpoint> --input '<json>'
+akashi run <provider/endpoint> --file input.json
 ```
 
 | Flag | Meaning |
@@ -79,9 +79,9 @@ The exit code is 1 when `status` is 400 or above.
 ## Examples
 
 ```bash
-node akashi.mjs run openweather/current --input '{"city":"Lagos"}'
-node akashi.mjs run frankfurter/convert --input '{"amount": 250, "base": "GBP", "quote": "NGN"}'
-node akashi.mjs run akashi/answer --input '{"question": "Who invented the transistor, and when?"}'
+akashi run openweather/current --input '{"city":"Lagos"}'
+akashi run frankfurter/convert --input '{"amount": 250, "base": "GBP", "quote": "NGN"}'
+akashi run akashi/answer --input '{"question": "Who invented the transistor, and when?"}'
 ```
 
 If your shell makes quoting hard, write the input to a file and use `--file`.

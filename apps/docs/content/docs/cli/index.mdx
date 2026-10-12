@@ -1,16 +1,16 @@
 ---
 title: CLI overview
-description: akashi.mjs is one file that discovers, inspects and runs Akashi tools, and serves them to AI agents as a local MCP server.
+description: Install the Akashi CLI from npm to discover, inspect and run tools, or start its local MCP server.
 ---
 
 ## Install
 
 ```bash
-curl -fsSLO https://useakashi.xyz/akashi.mjs
-node akashi.mjs --version
+npm install -g akashi
+akashi --version
 ```
 
-It needs Node.js 20 or later. The file bundles its dependencies, so there is nothing else to install. The examples call it as `node akashi.mjs`; you can also `chmod +x akashi.mjs` and run `./akashi.mjs`.
+It needs Node.js 20 or later. `npx -y akashi --version` runs it without a global install. The original [single-file download](https://useakashi.xyz/akashi.mjs) also works with `node akashi.mjs <command>`.
 
 ## Commands
 

@@ -50,7 +50,7 @@ Related: [`serper/search`](/docs/tools/serper#search), [`jina/search`](/docs/too
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run akashi/answer --input '{"question":"Who invented the transistor, and when?"}'
+akashi run akashi/answer --input '{"question":"Who invented the transistor, and when?"}'
 ```
 
 ## Akashi Business Days [#business-days]
@@ -90,7 +90,7 @@ Give exactly one of: `end`, or `add_days`.
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run akashi/business-days --input '{"country":"US","calendar":"NYSE","start":"2026-12-21","add_days":5}'
+akashi run akashi/business-days --input '{"country":"US","calendar":"NYSE","start":"2026-12-21","add_days":5}'
 ```
 
 ## Akashi Current Fact [#fact]
@@ -122,7 +122,7 @@ An entity (Wikidata QID or a name) and a property (PID or an alias such as 'capi
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run akashi/fact --input '{"subject":"Japan","property":"head of government"}'
+akashi run akashi/fact --input '{"subject":"Japan","property":"head of government"}'
 ```
 
 ## Akashi Cross-checked FX [#fx]
@@ -161,7 +161,7 @@ A base currency and up to ten quotes; optionally an amount to convert and a past
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run akashi/fx --input '{"base":"USD","quotes":["EUR","JPY","NGN"],"amount":1000}'
+akashi run akashi/fx --input '{"base":"USD","quotes":["EUR","JPY","NGN"],"amount":1000}'
 ```
 
 ## Akashi Public & Market Holidays [#holidays]
@@ -195,7 +195,7 @@ A country (ISO 3166-1 alpha-2) and a year; optionally a subdivision or a market 
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run akashi/holidays --input '{"country":"MA","year":2026}'
+akashi run akashi/holidays --input '{"country":"MA","year":2026}'
 ```
 
 ## Akashi Job Postings [#jobs]
@@ -234,7 +234,7 @@ Any mix of words, companies, location, remote, minimum stated salary and currenc
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run akashi/jobs --input '{"query":"engineer","remote":true,"limit":5}'
+akashi run akashi/jobs --input '{"query":"engineer","remote":true,"limit":5}'
 ```
 
 ## Akashi News Headlines [#news]
@@ -269,7 +269,7 @@ Words to match; optionally how many hours back, a country mentioned (ISO code) a
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run akashi/news --input '{"query":"AI","since_hours":24,"limit":5}'
+akashi run akashi/news --input '{"query":"AI","since_hours":24,"limit":5}'
 ```
 
 ## Akashi Time Zones [#time]
@@ -309,7 +309,7 @@ Give at least one of: `zone`, or `place`.
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run akashi/time --input '{"place":"Casablanca","convert_to":["America/New_York","Asia/Tokyo"]}'
+akashi run akashi/time --input '{"place":"Casablanca","convert_to":["America/New_York","Asia/Tokyo"]}'
 ```
 
 ## Akashi Cross-checked Weather [#weather]
@@ -343,5 +343,5 @@ Give at least one of: `lat` and `lon`, or `place`.
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run akashi/weather --input '{"place":"Chicago"}'
+akashi run akashi/weather --input '{"place":"Chicago"}'
 ```

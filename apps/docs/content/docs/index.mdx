@@ -40,7 +40,7 @@ curl -s -X POST https://api.useakashi.xyz/v1/inspect \
 ```
 
 ```bash title="Run (pays $0.005 from AKASHI_PRIVATE_KEY)"
-node akashi.mjs run openweather/current --input '{"city":"Lagos"}'
+akashi run openweather/current --input '{"city":"Lagos"}'
 ```
 
 ## What happens to a run
@@ -61,7 +61,7 @@ Each tool has an id of the form `provider/endpoint`, such as `firecrawl/search` 
     A local MCP server with three tools. Your key stays on your machine.
   </Card>
   <Card title="CLI" href="/docs/quickstart/cli">
-    One file, `akashi.mjs`. Discover, inspect and run from a terminal.
+    Install `akashi` from npm. Discover, inspect and run from a terminal.
   </Card>
   <Card title="HTTP" href="/docs/quickstart/http">
     Call the gateway from your own code with `@x402/fetch`.

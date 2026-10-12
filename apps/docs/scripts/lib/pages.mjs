@@ -47,7 +47,7 @@ function categoryNames(ids, labels) {
 }
 
 function runCommand(endpoint) {
-  return `node akashi.mjs run ${endpoint.id} --input ${shellQuote(JSON.stringify(endpoint.example))}`;
+  return `akashi run ${endpoint.id} --input ${shellQuote(JSON.stringify(endpoint.example))}`;
 }
 
 function endpointSection(endpoint, ctx) {
@@ -151,7 +151,7 @@ export function overviewPage(catalog, byProvider) {
     "## Providers",
     providerTable(catalog, byProvider),
     "## Run any tool",
-    fence("bash", `node akashi.mjs inspect openweather/current\nnode akashi.mjs run openweather/current --input '{"city":"Lagos"}'`),
+    fence("bash", `akashi inspect openweather/current\nakashi run openweather/current --input '{"city":"Lagos"}'`),
     "Over plain HTTP, `POST /v1/run/{provider}/{endpoint}` with the tool's input as the JSON body. Without a payment it answers `402`; see [Run](/docs/api/run).",
   ];
   return `${body.filter(Boolean).join("\n\n")}\n`;

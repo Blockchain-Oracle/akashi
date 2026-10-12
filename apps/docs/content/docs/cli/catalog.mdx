@@ -4,7 +4,7 @@ description: Print every provider and tool as JSON, with input and output schema
 ---
 
 ```bash
-node akashi.mjs catalog
+akashi catalog
 ```
 
 It calls [`GET /v1/catalog`](/docs/api/catalog#catalog) and prints the response: `service`, `title`, `catalogVersion`, `network`, `categories`, `providers`, `endpoints` and `hash`. Each endpoint has the same fields as [`inspect`](/docs/cli/inspect).
@@ -13,11 +13,11 @@ It calls [`GET /v1/catalog`](/docs/api/catalog#catalog) and prints the response:
 
 ```bash
 # every tool id with its price
-node akashi.mjs catalog | jq -r '.endpoints[] | "\(.id)\t$\(.price.usd)"'
+akashi catalog | jq -r '.endpoints[] | "\(.id)\t$\(.price.usd)"'
 
 # the tools in one category
-node akashi.mjs catalog | jq -r '.endpoints[] | select(.categories | index("weather")) | .id'
+akashi catalog | jq -r '.endpoints[] | select(.categories | index("weather")) | .id'
 
 # the catalog version, to notice changes
-node akashi.mjs catalog | jq -r .hash
+akashi catalog | jq -r .hash
 ```

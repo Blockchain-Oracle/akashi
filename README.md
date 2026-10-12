@@ -18,6 +18,8 @@
   &nbsp;·&nbsp;
   <a href="https://mcp.pocketmcp.network/audit?network=beta&ids=tool-router&operator=pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg"><b>Service Audit</b></a>
   &nbsp;·&nbsp;
+  <a href="https://www.npmjs.com/package/akashi"><b>npm CLI</b></a>
+  &nbsp;·&nbsp;
   <a href="https://docs.useakashi.xyz"><b>Docs</b></a>
 </p>
 
@@ -113,19 +115,19 @@ Browse them at [/tools](https://useakashi.xyz/tools), or `GET /v1/catalog`. A ne
 | --- | --- |
 | **Skill** | Give the agent [`/SKILL.md`](https://useakashi.xyz/SKILL.md). It explains discover, inspect, run and the x402 flow. |
 | **Remote MCP** | Add `https://api.useakashi.xyz/mcp` (Streamable HTTP): `akashi_discover`, `akashi_inspect`, `akashi_run`. Runs are paid by Akashi's demo wallet, capped per visitor per day ([`mcp.ts`](services/gateway/src/mcp.ts)). |
-| **Local MCP and CLI** | `node akashi.mjs mcp` with your own `AKASHI_PRIVATE_KEY`: a stdio MCP server that pays from your key, with a per-call and a per-session cap ([`client.ts`](apps/cli/src/client.ts)). |
+| **Local MCP and CLI** | Install the `akashi` npm package, then run `akashi mcp` with your own `AKASHI_PRIVATE_KEY`: a stdio MCP server that pays from your key, with a per-call and a per-session cap ([`client.ts`](apps/cli/src/client.ts)). |
 | **HTTP** | Any x402 client: `POST /v1/discover`, `POST /v1/inspect`, then `POST /v1/run/{provider}/{endpoint}`. |
 
-The CLI is one file:
+Install the CLI from npm:
 
 ```bash
-curl -fsSLO https://useakashi.xyz/akashi.mjs
-node akashi.mjs discover "crypto prices"
-node akashi.mjs inspect coingecko/price
-AKASHI_PRIVATE_KEY=0x… node akashi.mjs run coingecko/price --input '{"coins": ["btc", "eth"]}'
+npm install -g akashi
+akashi discover "crypto prices"
+akashi inspect coingecko/price
+AKASHI_PRIVATE_KEY=0x… akashi run coingecko/price --input '{"coins": ["btc", "eth"]}'
 ```
 
-The key needs Base Sepolia test USDC from [faucet.circle.com](https://faucet.circle.com), and no ETH.
+You can also run it with `npx -y akashi`, or download the [single-file build](https://useakashi.xyz/akashi.mjs) and run `node akashi.mjs`. The key needs Base Sepolia test USDC from [faucet.circle.com](https://faucet.circle.com), and no ETH.
 
 ## Built on
 

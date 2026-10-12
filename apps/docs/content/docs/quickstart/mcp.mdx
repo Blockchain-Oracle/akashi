@@ -1,22 +1,40 @@
 ---
 title: For AI agents (MCP)
-description: Run Akashi as a local MCP server over stdio. Three tools; payments are signed on your machine, within spend caps you set.
+description: Connect to the hosted MCP URL or run Akashi's npm CLI as a local stdio server with your own test wallet.
 ---
 
-The Akashi CLI includes an MCP server. It runs on your machine over stdio, so your private key never leaves it: only signed payments go to the gateway. It works with any client that starts MCP servers as local commands, such as Claude Code, Claude Desktop, Cursor and Codex.
+Akashi exposes the same three tools in two standard MCP ways:
 
-## 1. Download the CLI
+| Connection | How the client connects | Who pays for a run |
+| --- | --- | --- |
+| Hosted | Streamable HTTP at `https://api.useakashi.xyz/mcp` | Akashi's capped demo credit |
+| Local | Starts `akashi mcp` or `npx -y akashi mcp` over stdio | Your Base Sepolia test wallet, within your spend caps |
 
-`akashi.mjs` is a single file. It needs Node.js 20 or later.
+## Hosted MCP: connect by URL
+
+No npm install or wallet is needed. Add `https://api.useakashi.xyz/mcp` as a Streamable HTTP server in your MCP client. For example:
 
 ```bash
-curl -fsSLO https://useakashi.xyz/akashi.mjs
-node akashi.mjs --version
+codex mcp add akashi --url https://api.useakashi.xyz/mcp
+claude mcp add --transport http akashi https://api.useakashi.xyz/mcp
 ```
 
-Note its absolute path (for example `$HOME/akashi/akashi.mjs`). The client config needs it.
+`akashi_discover` and `akashi_inspect` are free. `akashi_run` uses limited demo credit; when the allowance is used up, use the local server with your own test wallet.
 
-## 2. Add the server
+## Local MCP: run the npm CLI
+
+The CLI runs an MCP server on your machine over stdio. It signs test USDC payments locally and sends only signed payments to the gateway. Node.js 20 or later is required.
+
+### 1. Install the CLI
+
+```bash
+npm install -g akashi
+akashi --version
+```
+
+The examples below use `npx -y akashi mcp`, which also works without a global install. If you installed globally, you may launch `akashi mcp` instead.
+
+### 2. Add the local server
 
 <Tabs items={["JSON (Claude Desktop, Cursor)", "Claude Code", "Codex"]}>
 <Tab value="JSON (Claude Desktop, Cursor)">
@@ -25,9 +43,8 @@ Note its absolute path (for example `$HOME/akashi/akashi.mjs`). The client confi
 {
   "mcpServers": {
     "akashi": {
-      "command": "node",
-      "args": ["/path/to/akashi.mjs", "mcp"],
-      "env": { "AKASHI_PRIVATE_KEY": "0x…" }
+      "command": "npx",
+      "args": ["-y", "akashi", "mcp"]
     }
   }
 }
@@ -37,7 +54,7 @@ Note its absolute path (for example `$HOME/akashi/akashi.mjs`). The client confi
 <Tab value="Claude Code">
 
 ```bash
-claude mcp add akashi -e AKASHI_PRIVATE_KEY=0x… -- node /path/to/akashi.mjs mcp
+claude mcp add akashi -- npx -y akashi mcp
 ```
 
 </Tab>
@@ -45,17 +62,16 @@ claude mcp add akashi -e AKASHI_PRIVATE_KEY=0x… -- node /path/to/akashi.mjs mc
 
 ```toml title="~/.codex/config.toml"
 [mcp_servers.akashi]
-command = "node"
-args = ["/path/to/akashi.mjs", "mcp"]
-env = { AKASHI_PRIVATE_KEY = "0x…" }
+command = "npx"
+args = ["-y", "akashi", "mcp"]
 ```
 
 </Tab>
 </Tabs>
 
-`AKASHI_PRIVATE_KEY` is a Base Sepolia key holding test USDC (see [Fund a test wallet](/docs/quickstart/skill#fund-a-test-wallet)). Without it, `akashi_discover` and `akashi_inspect` still work; `akashi_run` returns an error and signs nothing.
+To enable paid runs, provide `AKASHI_PRIVATE_KEY` to the local MCP process through your client's environment or secret settings. Use a Base Sepolia key holding test USDC (see [Fund a test wallet](/docs/quickstart/skill#fund-a-test-wallet)). Without it, `akashi_discover` and `akashi_inspect` still work; `akashi_run` returns an error and signs nothing.
 
-## 3. The tools
+### 3. The tools
 
 | Tool | Cost | Input | Returns |
 | --- | --- | --- | --- |

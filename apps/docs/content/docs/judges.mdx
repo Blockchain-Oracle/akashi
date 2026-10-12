@@ -52,15 +52,15 @@ Expect `"scheme": "exact"`, `"network": "eip155:84532"`, `"amount": "1000"` ($0.
 ## 3. A paid run with the CLI
 
 ```bash
-curl -fsSLO https://useakashi.xyz/akashi.mjs
+npm install -g akashi
 export AKASHI_PRIVATE_KEY=0x$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
-node akashi.mjs wallet
+akashi wallet
 ```
 
 Send test USDC on Base Sepolia to the printed `address` from [faucet.circle.com](https://faucet.circle.com). No ETH is needed. Then:
 
 ```bash
-node akashi.mjs run github/latest-release --input '{"repo": "astral-sh/uv"}'
+akashi run github/latest-release --input '{"repo": "astral-sh/uv"}'
 ```
 
 Check the output:
@@ -74,13 +74,13 @@ Check the output:
 A lookup that finds nothing:
 
 ```bash
-node akashi.mjs run wikipedia/summary --input '{"title": "Qzxv Nonexistent Article Akashi"}'
+akashi run wikipedia/summary --input '{"title": "Qzxv Nonexistent Article Akashi"}'
 ```
 
 `status` is `404`, `body.found` is `false` and `receipt.paid` is `false`. An input with a typo:
 
 ```bash
-node akashi.mjs run wikipedia/summary --input '{"titel": "Alan Turing"}'
+akashi run wikipedia/summary --input '{"titel": "Alan Turing"}'
 ```
 
 `status` is `422` with `"code": "invalid_input"`, and `receipt.paid` is `false`. The typo is caught by the free input check before any payment is asked for, so nothing is signed. The lookup that found nothing was signed, and the gateway never settled it.

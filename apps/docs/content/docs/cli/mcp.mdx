@@ -3,8 +3,10 @@ title: mcp
 description: Serve Akashi to an AI agent as a local MCP server over stdio, with three tools and the CLI's spend caps.
 ---
 
+This page covers the **local MCP server** built into the npm CLI. Your MCP client starts it as a command over stdio, and paid runs use your Base Sepolia test wallet. The same three tools are also available from the **hosted MCP server** at `https://api.useakashi.xyz/mcp` over Streamable HTTP; its paid runs use capped demo credit. [Choose a connection and set it up](/docs/quickstart/mcp).
+
 ```bash
-node akashi.mjs mcp
+akashi mcp
 ```
 
 The server speaks MCP over stdio, so an MCP client starts it as a command. Setup for Claude Code, Claude Desktop, Cursor and Codex is in [For AI agents (MCP)](/docs/quickstart/mcp).

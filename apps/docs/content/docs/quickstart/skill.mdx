@@ -33,7 +33,7 @@ curl -s -X POST https://api.useakashi.xyz/v1/inspect -H 'content-type: applicati
 
 A run is paid, so the agent needs a wallet and an x402 client. Give it one of these:
 
-- **The CLI.** Download `akashi.mjs` and set `AKASHI_PRIVATE_KEY`. The agent runs `node akashi.mjs run <id> --input '<json>'`. See [For humans (CLI)](/docs/quickstart/cli).
+- **The CLI.** Install `akashi` from npm and set `AKASHI_PRIVATE_KEY`. The agent runs `akashi run <id> --input '<json>'`. See [For humans (CLI)](/docs/quickstart/cli).
 - **The MCP server.** The same file, as three MCP tools. See [For AI agents (MCP)](/docs/quickstart/mcp).
 - **Code.** The skill includes an `@x402/fetch` snippet with a per-call price cap. See [From code (HTTP)](/docs/quickstart/http).
 
@@ -48,7 +48,7 @@ Create a key and read its address with the CLI:
 
 ```bash
 export AKASHI_PRIVATE_KEY=0x$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
-node akashi.mjs wallet
+akashi wallet
 ```
 
 </Step>

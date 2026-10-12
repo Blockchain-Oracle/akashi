@@ -2,7 +2,7 @@
  * Remote MCP at /mcp (Streamable HTTP, stateless): `claude mcp add --transport http akashi <gateway>/mcp`.
  * discover / inspect are free; akashi_run is paid by Akashi's demo wallet through this gateway's own x402 route,
  * so a run from any MCP client is a real Base Sepolia settlement and a real Pocket relay, capped per visitor per day.
- * For runs on your own wallet, use the local MCP (`node akashi.mjs mcp` with AKASHI_PRIVATE_KEY).
+ * For runs on your own wallet, use the local MCP (`akashi mcp` with AKASHI_PRIVATE_KEY).
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -97,11 +97,11 @@ export function mcpHandler(config: GatewayConfig, priceOf: (path: string) => big
         const path = `${RUN_PREFIX}/${id}`;
         const price = priceOf(path);
         if (price === undefined) return failure(`no tool ${id}; call akashi_discover first`);
-        if (!pay) return failure("Demo runs are off on this server. Use the local MCP with your own wallet: node akashi.mjs mcp");
+        if (!pay) return failure("Demo runs are off on this server. Use the local MCP with your own wallet: akashi mcp");
         const ledgerNow = book();
         const used = ledgerNow.perIp.get(ip) ?? NOTHING;
         if (used + price > MCP_DEMO_PER_IP_DAILY_ATOMIC || ledgerNow.total + price > MCP_DEMO_DAILY_ATOMIC) {
-          return failure("Today's demo credit is used up. Run tools on your own wallet with the local MCP: node akashi.mjs mcp");
+          return failure("Today's demo credit is used up. Run tools on your own wallet with the local MCP: akashi mcp");
         }
         const res = await pay(`${self}${path}`, {
           method: "POST",

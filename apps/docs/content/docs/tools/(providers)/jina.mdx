@@ -49,7 +49,7 @@ Related: [`jina/search`](/docs/tools/jina#search), [`firecrawl/scrape`](/docs/to
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run jina/read --input '{"url":"https://en.wikipedia.org/wiki/Transistor","max_tokens":2000}'
+akashi run jina/read --input '{"url":"https://en.wikipedia.org/wiki/Transistor","max_tokens":2000}'
 ```
 
 ## Jina Search [#search]
@@ -82,5 +82,5 @@ Related: [`serper/search`](/docs/tools/serper#search), [`jina/read`](/docs/tools
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run jina/search --input '{"query":"how do solid-state batteries work","num":3}'
+akashi run jina/search --input '{"query":"how do solid-state batteries work","num":3}'
 ```

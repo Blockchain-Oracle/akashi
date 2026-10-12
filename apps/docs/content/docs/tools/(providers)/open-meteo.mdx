@@ -53,7 +53,7 @@ Related: [`open-meteo/history`](/docs/tools/open-meteo#history), [`openweather/f
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run open-meteo/forecast --input '{"place":"Lagos","country_code":"NG","days":5}'
+akashi run open-meteo/forecast --input '{"place":"Lagos","country_code":"NG","days":5}'
 ```
 
 ## Open-Meteo Weather History [#history]
@@ -90,7 +90,7 @@ Related: [`open-meteo/forecast`](/docs/tools/open-meteo#forecast).
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run open-meteo/history --input '{"place":"Paris","country_code":"FR","start_date":"2024-07-26","end_date":"2024-07-28"}'
+akashi run open-meteo/history --input '{"place":"Paris","country_code":"FR","start_date":"2024-07-26","end_date":"2024-07-28"}'
 ```
 
 ## Open-Meteo Marine Forecast [#marine]
@@ -124,5 +124,5 @@ Related: [`open-meteo/forecast`](/docs/tools/open-meteo#forecast).
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run open-meteo/marine --input '{"lat":-33.89,"lon":151.28,"days":3}'
+akashi run open-meteo/marine --input '{"lat":-33.89,"lon":151.28,"days":3}'
 ```

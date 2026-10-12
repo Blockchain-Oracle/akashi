@@ -49,7 +49,7 @@ Related: [`openweather/current`](/docs/tools/openweather#current), [`openweather
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run openweather/air-quality --input '{"city":"Delhi,IN"}'
+akashi run openweather/air-quality --input '{"city":"Delhi,IN"}'
 ```
 
 ## OpenWeather Current Weather [#current]
@@ -81,7 +81,7 @@ Related: [`openweather/forecast`](/docs/tools/openweather#forecast), [`openweath
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run openweather/current --input '{"city":"Lagos,NG","units":"metric"}'
+akashi run openweather/current --input '{"city":"Lagos,NG","units":"metric"}'
 ```
 
 ## OpenWeather 5-Day Forecast [#forecast]
@@ -113,7 +113,7 @@ Related: [`openweather/current`](/docs/tools/openweather#current), [`openweather
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run openweather/forecast --input '{"city":"London,GB","units":"metric"}'
+akashi run openweather/forecast --input '{"city":"London,GB","units":"metric"}'
 ```
 
 ## OpenWeather Geocoding [#geocode]
@@ -143,5 +143,5 @@ Related: [`openweather/current`](/docs/tools/openweather#current), [`serper/plac
 ```
 
 ```bash title="Run it with the CLI"
-node akashi.mjs run openweather/geocode --input '{"query":"Springfield","limit":3}'
+akashi run openweather/geocode --input '{"query":"Springfield","limit":3}'
 ```

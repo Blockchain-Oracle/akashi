@@ -4,7 +4,7 @@ description: One tool's full contract, its description, input JSON Schema, outpu
 ---
 
 ```bash
-node akashi.mjs inspect <provider/endpoint>
+akashi inspect <provider/endpoint>
 ```
 
 It calls [`POST /v1/inspect`](/docs/api/inspect) with `{id}` and prints the response. An unknown id fails with `unknown_endpoint` and exit code 1.
@@ -12,7 +12,7 @@ It calls [`POST /v1/inspect`](/docs/api/inspect) with `{id}` and prints the resp
 ## Example
 
 ```bash
-node akashi.mjs inspect openweather/current
+akashi inspect openweather/current
 ```
 
 The result has every `discover` field except `score` and `health`, plus:
@@ -32,6 +32,6 @@ The result has every `discover` field except `score` and `health`, plus:
 Read `input` before a run. Copy `example` as a starting point:
 
 ```bash
-node akashi.mjs inspect openweather/current | jq -c .example
+akashi inspect openweather/current | jq -c .example
 # {"city":"Lagos,NG","units":"metric"}
 ```
