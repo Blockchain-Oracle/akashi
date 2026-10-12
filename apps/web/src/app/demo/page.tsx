@@ -104,6 +104,8 @@ export default async function DemoPage() {
               className="aspect-video w-full"
               src={demoEmbedUrl(video)}
               title="Meet Akashi: the demo"
+              // YouTube refuses an embed that arrives without a Referer (Error 153); say so instead of trusting defaults
+              referrerPolicy="strict-origin-when-cross-origin"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               loading="lazy"
