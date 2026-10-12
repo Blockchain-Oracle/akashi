@@ -22,12 +22,16 @@ const toolCalls = (steps: ReadonlyArray<{ toolCalls: readonly unknown[] }>) =>
   steps.reduce((n, step) => n + step.toolCalls.length, 0);
 
 /**
- * Spending the tool budget gets the turn one more step, told to answer, so a turn whose retries used the budget
+ * Spending the tool budget gets the turn up to two more steps, told to answer, so a turn whose calls used the budget
  * still ends with an answer (stopping at the spend left the last step as tool calls and no text, seen 2026-10-12).
- * That step keeps its tools: switching them off (activeTools: []) makes Groq reject a model that still calls one,
- * "Tool choice is none, but model called a tool" (2026-10-07). The turn stops after it either way.
+ * Those steps keep their tools: switching them off (activeTools: []) makes Groq reject a model that still calls one,
+ * "Tool choice is none, but model called a tool" (2026-10-07). A call past the budget runs nothing and costs
+ * nothing (tools.server.ts) and tells the model to answer; a model that told the user it would call every tool can
+ * ignore the first nudge, which is why there are two.
  */
-const answerStepTaken: StopCondition<ToolSet> = ({ steps }) => toolCalls(steps.slice(0, -1)) >= MAX_TOOL_CALLS_PER_TURN;
+const ANSWER_STEPS = 2;
+const answerStepsTaken: StopCondition<ToolSet> = ({ steps }) =>
+  toolCalls(steps.slice(0, -ANSWER_STEPS)) >= MAX_TOOL_CALLS_PER_TURN;
 
 /** Per message, since the mode decides whether the server or the browser pays for runs. */
 export function buildAgent({ model, mode, ip }: { model: LanguageModel; mode: ChatMode; ip?: string }) {
@@ -37,7 +41,7 @@ export function buildAgent({ model, mode, ip }: { model: LanguageModel; mode: Ch
     tools: buildTools(mode, ip),
     prepareStep: ({ steps }) =>
       toolCalls(steps) >= MAX_TOOL_CALLS_PER_TURN ? { instructions: AGENT_INSTRUCTIONS + ANSWER_NOW } : undefined,
-    stopWhen: [isStepCount(MAX_AGENT_STEPS), answerStepTaken],
+    stopWhen: [isStepCount(MAX_AGENT_STEPS), answerStepsTaken],
   });
 }
 
