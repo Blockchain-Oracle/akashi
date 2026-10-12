@@ -241,16 +241,6 @@ To supply `tool-router` yourself: run the backend container ([`services/api/Dock
 | [`apps/cli`](apps/cli) | The `akashi` CLI and local MCP server, bundled into one file. |
 | [`deploy`](deploy) | The RelayMiner and pocket-ap deployments, the service card, stake configs and the audit result. |
 
-## Honest limits
-
-- **Testnet only.** Payments are Base Sepolia test USDC and relays are on Pocket Beta. Nothing here moves real money.
-- **Not on the Agentic Portal yet.** Listing on Pocket's portal is a separate step curated by the Pocket Network Foundation. `tool-router` passes the audit; the listing request is the next step.
-- **One server.** Every piece runs on one Coolify host. The RelayMiner uses the HA design (relayer, miner and Redis) but runs one of each.
-- **Direct fallback.** If pocket-ap cannot be reached at all, a paid run goes to the backend directly and its receipt says `via: direct`. If the relay was sent but timed out, the run fails closed and is not charged rather than run twice.
-- **Shared free tiers.** Some keyless providers allow only a few calls (CoinGecko about 10 a minute, OpenStreetMap 1 a second). Akashi caches and rate-limits each one, so a burst can be slower or answer `429`.
-- **Demo credit is capped**: $0.10 per visitor and $2 in total per day, kept in memory. Past that, pay from your own wallet.
-- **Health is Akashi's own measurement**, from its runs and the 10-minute probe, not the provider's status page.
-
 ## License
 
 Made by **Abubakr Jimoh**. [MIT licensed](LICENSE). Third-party material keeps its own terms: see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
