@@ -75,7 +75,7 @@ class PapersOutput(ToolOutput):
     summary="Semantic search over research papers (arXiv and more): ids, titles, abstracts and scores.",
     description="Ranks papers by meaning, not keywords, so 'why RAG models hallucinate' finds the right work. "
     "Each result has a paper_id usable with firecrawl/read-paper (passages inside the paper) and "
-    "firecrawl/related-papers (similar, citing or cited work). For DOI metadata use crossref/works.",
+    "firecrawl/related-papers (similar, citing or cited work). For DOI metadata use crossref/work.",
     categories=(Category.research,),
     render=Render.papers,
     price=STANDARD,
@@ -144,9 +144,20 @@ class RelatedMode(StrEnum):
     references = "references"
 
 
+# Firecrawl requires a ranking intent in plain words; without a caller's focus, each mode states its own.
+_DEFAULT_INTENT = {
+    RelatedMode.similar: "papers on the same problem using similar methods",
+    RelatedMode.citers: "newer papers that build on, extend or evaluate this paper",
+    RelatedMode.references: "the earlier work this paper builds on",
+}
+
+
 class RelatedInput(ToolInput):
-    paper_id: str = Field(min_length=1, max_length=200)
+    paper_id: str = Field(min_length=1, max_length=200, description="paper_id or primary id (e.g. arxiv:2211.17192).")
     mode: RelatedMode = Field(RelatedMode.similar, description="similar work, papers citing it, or its references.")
+    focus: str | None = Field(None, min_length=2, max_length=300,
+                              description="What to favour among the related papers, in plain words "
+                              "(e.g. 'training better draft models').")
     k: int = Field(PAPERS_K_DEFAULT, ge=1, le=PAPERS_K_MAX)
 
 
@@ -160,19 +171,21 @@ class RelatedOutput(ToolOutput):
     provider=FIRECRAWL,
     slug="related-papers",
     name="Firecrawl Related Papers",
-    summary="Papers similar to, citing, or cited by a given paper.",
-    description="Expands from one paper_id to its neighbourhood: 'similar' (by content), 'citers' (newer work that "
-    "cites it) or 'references' (what it cites). Use after firecrawl/research-papers.",
+    summary="Who cites a paper, what it cites, and similar papers (arXiv and more), ranked by meaning.",
+    description="Expands from one paper (a paper_id from firecrawl/research-papers or an arXiv id such as "
+    "arxiv:2211.17192) to its neighbourhood: 'similar' (by content), 'citers' (newer work that cites it) or "
+    "'references' (what it cites), ranked by meaning. Add focus to favour one angle, e.g. 'training better draft "
+    "models'. For a citation count use openalex/work.",
     categories=(Category.research,),
     render=Render.papers,
     price=STANDARD,
-    example={"paper_id": "arxiv:2510.21538", "mode": "similar", "k": 5},
-    see_also=("firecrawl/read-paper",),
+    example={"paper_id": "arxiv:2211.17192", "mode": "citers", "k": 5},
+    see_also=("firecrawl/read-paper", "firecrawl/research-papers", "openalex/work"),
     cache_ttl_s=TTL_REFERENCE_S,
 )
 async def related_papers(inp: RelatedInput, ctx: RunContext) -> RelatedOutput:
-    payload = await ctx.get_json(FIRECRAWL, f"/v2/search/research/papers/{inp.paper_id}/similar",
-                                 params={"mode": inp.mode.value, "k": inp.k})
+    params = {"mode": inp.mode.value, "intent": inp.focus or _DEFAULT_INTENT[inp.mode], "k": inp.k}
+    payload = await ctx.get_json(FIRECRAWL, f"/v2/search/research/papers/{inp.paper_id}/similar", params=params)
     return RelatedOutput(paper_id=inp.paper_id, mode=inp.mode, papers=[_paper(r) for r in payload.get("results") or []])
 
 

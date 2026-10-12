@@ -11,6 +11,8 @@ from akashi_tools.constants import (
     DISCOVER_DEFAULT_LIMIT,
     DISCOVER_MAX_LIMIT,
     DISCOVER_MIN_TOKEN_CHARS,
+    DISCOVER_NAME_MAX_WORDS,
+    DISCOVER_NAMED_PROVIDER_BOOST,
     DISCOVER_PREFIX_MIN_CHARS,
     DISCOVER_QUERY_MAX_CHARS,
     DISCOVER_WEIGHTS,
@@ -114,6 +116,13 @@ def _terms(query: str) -> list[str]:
     return [f'"{t}"*' if len(t) >= DISCOVER_PREFIX_MIN_CHARS else f'"{t}"' for t in expanded]
 
 
+def _named_providers(query: str) -> set[str]:
+    """Providers the query names outright, as typed (never via synonyms): 'arxiv', 'hacker news', 'open-meteo'."""
+    words = _TOKEN.findall(query.lower()[:DISCOVER_QUERY_MAX_CHARS])
+    said = {"".join(words[i:i + n]) for n in range(1, DISCOVER_NAME_MAX_WORDS + 1) for i in range(len(words) - n + 1)}
+    return {e.provider.id for e in endpoints() if e.provider.id.replace("-", "") in said}
+
+
 def _search(query: str) -> list[tuple[str, float]]:
     terms = _terms(query)
     if not terms:
@@ -123,7 +132,12 @@ def _search(query: str) -> list[tuple[str, float]]:
         f"SELECT id, bm25(ep, 0.0, {weights}) AS s FROM ep WHERE ep MATCH ? ORDER BY s",
         (" OR ".join(terms),),
     ).fetchall()
-    return [(r[0], -float(r[1])) for r in rows]
+    named = _named_providers(query)
+    scored = [
+        (r[0], -float(r[1]) * (DISCOVER_NAMED_PROVIDER_BOOST if r[0].split("/", 1)[0] in named else 1.0))
+        for r in rows
+    ]
+    return sorted(scored, key=lambda pair: -pair[1])
 
 
 def _hints(top: Endpoint, ranked: list[Endpoint]) -> list[str]:

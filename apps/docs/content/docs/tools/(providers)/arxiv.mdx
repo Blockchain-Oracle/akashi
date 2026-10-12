@@ -25,15 +25,15 @@ Inputs are JSON bodies, and unknown fields are rejected with `422 invalid_input`
 
 **Search arXiv preprints by keywords, author or category; newest-first or by relevance.**
 
-Queries arXiv directly, so brand-new preprints appear the day they are announced. Returns id, title, authors, trimmed abstract, dates, categories, DOI/journal reference when published, and links to the abstract page and PDF (links only: arXiv's terms forbid redistributing the papers). Words are ANDed across all fields; arXiv syntax (ti:, au:, abs:, cat:) passes through. arXiv allows one request every 3 s, so calls may queue briefly. For citation counts use openalex/works; for semantic search or passages inside a paper use firecrawl/research-papers and firecrawl/read-paper.
+Queries arXiv directly, so brand-new preprints appear the day they are announced. Returns id, title, authors, trimmed abstract, dates, categories, DOI/journal reference when published, and links to the abstract page and PDF (links only: arXiv's terms forbid redistributing the papers). Words are ANDed across all fields; arXiv syntax (ti:, au:, abs:, cat:) passes through; a query of arXiv ids alone ('2211.17192', 'arxiv:2211.17192v2') looks those papers up exactly. arXiv allows one request every 3 s, so calls may queue briefly. For citation counts use openalex/work (it takes arXiv ids); for semantic search, passages inside a paper or related work use firecrawl/research-papers, firecrawl/read-paper and firecrawl/related-papers.
 
-Related: [`firecrawl/research-papers`](/docs/tools/firecrawl#research-papers), [`firecrawl/read-paper`](/docs/tools/firecrawl#read-paper), [`openalex/works`](/docs/tools/openalex#works).
+Related: [`firecrawl/research-papers`](/docs/tools/firecrawl#research-papers), [`firecrawl/read-paper`](/docs/tools/firecrawl#read-paper), [`firecrawl/related-papers`](/docs/tools/firecrawl#related-papers), [`openalex/work`](/docs/tools/openalex#work).
 
 ### Input [#search-input]
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `query` | string | yes | Words to match in any field, or arXiv syntax such as 'ti:transformer AND au:vaswani'. 2–500 characters. |
+| `query` | string | yes | Words to match in any field, arXiv syntax such as 'ti:transformer AND au:vaswani', or arXiv ids ('2211.17192', 'arxiv:2211.17192v2', several comma-separated). 2–500 characters. |
 | `category` | string | no | Restrict to an arXiv category, e.g. 'cs.CL' or 'astro-ph.GA'. At most 20 characters. Pattern `^[a-z][a-z-]*(\.[A-Za-z-]+)?$`. |
 | `sort` | string | no | relevance, newest submitted, or most recently updated. One of `relevance`, `submitted`, `updated`. Default `"relevance"`. |
 | `max_results` | integer | no | From 1 to 10. Default `5`. |

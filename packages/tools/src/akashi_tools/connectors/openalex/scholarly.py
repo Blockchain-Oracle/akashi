@@ -8,6 +8,7 @@ from urllib.parse import quote
 
 from pydantic import Field, field_validator, model_validator
 
+from akashi_tools.connectors.arxiv.provider import ARXIV_DOI_PREFIX, ARXIV_ID
 from akashi_tools.connectors.openalex.provider import OPENALEX
 from akashi_tools.constants import TTL_REFERENCE_S, TTL_SEARCH_S
 from akashi_tools.framework import LOCAL, Category, Render, RunContext, ToolInput, ToolOutput, tool
@@ -25,6 +26,18 @@ WORK_FIELDS = "id,doi,display_name,publication_year,publication_date,type,primar
 SEARCH_FIELDS = f"{WORK_FIELDS},authorships"
 DETAIL_FIELDS = f"{SEARCH_FIELDS},abstract_inverted_index,primary_topic,is_retracted,language,referenced_works_count"
 AUTHOR_FIELDS = "id,display_name,orcid,works_count,cited_by_count,summary_stats,last_known_institutions,topics"
+# OpenAlex keeps an arXiv preprint as its own record, often unlinked from the published version, and parses no
+# reference list for it (arXiv:2211.17192, an ICML 2023 oral: 32 citations, 0 references on 2026-10-12).
+ARXIV_PREPRINT_NOTE = (
+    "OpenAlex has partial data for arXiv preprints: cited_by usually undercounts (citations to the published "
+    "version may sit on another record) and references is often 0. For the papers that cite an arXiv paper use "
+    "firecrawl/related-papers with mode 'citers'."
+)
+
+
+def _note_arxiv(ctx: RunContext, works: list["Work"]) -> None:
+    if any((w.doi or "").lower().startswith(ARXIV_DOI_PREFIX) for w in works):
+        ctx.note(ARXIV_PREPRINT_NOTE)
 
 
 class Work(ToolOutput):
@@ -154,23 +167,27 @@ async def works(inp: WorksInput, ctx: RunContext) -> WorksOutput:
     if inp.sort in _SORT:
         params["sort"] = _SORT[inp.sort]
     data = await ctx.get_json(OPENALEX, "/works", params=params)
-    return WorksOutput(query=inp.query, total=(data.get("meta") or {}).get("count"),
-                       papers=[_work(r) for r in data.get("results") or []])
+    papers = [_work(r) for r in data.get("results") or []]
+    _note_arxiv(ctx, papers)
+    return WorksOutput(query=inp.query, total=(data.get("meta") or {}).get("count"), papers=papers)
 
 
 class WorkInput(ToolInput):
     id: str = Field(min_length=2, max_length=300,
-                    description="A DOI ('10.1038/nature14539', with or without https://doi.org/) or an OpenAlex "
-                    "work id ('W2919115771').")
+                    description="A DOI ('10.1038/nature14539', with or without https://doi.org/), an OpenAlex "
+                    "work id ('W2919115771') or an arXiv id ('2211.17192', 'arxiv:2211.17192v2').")
 
     @field_validator("id")
     @classmethod
     def _key(cls, value: str) -> str:
+        value = value.strip()
         if match := _OPENALEX_ID.match(value):
             return match.group(1).upper()
         if match := _DOI.match(value):
             return f"doi:{match.group(1).lower()}"
-        raise ValueError("expected a DOI (10.xxxx/…) or an OpenAlex work id (W…)")
+        if match := ARXIV_ID.match(value):
+            return f"doi:{ARXIV_DOI_PREFIX}{match.group(1).lower()}"
+        raise ValueError("expected a DOI (10.xxxx/…), an OpenAlex work id (W…) or an arXiv id (2211.17192)")
 
 
 class WorkOutput(ToolOutput):
@@ -182,20 +199,23 @@ class WorkOutput(ToolOutput):
     slug="work",
     name="OpenAlex Work",
     summary="One scholarly work by DOI or OpenAlex id: metadata, abstract, topic, citations, retraction flag.",
-    description="Looks up a single work and returns its title, authors, venue, date, type, citation and reference "
-    "counts, primary topic, open-access link, a retraction flag and the abstract when OpenAlex has one (publishers "
-    "withhold many). An unknown id answers found=false. For the publisher's own record (licence, update and "
-    "retraction notices) use crossref/work; to read inside the paper use firecrawl/read-paper.",
+    description="Looks up a single work by DOI, OpenAlex id or arXiv id and returns its title, authors, venue, date, "
+    "type, citation and reference counts, primary topic, open-access link, a retraction flag and the abstract when "
+    "OpenAlex has one (publishers withhold many). An unknown id answers found=false. arXiv preprints carry partial "
+    "citation data (a note says so). For the publisher's own record (licence, update and retraction notices) use "
+    "crossref/work; to read inside the paper use firecrawl/read-paper.",
     categories=(Category.research,),
     render=Render.papers,
     price=LOCAL,
     example={"id": "10.1038/nature14539"},
-    see_also=("crossref/work", "openalex/works", "firecrawl/read-paper"),
+    see_also=("crossref/work", "openalex/works", "firecrawl/read-paper", "firecrawl/related-papers"),
     cache_ttl_s=TTL_REFERENCE_S,
 )
 async def work(inp: WorkInput, ctx: RunContext) -> WorkOutput:
     row = await ctx.get_json(OPENALEX, f"/works/{quote(inp.id, safe=':/')}", params={"select": DETAIL_FIELDS})
-    return WorkOutput(papers=[_work(row, detail=True)])
+    papers = [_work(row, detail=True)]
+    _note_arxiv(ctx, papers)
+    return WorkOutput(papers=papers)
 
 
 class AuthorsInput(ToolInput):

@@ -37,6 +37,11 @@ DISCOVER_PREFIX_MIN_CHARS: Final = 3  # tokens this long also match as a prefix 
 DISCOVER_QUERY_MAX_CHARS: Final = 500
 # bm25() column weights, in FTS column order: name, summary, categories, provider, description.
 DISCOVER_WEIGHTS: Final = (4.0, 3.0, 3.0, 2.0, 1.0)
+# A query that names a provider ("arXiv papers", "hacker news on Rust") asked for that source: its endpoints' text
+# score is multiplied by this, enough to lift them over a generic match ("arXiv papers" put OpenAlex first at 1.0
+# vs arXiv 0.82 on 2026-10-12) without burying a far better tool from another provider.
+DISCOVER_NAMED_PROVIDER_BOOST: Final = 2.0
+DISCOVER_NAME_MAX_WORDS: Final = 3  # "open food facts" → openfoodfacts
 
 # Health (Monid-style verdicts computed from our own runs; SKILL.md "Endpoint Health")
 HEALTH_SAMPLES: Final = 200  # newest runs kept per endpoint

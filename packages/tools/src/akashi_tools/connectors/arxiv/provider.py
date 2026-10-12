@@ -1,5 +1,7 @@
 """arXiv provider (legacy query API, Atom feed; info.arxiv.org/help/api/user-manual.html)."""
 
+import re
+
 from akashi_tools.categories import Category
 from akashi_tools.framework import NoAuth, Provider, Terms
 
@@ -20,3 +22,8 @@ ARXIV = Provider(
     licence="Metadata CC0 1.0",
     attribution="Thank you to arXiv for use of its open access interoperability.",
 )
+
+# One arXiv identifier, with or without the "arxiv:" prefix other indexes use and a version suffix: new style
+# (2211.17192, 2211.17192v2) or old style (hep-th/9901001, math.GT/0309136). Group 1 is the id without its version.
+ARXIV_ID = re.compile(r"^(?:arxiv:)?(\d{4}\.\d{4,5}|[a-z-]+(?:\.[A-Z]{2})?/\d{7})(?:v\d+)?$", re.IGNORECASE)
+ARXIV_DOI_PREFIX = "10.48550/arxiv."  # arXiv registers every paper's DOI as 10.48550/arXiv.<id>

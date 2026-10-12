@@ -3630,12 +3630,13 @@
       "method": "POST",
       "path": "/v1/run/arxiv/search",
       "available": true,
-      "description": "Queries arXiv directly, so brand-new preprints appear the day they are announced. Returns id, title, authors, trimmed abstract, dates, categories, DOI/journal reference when published, and links to the abstract page and PDF (links only: arXiv's terms forbid redistributing the papers). Words are ANDed across all fields; arXiv syntax (ti:, au:, abs:, cat:) passes through. arXiv allows one request every 3 s, so calls may queue briefly. For citation counts use openalex/works; for semantic search or passages inside a paper use firecrawl/research-papers and firecrawl/read-paper.",
+      "description": "Queries arXiv directly, so brand-new preprints appear the day they are announced. Returns id, title, authors, trimmed abstract, dates, categories, DOI/journal reference when published, and links to the abstract page and PDF (links only: arXiv's terms forbid redistributing the papers). Words are ANDed across all fields; arXiv syntax (ti:, au:, abs:, cat:) passes through; a query of arXiv ids alone ('2211.17192', 'arxiv:2211.17192v2') looks those papers up exactly. arXiv allows one request every 3 s, so calls may queue briefly. For citation counts use openalex/work (it takes arXiv ids); for semantic search, passages inside a paper or related work use firecrawl/research-papers, firecrawl/read-paper and firecrawl/related-papers.",
       "notes": [],
       "seeAlso": [
         "firecrawl/research-papers",
         "firecrawl/read-paper",
-        "openalex/works"
+        "firecrawl/related-papers",
+        "openalex/work"
       ],
       "deadlineMs": 8000,
       "cacheTtlS": 600,
@@ -3655,7 +3656,7 @@
         "additionalProperties": false,
         "properties": {
           "query": {
-            "description": "Words to match in any field, or arXiv syntax such as 'ti:transformer AND au:vaswani'.",
+            "description": "Words to match in any field, arXiv syntax such as 'ti:transformer AND au:vaswani', or arXiv ids ('2211.17192', 'arxiv:2211.17192v2', several comma-separated).",
             "maxLength": 500,
             "minLength": 2,
             "title": "Query",
@@ -6976,12 +6977,12 @@
       "method": "POST",
       "path": "/v1/run/firecrawl/map",
       "available": true,
-      "description": "Discovers a site's URLs from its sitemap and links without scraping them, with titles where known. Use it to find the right page, then read that page with firecrawl/scrape.",
+      "description": "Discovers a site's URLs without scraping them, with titles where known; with search, the URLs most relevant to those words come first. Without search it reads the sitemap (about 1 s) and crawls only a site that has none. A first map of a large site can take up to 8 s and may time out (not charged): start from a narrower URL then. Use it to find the right page, then read that page with firecrawl/scrape.",
       "notes": [],
       "seeAlso": [
         "firecrawl/scrape"
       ],
-      "deadlineMs": 8000,
+      "deadlineMs": 9000,
       "cacheTtlS": 3600,
       "terms": "consent-pending",
       "input": {
@@ -7350,7 +7351,7 @@
       "providerName": "Firecrawl",
       "slug": "related-papers",
       "displayName": "Firecrawl Related Papers",
-      "summary": "Papers similar to, citing, or cited by a given paper.",
+      "summary": "Who cites a paper, what it cites, and similar papers (arXiv and more), ranked by meaning.",
       "categories": [
         "research"
       ],
@@ -7364,10 +7365,12 @@
       "method": "POST",
       "path": "/v1/run/firecrawl/related-papers",
       "available": true,
-      "description": "Expands from one paper_id to its neighbourhood: 'similar' (by content), 'citers' (newer work that cites it) or 'references' (what it cites). Use after firecrawl/research-papers.",
+      "description": "Expands from one paper (a paper_id from firecrawl/research-papers or an arXiv id such as arxiv:2211.17192) to its neighbourhood: 'similar' (by content), 'citers' (newer work that cites it) or 'references' (what it cites), ranked by meaning. Add focus to favour one angle, e.g. 'training better draft models'. For a citation count use openalex/work.",
       "notes": [],
       "seeAlso": [
-        "firecrawl/read-paper"
+        "firecrawl/read-paper",
+        "firecrawl/research-papers",
+        "openalex/work"
       ],
       "deadlineMs": 8000,
       "cacheTtlS": 86400,
@@ -7387,6 +7390,7 @@
         "additionalProperties": false,
         "properties": {
           "paper_id": {
+            "description": "paper_id or primary id (e.g. arxiv:2211.17192).",
             "maxLength": 200,
             "minLength": 1,
             "title": "Paper Id",
@@ -7396,6 +7400,21 @@
             "$ref": "#/$defs/RelatedMode",
             "default": "similar",
             "description": "similar work, papers citing it, or its references."
+          },
+          "focus": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "minLength": 2,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "What to favour among the related papers, in plain words (e.g. 'training better draft models').",
+            "title": "Focus"
           },
           "k": {
             "default": 8,
@@ -7556,8 +7575,8 @@
         "type": "object"
       },
       "example": {
-        "paper_id": "arxiv:2510.21538",
-        "mode": "similar",
+        "paper_id": "arxiv:2211.17192",
+        "mode": "citers",
         "k": 5
       }
     },
@@ -7581,7 +7600,7 @@
       "method": "POST",
       "path": "/v1/run/firecrawl/research-papers",
       "available": true,
-      "description": "Ranks papers by meaning, not keywords, so 'why RAG models hallucinate' finds the right work. Each result has a paper_id usable with firecrawl/read-paper (passages inside the paper) and firecrawl/related-papers (similar, citing or cited work). For DOI metadata use crossref/works.",
+      "description": "Ranks papers by meaning, not keywords, so 'why RAG models hallucinate' finds the right work. Each result has a paper_id usable with firecrawl/read-paper (passages inside the paper) and firecrawl/related-papers (similar, citing or cited work). For DOI metadata use crossref/work.",
       "notes": [],
       "seeAlso": [
         "firecrawl/read-paper",
@@ -9578,8 +9597,7 @@
         "type": "object"
       },
       "example": {
-        "query": "\"Pocket Network\"",
-        "recency": "month",
+        "query": "\"Pocket Network\" OR POKT",
         "limit": 5
       }
     },
@@ -12907,12 +12925,13 @@
       "method": "POST",
       "path": "/v1/run/openalex/work",
       "available": true,
-      "description": "Looks up a single work and returns its title, authors, venue, date, type, citation and reference counts, primary topic, open-access link, a retraction flag and the abstract when OpenAlex has one (publishers withhold many). An unknown id answers found=false. For the publisher's own record (licence, update and retraction notices) use crossref/work; to read inside the paper use firecrawl/read-paper.",
+      "description": "Looks up a single work by DOI, OpenAlex id or arXiv id and returns its title, authors, venue, date, type, citation and reference counts, primary topic, open-access link, a retraction flag and the abstract when OpenAlex has one (publishers withhold many). An unknown id answers found=false. arXiv preprints carry partial citation data (a note says so). For the publisher's own record (licence, update and retraction notices) use crossref/work; to read inside the paper use firecrawl/read-paper.",
       "notes": [],
       "seeAlso": [
         "crossref/work",
         "openalex/works",
-        "firecrawl/read-paper"
+        "firecrawl/read-paper",
+        "firecrawl/related-papers"
       ],
       "deadlineMs": 8000,
       "cacheTtlS": 86400,
@@ -12921,7 +12940,7 @@
         "additionalProperties": false,
         "properties": {
           "id": {
-            "description": "A DOI ('10.1038/nature14539', with or without https://doi.org/) or an OpenAlex work id ('W2919115771').",
+            "description": "A DOI ('10.1038/nature14539', with or without https://doi.org/), an OpenAlex work id ('W2919115771') or an arXiv id ('2211.17192', 'arxiv:2211.17192v2').",
             "maxLength": 300,
             "minLength": 2,
             "title": "Id",
@@ -18943,5 +18962,5 @@
       }
     }
   ],
-  "hash": "67461b11b08ff1d1"
+  "hash": "2b2dc44bc3ff76c9"
 }

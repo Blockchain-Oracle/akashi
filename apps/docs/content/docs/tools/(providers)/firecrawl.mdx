@@ -18,7 +18,7 @@ description: "Live web search, any URL as clean markdown, site maps, and curated
 | [`firecrawl/gov-search`](/docs/tools/firecrawl#gov-search) | $0.005 | Search US federal, state and local primary law: statutes, regulations, codes and court opinions. |
 | [`firecrawl/map`](/docs/tools/firecrawl#map) | $0.005 | List the URLs on a website (optionally only those relevant to a few words), fast. |
 | [`firecrawl/read-paper`](/docs/tools/firecrawl#read-paper) | $0.005 | Open one paper: its metadata, or the passages inside it that answer a question. |
-| [`firecrawl/related-papers`](/docs/tools/firecrawl#related-papers) | $0.005 | Papers similar to, citing, or cited by a given paper. |
+| [`firecrawl/related-papers`](/docs/tools/firecrawl#related-papers) | $0.005 | Who cites a paper, what it cites, and similar papers (arXiv and more), ranked by meaning. |
 | [`firecrawl/research-papers`](/docs/tools/firecrawl#research-papers) | $0.005 | Semantic search over research papers (arXiv and more): ids, titles, abstracts and scores. |
 | [`firecrawl/scrape`](/docs/tools/firecrawl#scrape) | $0.005 | Turn any URL (including JavaScript-heavy pages and PDFs) into clean markdown. |
 | [`firecrawl/search`](/docs/tools/firecrawl#search) | $0.01 | Search the live web or news and optionally get every result's page as markdown in the same call. |
@@ -123,7 +123,7 @@ akashi run firecrawl/gov-search --input '{"query":"food labeling requirements fo
 
 **List the URLs on a website (optionally only those relevant to a few words), fast.**
 
-Discovers a site's URLs from its sitemap and links without scraping them, with titles where known. Use it to find the right page, then read that page with firecrawl/scrape.
+Discovers a site's URLs without scraping them, with titles where known; with search, the URLs most relevant to those words come first. Without search it reads the sitemap (about 1 s) and crawls only a site that has none. A first map of a large site can take up to 8 s and may time out (not charged): start from a narrower URL then. Use it to find the right page, then read that page with firecrawl/scrape.
 
 Related: [`firecrawl/scrape`](/docs/tools/firecrawl#scrape).
 
@@ -184,32 +184,33 @@ akashi run firecrawl/read-paper --input '{"paper_id":"arxiv:2510.21538","questio
 
 `firecrawl/related-papers` · **$0.005** per call (standard) · Research & Papers
 
-**Papers similar to, citing, or cited by a given paper.**
+**Who cites a paper, what it cites, and similar papers (arXiv and more), ranked by meaning.**
 
-Expands from one paper\_id to its neighbourhood: 'similar' (by content), 'citers' (newer work that cites it) or 'references' (what it cites). Use after firecrawl/research-papers.
+Expands from one paper (a paper\_id from firecrawl/research-papers or an arXiv id such as arxiv:2211.17192) to its neighbourhood: 'similar' (by content), 'citers' (newer work that cites it) or 'references' (what it cites), ranked by meaning. Add focus to favour one angle, e.g. 'training better draft models'. For a citation count use openalex/work.
 
-Related: [`firecrawl/read-paper`](/docs/tools/firecrawl#read-paper).
+Related: [`firecrawl/read-paper`](/docs/tools/firecrawl#read-paper), [`firecrawl/research-papers`](/docs/tools/firecrawl#research-papers), [`openalex/work`](/docs/tools/openalex#work).
 
 ### Input [#related-papers-input]
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `paper_id` | string | yes | 1–200 characters. |
+| `paper_id` | string | yes | paper\_id or primary id (e.g. arxiv:2211.17192). 1–200 characters. |
 | `mode` | string | no | similar work, papers citing it, or its references. One of `similar`, `citers`, `references`. Default `"similar"`. |
+| `focus` | string | no | What to favour among the related papers, in plain words (e.g. 'training better draft models'). 2–300 characters. |
 | `k` | integer | no | From 1 to 25. Default `8`. |
 
 ### Example [#related-papers-example]
 
 ```json title="Input"
 {
-  "paper_id": "arxiv:2510.21538",
-  "mode": "similar",
+  "paper_id": "arxiv:2211.17192",
+  "mode": "citers",
   "k": 5
 }
 ```
 
 ```bash title="Run it with the CLI"
-akashi run firecrawl/related-papers --input '{"paper_id":"arxiv:2510.21538","mode":"similar","k":5}'
+akashi run firecrawl/related-papers --input '{"paper_id":"arxiv:2211.17192","mode":"citers","k":5}'
 ```
 
 ## Firecrawl Research Papers [#research-papers]
@@ -218,7 +219,7 @@ akashi run firecrawl/related-papers --input '{"paper_id":"arxiv:2510.21538","mod
 
 **Semantic search over research papers (arXiv and more): ids, titles, abstracts and scores.**
 
-Ranks papers by meaning, not keywords, so 'why RAG models hallucinate' finds the right work. Each result has a paper\_id usable with firecrawl/read-paper (passages inside the paper) and firecrawl/related-papers (similar, citing or cited work). For DOI metadata use crossref/works.
+Ranks papers by meaning, not keywords, so 'why RAG models hallucinate' finds the right work. Each result has a paper\_id usable with firecrawl/read-paper (passages inside the paper) and firecrawl/related-papers (similar, citing or cited work). For DOI metadata use crossref/work.
 
 Related: [`firecrawl/read-paper`](/docs/tools/firecrawl#read-paper), [`firecrawl/related-papers`](/docs/tools/firecrawl#related-papers), [`openalex/works`](/docs/tools/openalex#works).
 

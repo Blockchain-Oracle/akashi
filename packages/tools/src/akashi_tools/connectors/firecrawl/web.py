@@ -6,7 +6,7 @@ from typing import Any
 from pydantic import Field, HttpUrl
 
 from akashi_tools.connectors.firecrawl.provider import FIRECRAWL
-from akashi_tools.constants import TTL_PAGE_S, TTL_SEARCH_S
+from akashi_tools.constants import RUN_DEADLINE_MAX_S, TTL_PAGE_S, TTL_SEARCH_S
 from akashi_tools.framework import (
     PREMIUM,
     STANDARD,
@@ -25,6 +25,12 @@ SEARCH_LIMIT_DEFAULT = 5
 CONTENT_CHARS_PER_RESULT = 4_000  # with_content: keep each page short enough for several to fit
 MAP_LIMIT_MAX = 200
 MAP_LIMIT_DEFAULT = 50
+# A site's sitemap answers in about 1 s; a full map (sitemap plus crawled links) of a cold site took 7–10 s
+# (measured 2026-10-12). Sitemap-only mode ignores `search` (URLs come back alphabetical), so a search always uses
+# the full map; without one the sitemap goes first. The full map gets Firecrawl's own timeout inside what is left.
+MAP_CRAWL_SLACK_MS = 750  # Firecrawl stops this long before our deadline, so its MAP_TIMEOUT message reaches the caller
+MAP_CRAWL_MIN_MS = 1_500  # less time than this left: skip a crawl that could not finish
+MS_PER_S = 1000
 HTTP_CLIENT_ERROR_MIN = 400  # the site itself answered 4xx/5xx: there is no page to return
 PAGE_CACHE_MAX_AGE_MS = 86_400_000  # accept Firecrawl's own cached copy up to a day old (500% faster, same price)
 QUESTION_MAX_CHARS = 500
@@ -173,21 +179,28 @@ class MapOutput(ToolOutput):
     slug="map",
     name="Firecrawl Site Map",
     summary="List the URLs on a website (optionally only those relevant to a few words), fast.",
-    description="Discovers a site's URLs from its sitemap and links without scraping them, with titles where "
-    "known. Use it to find the right page, then read that page with firecrawl/scrape.",
+    description="Discovers a site's URLs without scraping them, with titles where known; with search, the URLs "
+    "most relevant to those words come first. Without search it reads the sitemap (about 1 s) and crawls only a "
+    "site that has none. A first map of a large site can take up to 8 s and may time out (not charged): start "
+    "from a narrower URL then. Use it to find the right page, then read that page with firecrawl/scrape.",
     categories=(Category.web_extraction,),
     render=Render.search_results,
     price=STANDARD,
     example={"url": "https://docs.firecrawl.dev", "search": "rate limits", "limit": 10},
     see_also=("firecrawl/scrape",),
     cache_ttl_s=TTL_PAGE_S,
+    deadline_s=RUN_DEADLINE_MAX_S,
 )
 async def site_map(inp: MapInput, ctx: RunContext) -> MapOutput:
     body: dict[str, Any] = {"url": str(inp.url), "limit": inp.limit}
+    links: list[Any] = []
     if inp.search:
         body["search"] = inp.search
-    payload = await ctx.post_json(FIRECRAWL, "/v2/map", json=body)
-    links = payload.get("links") or []
+    else:
+        links = (await ctx.post_json(FIRECRAWL, "/v2/map", json={**body, "sitemap": "only"})).get("links") or []
+    crawl_ms = round(ctx.deadline.remaining() * MS_PER_S) - MAP_CRAWL_SLACK_MS
+    if not links and crawl_ms >= MAP_CRAWL_MIN_MS:
+        links = (await ctx.post_json(FIRECRAWL, "/v2/map", json={**body, "timeout": crawl_ms})).get("links") or []
     return MapOutput(
         site=str(inp.url),
         links=[

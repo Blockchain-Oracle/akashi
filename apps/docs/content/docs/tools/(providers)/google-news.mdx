@@ -76,12 +76,11 @@ Related: [`google-news/headlines`](/docs/tools/google-news#headlines), [`serper/
 
 ```json title="Input"
 {
-  "query": "\"Pocket Network\"",
-  "recency": "month",
+  "query": "\"Pocket Network\" OR POKT",
   "limit": 5
 }
 ```
 
 ```bash title="Run it with the CLI"
-akashi run google-news/search --input '{"query":"\"Pocket Network\"","recency":"month","limit":5}'
+akashi run google-news/search --input '{"query":"\"Pocket Network\" OR POKT","limit":5}'
 ```

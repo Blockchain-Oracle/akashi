@@ -8,9 +8,19 @@ from xml.etree.ElementTree import Element
 from defusedxml import ElementTree
 from pydantic import Field
 
-from akashi_tools.connectors.arxiv.provider import ARXIV
+from akashi_tools.connectors.arxiv.provider import ARXIV, ARXIV_ID
 from akashi_tools.constants import TTL_SEARCH_S
-from akashi_tools.framework import LOCAL, Category, ProviderError, Render, RunContext, ToolInput, ToolOutput, tool
+from akashi_tools.framework import (
+    LOCAL,
+    Category,
+    ProviderError,
+    Render,
+    RunContext,
+    ToolInput,
+    ToolNotFoundResult,
+    ToolOutput,
+    tool,
+)
 
 RESULTS_DEFAULT = 5
 RESULTS_MAX = 10
@@ -26,6 +36,7 @@ CATEGORY_PATTERN = r"^[a-z][a-z-]*(\.[A-Za-z-]+)?$"  # cs.CL, astro-ph.GA, hep-t
 # Field-prefixed queries (ti:, au:, abs:, cat:…) are passed through untouched for agents that know the syntax.
 _FIELD_SYNTAX = re.compile(r"\b(ti|au|abs|co|jr|cat|rn|id|all):", re.IGNORECASE)
 _TERM = re.compile(r"[\w.\-]+")
+_ID_SEPARATORS = re.compile(r"[\s,]+")
 
 
 class SortBy(StrEnum):
@@ -39,8 +50,8 @@ _SORT = {SortBy.relevance: "relevance", SortBy.submitted: "submittedDate", SortB
 
 class SearchInput(ToolInput):
     query: str = Field(min_length=2, max_length=500,
-                       description="Words to match in any field, or arXiv syntax such as 'ti:transformer AND au:"
-                       "vaswani'.")
+                       description="Words to match in any field, arXiv syntax such as 'ti:transformer AND au:"
+                       "vaswani', or arXiv ids ('2211.17192', 'arxiv:2211.17192v2', several comma-separated).")
     category: str | None = Field(None, max_length=20, pattern=CATEGORY_PATTERN,
                                  description="Restrict to an arXiv category, e.g. 'cs.CL' or 'astro-ph.GA'.")
     sort: SortBy = Field(SortBy.relevance, description="relevance, newest submitted, or most recently updated.")
@@ -67,6 +78,14 @@ class SearchOutput(ToolOutput):
     query: str
     total: int | None = None
     papers: list[Paper]
+
+
+def _ids(query: str) -> list[str] | None:
+    """The ids when the query is only arXiv ids (exact lookup, versions kept), else None."""
+    tokens = [t for t in _ID_SEPARATORS.split(query.strip()) if t]
+    if not tokens or len(tokens) > RESULTS_MAX or not all(ARXIV_ID.match(t) for t in tokens):
+        return None
+    return [t.split(":", 1)[-1] for t in tokens]
 
 
 def _search_query(query: str, category: str | None) -> str:
@@ -121,24 +140,31 @@ def _paper(entry: Element) -> Paper:
     description="Queries arXiv directly, so brand-new preprints appear the day they are announced. Returns id, "
     "title, authors, trimmed abstract, dates, categories, DOI/journal reference when published, and links to the "
     "abstract page and PDF (links only: arXiv's terms forbid redistributing the papers). Words are ANDed across all "
-    "fields; arXiv syntax (ti:, au:, abs:, cat:) passes through. arXiv allows one request every 3 s, so calls may "
-    "queue briefly. For citation counts use openalex/works; for semantic search or passages inside a paper use "
-    "firecrawl/research-papers and firecrawl/read-paper.",
+    "fields; arXiv syntax (ti:, au:, abs:, cat:) passes through; a query of arXiv ids alone ('2211.17192', "
+    "'arxiv:2211.17192v2') looks those papers up exactly. arXiv allows one request every 3 s, so calls may queue "
+    "briefly. For citation counts use openalex/work (it takes arXiv ids); for semantic search, passages inside a "
+    "paper or related work use firecrawl/research-papers, firecrawl/read-paper and firecrawl/related-papers.",
     categories=(Category.research,),
     render=Render.papers,
     price=LOCAL,
     example={"query": "retrieval augmented generation", "category": "cs.CL", "sort": "submitted", "max_results": 5},
-    see_also=("firecrawl/research-papers", "firecrawl/read-paper", "openalex/works"),
+    see_also=("firecrawl/research-papers", "firecrawl/read-paper", "firecrawl/related-papers", "openalex/work"),
     cache_ttl_s=TTL_SEARCH_S,
 )
 async def search(inp: SearchInput, ctx: RunContext) -> SearchOutput:
-    query = _search_query(inp.query, inp.category)
-    params = {"search_query": query, "start": 0, "max_results": inp.max_results, "sortBy": _SORT[inp.sort],
-              "sortOrder": "descending"}
+    ids = _ids(inp.query)
+    query = ",".join(ids) if ids else _search_query(inp.query, inp.category)
+    params: dict[str, Any] = {"start": 0, "max_results": inp.max_results}
+    if ids:
+        params["id_list"] = query
+    else:
+        params |= {"search_query": query, "sortBy": _SORT[inp.sort], "sortOrder": "descending"}
     root = ElementTree.fromstring(await ctx.get_text(ARXIV, "/api/query", params=params))
     entries = root.findall(f"{ATOM}entry")
     if entries and ERROR_ID_MARK in (entries[0].findtext(f"{ATOM}id") or ""):
         raise ProviderError("arXiv rejected the query", details=[_text(entries[0], f"{ATOM}summary") or query])
+    if ids and not entries:  # an exact lookup that matched nothing is not a result (and is never charged)
+        raise ToolNotFoundResult(f"arXiv has no paper with id {query}")
     total = root.findtext(f"{OPENSEARCH}totalResults")
     return SearchOutput(query=query, total=int(total) if total and total.isdigit() else None,
                         papers=[_paper(e) for e in entries])

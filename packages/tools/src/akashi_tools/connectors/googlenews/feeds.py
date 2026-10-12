@@ -113,7 +113,7 @@ class SearchInput(Edition):
     categories=(Category.news,),
     render=Render.news,
     price=LOCAL,
-    example={"query": "\"Pocket Network\"", "recency": "month", "limit": 5},
+    example={"query": "\"Pocket Network\" OR POKT", "limit": 5},  # a one-month window can be empty (2026-10-12)
     see_also=("google-news/headlines", "serper/news", "jina/read"),
     cache_ttl_s=TTL_SEARCH_S,
 )

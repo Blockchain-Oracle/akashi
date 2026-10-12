@@ -57,15 +57,15 @@ akashi run openalex/authors --input '{"query":"Geoffrey Hinton","k":3}'
 
 **One scholarly work by DOI or OpenAlex id: metadata, abstract, topic, citations, retraction flag.**
 
-Looks up a single work and returns its title, authors, venue, date, type, citation and reference counts, primary topic, open-access link, a retraction flag and the abstract when OpenAlex has one (publishers withhold many). An unknown id answers found=false. For the publisher's own record (licence, update and retraction notices) use crossref/work; to read inside the paper use firecrawl/read-paper.
+Looks up a single work by DOI, OpenAlex id or arXiv id and returns its title, authors, venue, date, type, citation and reference counts, primary topic, open-access link, a retraction flag and the abstract when OpenAlex has one (publishers withhold many). An unknown id answers found=false. arXiv preprints carry partial citation data (a note says so). For the publisher's own record (licence, update and retraction notices) use crossref/work; to read inside the paper use firecrawl/read-paper.
 
-Related: [`crossref/work`](/docs/tools/crossref#work), [`openalex/works`](/docs/tools/openalex#works), [`firecrawl/read-paper`](/docs/tools/firecrawl#read-paper).
+Related: [`crossref/work`](/docs/tools/crossref#work), [`openalex/works`](/docs/tools/openalex#works), [`firecrawl/read-paper`](/docs/tools/firecrawl#read-paper), [`firecrawl/related-papers`](/docs/tools/firecrawl#related-papers).
 
 ### Input [#work-input]
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `id` | string | yes | A DOI ('10.1038/nature14539', with or without https://doi.org/) or an OpenAlex work id ('W2919115771'). 2–300 characters. |
+| `id` | string | yes | A DOI ('10.1038/nature14539', with or without https://doi.org/), an OpenAlex work id ('W2919115771') or an arXiv id ('2211.17192', 'arxiv:2211.17192v2'). 2–300 characters. |
 
 ### Example [#work-example]
 
