@@ -8,6 +8,7 @@ import { DEMO_COVER, DEMO_VIDEO_ID, demoEmbedUrl, demoVideoUrl } from "@/lib/con
 import { AUDIT_URL, ONCHAIN, basescanTx, pocketService, pocketTx, shortHash } from "@/lib/constants/onchain";
 import { getCatalog } from "@/lib/catalog/catalog.server";
 import { REPO_URL } from "@/lib/constants/site";
+import { demoVideoPlayable } from "@/lib/server/demo-video.server";
 
 // Rendered per request, like /tools: the footer counts tools from the live catalog.
 export const dynamic = "force-dynamic";
@@ -81,8 +82,12 @@ const STEPS = [
 ];
 
 export default async function DemoPage() {
-  const catalog = await getCatalog();
+  const [catalog, playable] = await Promise.all([
+    getCatalog(),
+    DEMO_VIDEO_ID ? demoVideoPlayable(DEMO_VIDEO_ID) : Promise.resolve(false),
+  ]);
   const tools = catalog.endpoints.filter((e) => e.available).length;
+  const video = playable ? DEMO_VIDEO_ID : null;
   return (
     <>
       <SiteHeader />
@@ -94,11 +99,11 @@ export default async function DemoPage() {
         <p className="mt-4 max-w-[640px] text-lg text-muted-foreground">{description}</p>
 
         <div className="mt-10 overflow-hidden rounded-2xl border border-line bg-muted">
-          {DEMO_VIDEO_ID ? (
+          {video ? (
             <iframe
               className="aspect-video w-full"
-              src={demoEmbedUrl(DEMO_VIDEO_ID)}
-              title="Akashi: the demo"
+              src={demoEmbedUrl(video)}
+              title="Meet Akashi: the demo"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               loading="lazy"
@@ -111,8 +116,8 @@ export default async function DemoPage() {
           )}
         </div>
         <p className="mt-3 text-sm text-muted-foreground">
-          {DEMO_VIDEO_ID ? (
-            <a className={external} href={demoVideoUrl(DEMO_VIDEO_ID)}>Watch on YouTube</a>
+          {video ? (
+            <a className={external} href={demoVideoUrl(video)}>Watch on YouTube</a>
           ) : (
             "The narrated film is on its way. Until then, everything it shows can be done live, below."
           )}

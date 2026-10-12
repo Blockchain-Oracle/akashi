@@ -10,7 +10,7 @@
 <p align="center">
   <a href="https://useakashi.xyz"><b>Open the app</b></a>
   &nbsp;·&nbsp;
-  <a href="#demo-walkthrough"><b>Demo walkthrough</b></a>
+  <a href="#demo-video"><b>Demo video</b></a>
   &nbsp;·&nbsp;
   <a href="https://useakashi.xyz/agent"><b>Try the agent</b></a>
   &nbsp;·&nbsp;
@@ -35,15 +35,15 @@ Akashi puts the tools behind one API and one way to pay. The agent **discovers**
 
 **In practice.** Asked "Is it raining in Lagos right now, and what is 100 USD in naira?", the agent in Akashi's chat picks `openweather/current` and `frankfurter/rates`, pays $0.005 and $0.001, and answers. Under the answer are the two tool cards, the two receipts with their Base Sepolia transactions, and "Pocket relay · tool-router".
 
-## Demo walkthrough
+## Demo video
 
 <p align="center">
   <a href="https://useakashi.xyz/demo">
-    <img src="apps/web/public/demo/cover.png" width="960" alt="See Akashi work: discover, inspect, pay and relay, shown as a light illustration with a play button" />
+    <img src="apps/web/public/demo/cover.png" width="960" alt="Watch Akashi work: discover, inspect, pay and relay, shown as a light illustration with a play button" />
   </a>
 </p>
 
-**[Follow the live walkthrough on /demo](https://useakashi.xyz/demo)**. The narrated film has not been published yet; the page links to the steps and proof you can check now.
+**[Watch “Meet Akashi” on YouTube](https://youtu.be/Y1gWHTdOu_A)**, or [on useakashi.xyz/demo](https://useakashi.xyz/demo) with the steps and the on-chain proof below the player.
 
 You can also follow the proof directly:
 
