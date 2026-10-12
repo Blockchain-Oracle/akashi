@@ -159,6 +159,14 @@ The hackathon asks for "a service that can be deployed on Pocket testnet and rea
 
 ## Proof on Pocket Beta
 
+<p align="center">
+  <a href="https://mcp.pocketmcp.network/audit?network=beta&ids=tool-router&operator=pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg">
+    <img src=".github/assets/pocket-service-audit-beta-2026-10-12.jpg" width="960" alt="Pocket Service Audit for tool-router on Beta TestNet, captured 12 October 2026: A1 through A9 pass, zero warnings or failures, and 14 settled claims" />
+  </a>
+</p>
+
+*Pocket Beta Service Audit, captured 12 October 2026: A1–A9 pass, zero warnings or failures, 14 settled claims. [Run the live audit](https://mcp.pocketmcp.network/audit?network=beta&ids=tool-router&operator=pokt1qnrjr3susgpyh4a4rx8f0x0wd6pqdtptr50ayg) to check the current result.*
+
 On Pocket Beta (`pocket-lego-testnet`) unless marked Base Sepolia, checked on 2026-10-07.
 
 | Record | Transaction |
