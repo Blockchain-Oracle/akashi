@@ -25,6 +25,7 @@ export const AUDIT_URL =
 
 export const pocketTx = (tx: string) => `${POCKET_EXPLORER}/tx/${tx}`;
 export const pocketService = (id: string) => `${POCKET_EXPLORER}/service/${id}`;
+export const pocketAccount = (address: string) => `${POCKET_EXPLORER}/account/${address}`;
 export const basescanTx = (tx: string) => `${BASESCAN}/tx/${tx}`;
 export const basescanAddress = (address: string) => `${BASESCAN}/address/${address}`;
 export const shortHash = (value: string, keep = 6) => `${value.slice(0, keep)}…${value.slice(-keep)}`;

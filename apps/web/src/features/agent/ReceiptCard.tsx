@@ -2,7 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 
 import type { Receipt } from "@/lib/agent/schemas";
 import { formatPrice } from "@/lib/catalog/format";
-import { ONCHAIN, shortHash } from "@/lib/constants/onchain";
+import { ONCHAIN, pocketAccount, shortHash } from "@/lib/constants/onchain";
 import { BASESCAN_ADDRESS, BASESCAN_TX, NETWORK_LABEL } from "@/lib/constants/wallet";
 import { cn } from "@/lib/utils";
 
@@ -36,9 +36,22 @@ export function ReceiptCard({ receipt, endpointId, latencyMs }: { receipt: Recei
       </a>,
     ]);
   }
+  // A relay has no transaction of its own: the supplier claims a whole session's relays in one claim once the session
+  // ends, so the link is the supplier's explorer page (relays served, last settled claim), not a per-run tx.
   rows.push([
     "Delivered",
-    receipt.via === "pocket" ? `Pocket relay · ${ONCHAIN.serviceId} · ${latencyMs} ms` : receipt.via === "direct" ? `Direct (relay unavailable) · ${latencyMs} ms` : `${latencyMs} ms`,
+    receipt.via === "pocket" ? (
+      <a
+        key="d"
+        className="inline-flex items-center gap-0.5 text-brand hover:underline"
+        href={pocketAccount(ONCHAIN.operator)}
+        target="_blank"
+        rel="noreferrer"
+        title="Akashi's supplier on the Pocket Explorer: relays served and claims settled on chain"
+      >
+        Pocket relay · {ONCHAIN.serviceId} · {latencyMs} ms <ArrowUpRight className="size-3" aria-hidden />
+      </a>
+    ) : receipt.via === "direct" ? `Direct (relay unavailable) · ${latencyMs} ms` : `${latencyMs} ms`,
   ]);
   return (
     <div className="relative w-full max-w-[520px] overflow-hidden rounded-md border border-line bg-background shadow-card">
