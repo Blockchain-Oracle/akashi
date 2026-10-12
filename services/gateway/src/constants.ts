@@ -37,12 +37,15 @@ export const HTTP_BAD_REQUEST = 400;
 export const HTTP_NOT_FOUND = 404;
 export const HTTP_UNPROCESSABLE = 422;
 export const HTTP_PAYLOAD_TOO_LARGE = 413;
+export const HTTP_FAILED_DEPENDENCY = 424;
 export const HTTP_BAD_GATEWAY = 502;
 export const HTTP_SERVER_ERROR_MIN = 500;
 
 // Headers browsers must be allowed to read for the x402 flow
 export const EXPOSED_HEADERS = ["PAYMENT-REQUIRED", "PAYMENT-RESPONSE", "X-Akashi-Via", "X-Akashi-Endpoint"];
 export const VIA_HEADER = "X-Akashi-Via";
+// The api sends a tool failure as 424 + this header (the RelayMiner never relays a backend 5xx); relay.ts restores it.
+export const UPSTREAM_STATUS_HEADER = "X-Akashi-Status";
 export const ENDPOINT_HEADER = "X-Akashi-Endpoint";
 
 // Remote MCP (/mcp): runs are paid by Akashi's demo wallet so any MCP client can try a tool without a wallet.

@@ -27,8 +27,14 @@ HTTP_NOT_FOUND: Final = 404
 HTTP_METHOD_NOT_ALLOWED: Final = 405
 HTTP_PAYLOAD_TOO_LARGE: Final = 413
 HTTP_UNPROCESSABLE: Final = 422
+HTTP_FAILED_DEPENDENCY: Final = 424
 HTTP_INTERNAL: Final = 500
 HTTP_CLIENT_ERROR_MIN: Final = 400
 HTTP_SERVER_ERROR_MIN: Final = 500
 
 JSON_MEDIA_TYPE: Final = "application/json"
+
+# The RelayMiner never relays a backend 5xx (pocket-relay-miner relayer/proxy.go: no signed RelayResponse, and it
+# counts toward its circuit breaker), so a tool failure leaves the api as 424 with its real status in this header;
+# the gateway restores the status for clients.
+UPSTREAM_STATUS_HEADER: Final = "x-akashi-status"

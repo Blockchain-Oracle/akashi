@@ -15,6 +15,7 @@ from akashi_core.app.handlers import install_handlers
 from akashi_core.app.middleware import BodyLimitMiddleware, DeadlineMiddleware
 from akashi_core.app.responses import AkashiJSONResponse
 from akashi_core.constants.app import APP_VERSION, HEALTH_OK
+from akashi_core.constants.http import HTTP_FAILED_DEPENDENCY, HTTP_SERVER_ERROR_MIN, UPSTREAM_STATUS_HEADER
 from akashi_tools.categories import Category
 from akashi_tools.constants import (
     CATALOG_ROUTE_DEADLINE_S,
@@ -46,13 +47,16 @@ install_handlers(app)
 
 
 def _error(status: int, code: str, message: str, *, retryable: bool = False,
-           details: list[str] | None = None) -> AkashiJSONResponse:
+           details: list[str] | None = None, headers: dict[str, str] | None = None) -> AkashiJSONResponse:
     body = {"error": {"code": code, "message": message, "retryable": retryable, "details": details or []}}
-    return AkashiJSONResponse(body, status_code=status)
+    return AkashiJSONResponse(body, status_code=status, headers=headers)
 
 
 @app.exception_handler(ToolError)
 async def _on_tool_error(_: Request, exc: ToolError) -> AkashiJSONResponse:
+    if exc.status >= HTTP_SERVER_ERROR_MIN:  # must still cross the relay: see UPSTREAM_STATUS_HEADER
+        return _error(HTTP_FAILED_DEPENDENCY, exc.code.value, exc.message, retryable=exc.retryable,
+                      details=exc.details, headers={UPSTREAM_STATUS_HEADER: str(exc.status)})
     return _error(exc.status, exc.code.value, exc.message, retryable=exc.retryable, details=exc.details)
 
 

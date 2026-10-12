@@ -1,7 +1,14 @@
 /** Forwarding. Paid runs go through pocket-ap (a signed Pocket relay to Akashi's supplier); reads go direct. */
 
 import type { GatewayConfig } from "./config.js";
-import { HTTP_SERVER_ERROR_MIN, NOT_SENT_CODES, READ_FORWARD_TIMEOUT_MS, RUN_FORWARD_TIMEOUT_MS } from "./constants.js";
+import {
+  HTTP_FAILED_DEPENDENCY,
+  HTTP_SERVER_ERROR_MIN,
+  NOT_SENT_CODES,
+  READ_FORWARD_TIMEOUT_MS,
+  RUN_FORWARD_TIMEOUT_MS,
+  UPSTREAM_STATUS_HEADER,
+} from "./constants.js";
 
 export type Via = "pocket" | "direct";
 
@@ -18,9 +25,15 @@ async function post(url: string, body: string, timeoutMs: number): Promise<Respo
   return fetch(url, { method: "POST", headers: JSON_HEADERS, body, signal: AbortSignal.timeout(timeoutMs) });
 }
 
+/** A tool failure crosses the relay as 424 + its real status (the RelayMiner drops a 5xx); clients see the real one. */
+function upstreamStatus(res: Response): number {
+  const original = Number(res.headers.get(UPSTREAM_STATUS_HEADER));
+  return res.status === HTTP_FAILED_DEPENDENCY && original >= HTTP_SERVER_ERROR_MIN ? original : res.status;
+}
+
 async function read(res: Response, via: Via): Promise<Forwarded> {
   return {
-    status: res.status,
+    status: upstreamStatus(res),
     body: await res.text(),
     via,
     contentType: res.headers.get("content-type") ?? "application/json",
@@ -28,8 +41,8 @@ async function read(res: Response, via: Via): Promise<Forwarded> {
 }
 
 /**
- * A relay-layer failure (pocket-ap down, no session, supplier unreachable) answers 5xx or throws before the
- * backend runs. Only then may we go direct; a backend 5xx that came back through the relay is a real answer.
+ * A relay-layer failure (pocket-ap down, no session, supplier unreachable) answers a non-JSON 5xx or throws before
+ * the backend runs. Only then may we go direct. A tool failure is never one of these: it crosses the relay as 424.
  */
 function relayLayerFailed(res: Response): boolean {
   return res.status >= HTTP_SERVER_ERROR_MIN && !res.headers.get("content-type")?.includes("application/json");

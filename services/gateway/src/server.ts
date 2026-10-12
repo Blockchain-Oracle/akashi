@@ -123,7 +123,10 @@ app.post(`${RUN_PREFIX}/:provider/:slug`, async (c, next) => {
   const checked = await forwardRead(config, "POST", path.replace(RUN_PREFIX, VALIDATE_PREFIX), body || "{}");
   // Only a verdict on the input blocks (400 bad JSON, 422 bad fields); anything else (an older api without
   // /v1/validate, a hiccup) falls through to the normal paid path, where the api validates again anyway.
-  return checked.status === HTTP_BAD_REQUEST || checked.status === HTTP_UNPROCESSABLE ? relay(c, checked) : next();
+  // The verdict ran no tool and crossed no relay, so it carries no X-Akashi-Via: no receipt claims a delivery path.
+  return checked.status === HTTP_BAD_REQUEST || checked.status === HTTP_UNPROCESSABLE
+    ? new Response(checked.body, { status: checked.status, headers: { "content-type": checked.contentType } })
+    : next();
 });
 
 // Payment runs before the handler: unpaid → 402 with the price; paid → handler → settle only if status < 400.
