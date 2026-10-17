@@ -1,0 +1,16 @@
+# Pocket application signer for the tool-router service. The key is supplied
+# only as a Coolify runtime secret; this Compose file contains no key material.
+services:
+  pocket-ap:
+    image: ghcr.io/pokt-network/pocket-ap:v0.1.2
+    command: ["serve", "-config", "/etc/pocket-ap/config.yaml"]
+    environment:
+      POCKET_APP_PRIVATE_KEY: ${POCKET_APP_PRIVATE_KEY}
+    volumes:
+      - /opt/pocket/config/pocket-ap.yaml:/etc/pocket-ap/config.yaml:ro
+    expose: ["8550"]
+    mem_limit: 128m
+    restart: unless-stopped
+    networks: [coolify]
+networks:
+  coolify: { external: true }

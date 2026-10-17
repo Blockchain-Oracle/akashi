@@ -35,6 +35,10 @@ services:
       - /opt/pocket/config/relayer-config.yaml:/config/config.yaml:ro
       - /opt/pocket/secrets/supplier-keys.yaml:/keys/supplier-keys.yaml:ro
     expose: ["8080"]
+    # The Coolify proxy and private Akashi API live on the shared network; keep the stack network for Redis.
+    networks: [default, coolify]
+    labels:
+      traefik.docker.network: coolify
     mem_limit: 256m
     environment: { GOMEMLIMIT: "230MiB", GOMAXPROCS: "2" }
     # Started, not healthy: the relayer's own /ready stays 503 until the miner publishes its manifest, and a strict
@@ -45,3 +49,5 @@ services:
                    retries: 30, start_period: 20s }
     restart: unless-stopped
 volumes: { pocket-redis-data: {} }
+networks:
+  coolify: { external: true }
