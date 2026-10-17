@@ -1,0 +1,7 @@
+{
+  "tool": "akashi_discover",
+  "arguments": {
+    "query": "weather in a city",
+    "limit": 3
+  }
+}
