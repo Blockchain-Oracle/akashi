@@ -90,7 +90,7 @@ export default async function DemoPage() {
   const video = playable ? DEMO_VIDEO_ID : null;
   return (
     <>
-      <SiteHeader />
+      <SiteHeader active="Demo" />
       <main id="main" className="mx-auto max-w-[1040px] px-4 py-14 sm:px-6">
         <p className="font-mono text-[0.6875rem] tracking-[0.12em] text-muted-foreground uppercase">
           The Akashi demo · {ONCHAIN.network}

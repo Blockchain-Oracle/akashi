@@ -1,12 +1,12 @@
-import { ArrowRight, Menu } from "lucide-react";
+import { Menu, Play } from "lucide-react";
 import Link from "next/link";
 
 import { Logo } from "@/components/brand/Logo";
 import { GitHubMark } from "@/components/common/GitHubMark";
 import { ThemeToggle } from "@/components/shell/ThemeToggle";
-import { NAV, REPO_URL, docsPage } from "@/lib/constants/site";
+import { NAV, REPO_URL } from "@/lib/constants/site";
 
-/** Monid's header: wordmark left, four links centred, icon links + a quiet "Get started" pill right. */
+/** Wordmark, primary navigation, and a visible path to the product demo. */
 export function SiteHeader({ active }: { active?: string }) {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
@@ -48,12 +48,15 @@ export function SiteHeader({ active }: { active?: string }) {
               ))}
             </nav>
           </details>
-          <a
-            href={docsPage("quickstart")}
-            className="inline-flex h-9 items-center gap-1.5 rounded-md bg-muted px-3.5 text-sm font-medium text-foreground transition-colors hover:bg-line"
+          <Link
+            href="/demo"
+            aria-current={active === "Demo" ? "page" : undefined}
+            className="inline-flex h-9 items-center gap-1.5 rounded-md bg-brand px-3.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
           >
-            Get started <ArrowRight className="size-3.5" aria-hidden />
-          </a>
+            <Play className="size-3.5 fill-current" aria-hidden />
+            <span className="sm:hidden">Demo</span>
+            <span className="hidden sm:inline">Watch demo</span>
+          </Link>
         </div>
       </div>
     </header>

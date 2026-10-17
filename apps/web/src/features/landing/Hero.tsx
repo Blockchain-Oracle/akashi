@@ -1,4 +1,6 @@
+import { Play } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { CopyCommand } from "@/components/common/CopyCommand";
 import { AGENT_MARKS } from "@/lib/constants/landing";
@@ -32,6 +34,12 @@ export function Hero({ catalog }: { catalog: Catalog }) {
         </div>
         <CopyCommand command={SKILL_COMMAND} className="mt-5 max-w-[440px]" />
         <p className="mt-6 text-lg text-ink-2">and let it take it from there.</p>
+        <Link
+          href="/demo"
+          className="mt-7 inline-flex items-center gap-2 rounded-md border border-brand/25 bg-background px-4 py-2.5 text-sm font-medium text-brand transition-colors hover:border-brand hover:bg-brand/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+        >
+          <Play className="size-3.5 fill-current" aria-hidden /> Watch the demo
+        </Link>
       </div>
       <ToolHub catalog={catalog} />
     </section>
