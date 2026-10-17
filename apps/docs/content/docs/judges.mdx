@@ -4,6 +4,7 @@ description: Test Akashi end to end in about ten minutes. The free routes with c
 ---
 
 Everything below runs against the public gateway. Steps 1 and 2 need only `curl` (and `jq` to read the output). Step 3 needs Node.js 20 or later and test USDC.
+The free routes and the 402 check do not send a signed Pocket relay. Use the paid run in step 3 to test the full path.
 
 ```bash
 API=https://api.useakashi.xyz
@@ -67,7 +68,7 @@ Check the output:
 
 - `status` is `200` and `body.data` holds the release.
 - `receipt.paid` is `true` and `receipt.transaction` is the settlement. Open `https://sepolia.basescan.org/tx/<transaction>`: a USDC transfer of 0.001 to `0x8164…948D`.
-- `receipt.via` is `pocket` (relayed through Pocket Network) or `direct` (the gateway's fallback).
+- `receipt.via` must be `pocket` for this to count as a successful Pocket test. If it is `direct`, the gateway used its fallback: the backend may have worked, but the relay path did not. Retry and report that result.
 
 ## 4. Runs that are not charged
 
@@ -84,6 +85,8 @@ akashi run wikipedia/summary --input '{"titel": "Alan Turing"}'
 ```
 
 `status` is `422` with `"code": "invalid_input"`, and `receipt.paid` is `false`. The typo is caught by the free input check before any payment is asked for, so nothing is signed. The lookup that found nothing was signed, and the gateway never settled it.
+
+Live tools depend on third-party services. An upstream timeout can return `error.code: "deadline_exceeded"` with `retryable: true`; it is not charged, and a later attempt may succeed. A `found: false` answer is also not charged. For `wayback/snapshot`, it means the Wayback availability API returned no closest capture; that API can return an empty result while it is degraded, so this is not proof that no archived copy exists. Release tags, search results, weather and other live data can change between runs.
 
 ## 5. The agent chat
 
