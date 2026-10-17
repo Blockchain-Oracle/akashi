@@ -1,29 +1,33 @@
 /** x402 seller: one exact-price route per catalog endpoint, settled only when the run returns < 400. */
 
 import { HTTPFacilitatorClient } from "@x402/core/server";
-import type { RouteConfig } from "@x402/core/server";
+import type { FacilitatorConfig, RouteConfig } from "@x402/core/server";
 import { ExactEvmScheme } from "@x402/evm/exact/server";
 import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
 
 import type { Catalog } from "./catalog.js";
-import type { GatewayConfig } from "./config.js";
-import { PAYMENT_TIMEOUT_S, SERVICE_NAME } from "./constants.js";
+import { cdpAuthHeaders } from "./cdp-auth.js";
+import type { GatewayConfig, MainnetConfig } from "./config.js";
+import { PAYMENT_TIMEOUT_S, RUN_PREFIX, RUN_V2_PREFIX, SERVICE_NAME } from "./constants.js";
 import { SerialFacilitator } from "./serial-facilitator.js";
 
-/** Exact `POST /v1/run/<provider>/<slug>` keys only: no wildcard, so no path can run unpaid. */
-export function runRoutes(catalog: Catalog, config: GatewayConfig): Record<string, RouteConfig> {
+type Rail = { prefix: string; network: `${string}:${string}`; payTo: `0x${string}` };
+
+/** Exact `POST <prefix>/<provider>/<slug>` keys only: no wildcard, so no path can run unpaid. */
+export function runRoutes(catalog: Catalog, publicBaseUrl: string, rail: Rail): Record<string, RouteConfig> {
   const routes: Record<string, RouteConfig> = {};
   for (const endpoint of catalog.endpoints) {
     if (!endpoint.available) continue;
-    routes[`POST ${endpoint.path}`] = {
+    const path = endpoint.path.replace(RUN_PREFIX, rail.prefix);
+    routes[`POST ${path}`] = {
       accepts: {
         scheme: "exact",
         price: `$${endpoint.price.usd}`,
-        network: config.network,
-        payTo: config.payTo,
+        network: rail.network,
+        payTo: rail.payTo,
         maxTimeoutSeconds: PAYMENT_TIMEOUT_S,
       },
-      resource: `${config.publicBaseUrl}${endpoint.path}`,
+      resource: `${publicBaseUrl}${path}`,
       description: `${endpoint.displayName}: ${endpoint.summary}`,
       mimeType: "application/json",
       serviceName: SERVICE_NAME,
@@ -37,17 +41,27 @@ export function runRoutes(catalog: Catalog, config: GatewayConfig): Record<strin
 // changes, and a fresh queue would settle in parallel with the old one.
 const facilitators = new Map<string, SerialFacilitator>();
 
-function facilitatorFor(url: string): SerialFacilitator {
+function facilitatorFor(url: string, createAuthHeaders?: FacilitatorConfig["createAuthHeaders"]): SerialFacilitator {
   let facilitator = facilitators.get(url);
   if (!facilitator) {
-    facilitator = new SerialFacilitator(new HTTPFacilitatorClient({ url }));
+    facilitator = new SerialFacilitator(new HTTPFacilitatorClient({ url, createAuthHeaders }));
     facilitators.set(url, facilitator);
   }
   return facilitator;
 }
 
+/** Pocket path: Base Sepolia through the public facilitator (unchanged). */
 export function paymentLayer(catalog: Catalog, config: GatewayConfig) {
   const facilitator = facilitatorFor(config.facilitatorUrl);
   const server = new x402ResourceServer(facilitator).register(config.network, new ExactEvmScheme());
-  return paymentMiddleware(runRoutes(catalog, config), server);
+  const rail = { prefix: RUN_PREFIX, network: config.network, payTo: config.payTo };
+  return paymentMiddleware(runRoutes(catalog, config.publicBaseUrl, rail), server);
+}
+
+/** PayBox path: the same tools on Base mainnet through the CDP facilitator. */
+export function mainnetPaymentLayer(catalog: Catalog, config: GatewayConfig, mainnet: MainnetConfig) {
+  const facilitator = facilitatorFor(mainnet.facilitatorUrl, cdpAuthHeaders(mainnet));
+  const server = new x402ResourceServer(facilitator).register(mainnet.network, new ExactEvmScheme());
+  const rail = { prefix: RUN_V2_PREFIX, network: mainnet.network, payTo: mainnet.payTo };
+  return paymentMiddleware(runRoutes(catalog, config.publicBaseUrl, rail), server);
 }

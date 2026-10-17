@@ -1,6 +1,6 @@
 /** Runtime configuration from the environment. Fails fast on anything a paid route cannot work without. */
 
-import { ANY_ORIGIN, DEFAULT_FACILITATOR_URL, DEFAULT_NETWORK } from "./constants.js";
+import { ANY_ORIGIN, CDP_FACILITATOR_URL, DEFAULT_FACILITATOR_URL, DEFAULT_NETWORK, MAINNET_NETWORK } from "./constants.js";
 
 const DEFAULT_PORT = 8080;
 const ADDRESS = /^0x[0-9a-fA-F]{40}$/;
@@ -24,6 +24,31 @@ export interface GatewayConfig {
   facilitatorUrl: string;
   publicBaseUrl: string;
   corsOrigins: string | string[]; // "*" or an allowlist
+  /** Mainnet /v2 routes. Undefined (no CDP key) → no /v2 routes at all, never a half-configured paid path. */
+  mainnet: MainnetConfig | undefined;
+}
+
+export interface MainnetConfig {
+  network: `${string}:${string}`;
+  payTo: `0x${string}`;
+  facilitatorUrl: string;
+  cdpKeyId: string;
+  cdpKeySecret: string;
+}
+
+function readMainnet(defaultPayTo: string): MainnetConfig | undefined {
+  const cdpKeyId = process.env.CDP_API_KEY_ID?.trim();
+  const cdpKeySecret = process.env.CDP_API_KEY_SECRET?.trim().replace(/\\n/g, "\n");
+  if (!cdpKeyId || !cdpKeySecret) return undefined;
+  const payTo = process.env.AKASHI_MAINNET_PAY_TO?.trim() || defaultPayTo;
+  if (!ADDRESS.test(payTo)) throw new Error("AKASHI_MAINNET_PAY_TO must be a 0x address");
+  return {
+    network: (process.env.X402_MAINNET_NETWORK ?? MAINNET_NETWORK) as `${string}:${string}`,
+    payTo: payTo as `0x${string}`,
+    facilitatorUrl: process.env.X402_MAINNET_FACILITATOR_URL ?? CDP_FACILITATOR_URL,
+    cdpKeyId,
+    cdpKeySecret,
+  };
 }
 
 /** Hono's cors() reads an array as an allowlist, so a bare "*" must stay a string to mean any origin. */
@@ -45,5 +70,6 @@ export function readConfig(): GatewayConfig {
     facilitatorUrl: process.env.X402_FACILITATOR_URL ?? DEFAULT_FACILITATOR_URL,
     publicBaseUrl: (process.env.AKASHI_PUBLIC_URL ?? `http://localhost:${DEFAULT_PORT}`).replace(/\/$/, ""),
     corsOrigins: corsOrigins(process.env.AKASHI_CORS_ORIGINS ?? ANY_ORIGIN),
+    mainnet: readMainnet(payTo),
   };
 }

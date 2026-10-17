@@ -11,6 +11,13 @@ export const SPEC_PATH = "/specs/tool-router.openapi.json";
 export const DEFAULT_NETWORK = "eip155:84532" as const;
 export const DEFAULT_FACILITATOR_URL = "https://x402.org/facilitator";
 export const PAYMENT_TIMEOUT_S = 60; // the signed authorization stays valid this long (portal uses 60 s too)
+
+// /v2: the same tools paid in mainnet USDC through Coinbase's CDP facilitator, which PayBox can pay. The Pocket
+// /v1 path above stays exactly as it is. x402.org is testnet-only, so mainnet settles through CDP (key + JWT).
+export const RUN_V2_PREFIX = "/v2/run";
+export const MAINNET_NETWORK = "eip155:8453" as const; // Base mainnet, PayBox's EVM x402 rail
+export const CDP_FACILITATOR_URL = "https://api.cdp.coinbase.com/platform/v2/x402";
+export const CDP_JWT_TTL_S = 120; // a fresh JWT per facilitator call; two minutes covers verify → settle
 export const USDC_DECIMALS = 6;
 // The facilitator's relayer races itself when two settlements overlap (serial-facilitator.ts): queue them, and retry
 // a lost race once after roughly one Base block (2 s), well inside PAYMENT_TIMEOUT_S.

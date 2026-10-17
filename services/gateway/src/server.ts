@@ -2,6 +2,7 @@
  * akashi-gateway: the public front door (api.<domain>).
  *   free   GET  /v1/catalog · POST /v1/discover · POST /v1/inspect · GET /v1/endpoints/:p/:s · /.well-known/x402
  *   paid   POST /v1/run/:provider/:slug  — x402 exact payment, relayed over Pocket, settled only on success
+ *   paid   POST /v2/run/:provider/:slug  — the same tools in mainnet USDC (CDP facilitator), payable from PayBox
  */
 
 import { serve } from "@hono/node-server";
@@ -24,13 +25,14 @@ import {
   HTTP_UNPROCESSABLE,
   MAX_BODY_BYTES,
   RUN_PREFIX,
+  RUN_V2_PREFIX,
   SERVICE_ID,
   SPEC_PATH,
   VALIDATE_PREFIX,
   VIA_HEADER,
 } from "./constants.js";
 import { mcpHandler } from "./mcp.js";
-import { paymentLayer } from "./payments.js";
+import { mainnetPaymentLayer, paymentLayer } from "./payments.js";
 import { forwardRead, forwardRun } from "./relay.js";
 import type { Forwarded } from "./relay.js";
 
@@ -38,8 +40,10 @@ const config = readConfig();
 let catalog: Catalog = await loadCatalog(config.apiUrl);
 let endpointsByPath = new Map(catalog.endpoints.filter((e) => e.available).map((e) => [e.path, e]));
 let payments = paymentLayer(catalog, config);
+const mainnetLayer = (c: Catalog) => (config.mainnet ? mainnetPaymentLayer(c, config, config.mainnet) : undefined);
+let mainnetPayments = mainnetLayer(catalog);
 
-/** A new api deploy can add, remove or reprice tools: swap the catalog and the paid route table atomically. */
+/** A new api deploy can add, remove or reprice tools: swap the catalog and the paid route tables atomically. */
 async function refreshCatalog(): Promise<void> {
   try {
     const next = await loadCatalog(config.apiUrl, 1);
@@ -47,6 +51,7 @@ async function refreshCatalog(): Promise<void> {
     catalog = next;
     endpointsByPath = new Map(next.endpoints.filter((e) => e.available).map((e) => [e.path, e]));
     payments = paymentLayer(next, config);
+    mainnetPayments = mainnetLayer(next);
     console.log(JSON.stringify({ event: "catalog_reloaded", hash: next.hash, endpoints: endpointsByPath.size }));
   } catch (error) {
     console.warn(JSON.stringify({ event: "catalog_refresh_failed", error: String(error) }));
@@ -114,28 +119,46 @@ app.all("/mcp", (c) =>
   mcp(c.req.raw, c.req.header("x-forwarded-for")?.split(",")[0]?.trim() || c.req.header("x-real-ip") || "unknown"),
 );
 
-// Before any 402: an input that cannot run is rejected for free (nobody signs for a 422).
-app.post(`${RUN_PREFIX}/:provider/:slug`, async (c, next) => {
-  if (c.req.header("payment-signature") || c.req.header("x-payment")) return next();
-  const path = `${RUN_PREFIX}/${c.req.param("provider")}/${c.req.param("slug")}`;
-  if (!endpointsByPath.has(path)) return next();
-  const body = await c.req.raw.clone().text();
-  const checked = await forwardRead(config, "POST", path.replace(RUN_PREFIX, VALIDATE_PREFIX), body || "{}");
-  // Only a verdict on the input blocks (400 bad JSON, 422 bad fields); anything else (an older api without
-  // /v1/validate, a hiccup) falls through to the normal paid path, where the api validates again anyway.
-  // The verdict ran no tool and crossed no relay, so it carries no X-Akashi-Via: no receipt claims a delivery path.
-  return checked.status === HTTP_BAD_REQUEST || checked.status === HTTP_UNPROCESSABLE
-    ? new Response(checked.body, { status: checked.status, headers: { "content-type": checked.contentType } })
-    : next();
-});
+/** The catalog keys every tool by its /v1 path; /v2 serves the same tool, so lookups and runs use the /v1 path. */
+const catalogPath = (c: Context) => `${RUN_PREFIX}/${c.req.param("provider")}/${c.req.param("slug")}`;
+
+/**
+ * Before any 402: an input that cannot run is rejected for free (nobody signs for a 422).
+ * On /v2 an empty body goes straight to the 402: x402 buyers such as PayBox's use_service probe the price
+ * without the body and send it only on the paid retry, which the api validates again (a 422 then is not settled).
+ */
+function prevalidate(emptyBodyProbesPrice: boolean) {
+  return async (c: Context, next: () => Promise<void>) => {
+    if (c.req.header("payment-signature") || c.req.header("x-payment")) return next();
+    const path = catalogPath(c);
+    if (!endpointsByPath.has(path)) return next();
+    const body = await c.req.raw.clone().text();
+    if (emptyBodyProbesPrice && !body.trim()) return next();
+    const checked = await forwardRead(config, "POST", path.replace(RUN_PREFIX, VALIDATE_PREFIX), body || "{}");
+    // Only a verdict on the input blocks (400 bad JSON, 422 bad fields); anything else (an older api without
+    // /v1/validate, a hiccup) falls through to the normal paid path, where the api validates again anyway.
+    // The verdict ran no tool and crossed no relay, so it carries no X-Akashi-Via: no receipt claims a delivery path.
+    return checked.status === HTTP_BAD_REQUEST || checked.status === HTTP_UNPROCESSABLE
+      ? new Response(checked.body, { status: checked.status, headers: { "content-type": checked.contentType } })
+      : next();
+  };
+}
+
+app.post(`${RUN_PREFIX}/:provider/:slug`, prevalidate(false));
+app.post(`${RUN_V2_PREFIX}/:provider/:slug`, prevalidate(true));
 
 // Payment runs before the handler: unpaid → 402 with the price; paid → handler → settle only if status < 400.
 app.use(`${RUN_PREFIX}/*`, (c, next) => payments(c, next));
+app.use(`${RUN_V2_PREFIX}/*`, async (c, next) =>
+  mainnetPayments ? mainnetPayments(c, next) : jsonError(c, HTTP_NOT_FOUND, "mainnet_disabled", "Mainnet runs are not enabled on this gateway."));
 
-app.post(`${RUN_PREFIX}/:provider/:slug`, async (c) => {
-  const path = `${RUN_PREFIX}/${c.req.param("provider")}/${c.req.param("slug")}`;
+app.post(`${RUN_PREFIX}/:provider/:slug`, runTool);
+app.post(`${RUN_V2_PREFIX}/:provider/:slug`, runTool);
+
+async function runTool(c: Context) {
+  const path = catalogPath(c);
   if (!endpointsByPath.has(path)) {
-    return jsonError(c, HTTP_NOT_FOUND, "unknown_endpoint", `no endpoint at ${path}`,
+    return jsonError(c, HTTP_NOT_FOUND, "unknown_endpoint", `no endpoint at ${c.req.path}`,
       ["POST /v1/discover with {query} to find one"]);
   }
   const body = await c.req.text();
@@ -161,7 +184,7 @@ app.post(`${RUN_PREFIX}/:provider/:slug`, async (c) => {
     }
   }
   return response;
-});
+}
 
 app.notFound((c) => jsonError(c, HTTP_NOT_FOUND, "not_found", `no route ${c.req.method} ${c.req.path}`));
 app.onError((error, c) => {
@@ -171,5 +194,5 @@ app.onError((error, c) => {
 
 serve({ fetch: app.fetch, port: config.port }, (info) => {
   console.log(JSON.stringify({ event: "gateway_ready", port: info.port, endpoints: endpointsByPath.size,
-    network: config.network, relay: config.pocketApUrl ? "pocket" : "direct" }));
+    network: config.network, mainnet: config.mainnet?.network ?? null, relay: config.pocketApUrl ? "pocket" : "direct" }));
 });
