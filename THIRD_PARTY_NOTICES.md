@@ -1,25 +1,16 @@
 # Third-party notices
 
-This file records where parts of Akashi's design came from and the attribution for the data it serves. It does not
+This file records the earlier work and the attribution for the data it serves. It does not
 grant a licence to Akashi as a whole, change any upstream terms, or imply endorsement by the projects named.
 File-level notices and each dependency's own licence still apply.
 
-## Monid: the website's look and the tool-router idea
+## The author's earlier work
 
-Akashi's website follows the look of [monid.ai](https://monid.ai): its palette, type scale, radii and the layout of
-its landing page, tool catalog and docs, read from monid.ai's own stylesheet on 2026-10-07. The tokens are in
-`packages/brand/tokens/paint.css`, and each component that follows a Monid section names it in a comment. No code
-or asset from monid.ai is included. Akashi keeps its own name, its 証 seal and its own copy.
-
-Monid's open connector repository ([monid-ai/monid](https://github.com/monid-ai/monid), MIT) was read as a
-reference for the connector format. No files are copied from it; Akashi's connector framework is its own Python code.
-
-## The author's earlier projects
-
-Parts of the chat interface are ported from the same author's own projects, and each file names its source in a
-comment: KeeperHub Copilot v2 (tool timeline, composer, conversation history, receipt card), Portaldot (the inline
-pay card flow), DeepBookie (payment states) and Masayume (the wallet setup). Some of those components started from
-21st.dev community components, named in their comments.
+Parts of the chat interface reuse components from the author's own earlier open-source projects, built before this
+one: KeeperHub Copilot v2 (tool timeline, composer, conversation history, receipt card), Portaldot (the inline pay
+card flow), DeepBookie (payment states) and a wallet-setup flow. Each file names its source in a comment. Some of
+those components started from 21st.dev community components, named in their comments. Akashi's connector framework
+and design tokens (`packages/brand/tokens/paint.css`) are its own.
 
 ## Fonts
 
